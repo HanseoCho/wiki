@@ -175,6 +175,17 @@ function mainCluster(){
     echo "data2" >> /root/hadoop/etc/hadoop/slaves
     echo "data3" >> /root/hadoop/etc/hadoop/slaves
 }
+#yarn-site.xml 전체에 
+            #<configuration>
+                #<property>
+                  #  <name>yarn.nodemanager.aux-services</name>
+                 #   <value>mapreduce_shuffle</value>
+                #</property>
+                #<property>
+               #     <name>yarn.nodemanager.auxservices.mapreduce.shuffle.class</name>
+              #      <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+             #   </property>
+            #</configuration>
 function subCluster(){
     #서브는 파라미터로 몇번제것인지 표기해줘야함
     sed -i "25s/.*/export JAVA_HOME=\/root\/java/g" /root/hadoop/etc/hadoop/hadoop-env.sh
