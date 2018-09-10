@@ -1,0 +1,60 @@
+resources/test/print.html : 그래프저장
+Web-----
+    $(document).ready(function(){
+    	$("#print").on("click", function(){
+    		var imgData = chart.getImageURI();
+    		console.log(imgData);
+			$.ajax({
+				type: "post",
+				url: "/eis/getImg",
+				data: {"imgData": imgData}
+			}).always(function(){
+				console.log("oK!");
+			});
+    	});
+    });
+
+java----
+	@RequestMapping(value = "getImg", method = RequestMethod.POST)
+	public void getImg(HttpServletRequest req, HttpServletResponse resp) {
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		
+		String imgData = req.getParameter("imgData");
+		System.out.println(imgData);
+		OutputStream out = null;
+		// base64 이미지로 저장
+		try {
+			String path = "D:/GDJ10/IDE/sts-bundle/workspace2/Dashboard/src/main/webapp/resources/upload/";
+			String fileNm = "img.png";
+			File dir = new File(path);
+			if(!dir.exists()) {
+				dir.mkdirs();
+			}
+			File file = new File(path + fileNm);
+			out = new FileOutputStream(file);
+			byte[] byteDat = Base64Utils.decodeFromString(imgData.replace("data:image/png;base64,", ""));
+			out.write(byteDat);
+			result.put("status", 1);
+			result.put("url", "/eis/resources/upload/" + fileNm);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.put("status", 0);
+		} finally {
+			try {
+				out.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		resp.setCharacterEncoding("UTF-8");
+		resp.setContentType("text/json;charset=utf-8");
+		JSONObject json = JSONObject.fromObject(JSONSerializer.toJSON(result));
+		try {
+			resp.getWriter().write(json.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+

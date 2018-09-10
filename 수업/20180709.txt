@@ -1,0 +1,20 @@
+빅데이터 ETL
+1. ETL틀이라 하고 sql 흐름도에 따라 배열로 표현한다함 (필요한 sql문 순서에 따라 배치)
+job = [
+    {"target":"원본","type":"S","sql":"select * from test"},
+    {"target":"대상","type":"T","sql":"truncate table test2"},
+    {"target":"대상","type":"I","sql":"insert into db_b.test2 (`no`,`name`,`desc`,`regDT`) value"},
+    {"target":"대상","type":"S","sql":"select * from test"}
+]
+    
+    *. db설정문과는 따로 배치한다. (역할이 구분되어있기 때문이다.)
+
+2. insert할때 select한것을 이용할려면 바로 사용을 못하고 한번 변환을 해줘야한다.
+    (select로 받아올때에는 한개 이상인이상 배열로 담겨서 오기 때문에 문자열로 변환해주는 것이다.)
+    for index in range(len(원본데이터)):
+        if index > 0:
+            value = "{0},{1}".format(value,원본데이터[index])
+        else :
+            value = "{0}".format(원본데이터[index])
+
+    

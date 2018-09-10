@@ -1,0 +1,17 @@
+*. 자바에서 공유해서 사용해야하는값 : 세션
+    HttpSession session // db연동을위한 @Resources HttpSession과 충돌할수 있다함.
+
+    session.setAttribute("user", result); // 셋
+
+
+*. 세션유지시간 (참고 : http://blog.whitelife.co.kr/221)
+    web.xml - <session-config>
+        session-timeout 은 분 단위로 설정 된다. 30 이라고 선언했다면 getSession() 할때 마다 Session 유효 시간은 30분 이다.
+        - 아무것도 안했을때 30분이라함
+        session 이 created, destoryed 되는 것을 확인 하고 싶을 때가 있을 것이다. HttpSessionListener 를 구현하면 확인이 가능하다.
+        
+
+
+*. 로그 남기기 
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+    logger info or debug : 로그에 찍기가능 이렇게 할경우 src/main/Resources/log4j.xml 에서 한번에 볼수있다.

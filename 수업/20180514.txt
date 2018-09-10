@@ -1,0 +1,168 @@
+json으로 데이터 주고받기
+    $.ajax({
+            url : "data.json", // 호출 주소(URL)
+            dataType : "json"       // 가져올 데이터 타입설정 (json)
+    })
+
+
+앙귤러.js
+ 1) 사용할때는 jquery랑 똑같이 불러와준다.
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js">
+    </script>
+ 2) 
+    <body data-ng-app="myApp" data-ng-controller="myCtrl"> : 웹에서 사용할때는 앞에 data를 붙여서 선언해준다.
+                        이렇게 선언해주면 body태그는 엥귤러를 사용해서 영향을 준다는뜻이다.
+
+
+모듈을 만들어서 컨트롤 할수 있는 영역을 만든다.
+<script>
+    var app = angular.module('myApp', []);  // myApp은 body에 붙여주는 이름
+    app.controller('myCtrl', function($scope) { // body에 컨트롤러를 선언해줘야한다.
+        여기는 컨트롤해주기위한 장소         
+    });
+</script
+
+repeat : 반복문 
+앵귤러와 ajax를 사용한 연결방법 - 비추천 방법
+<body data-ng-app="myApp" data-ng-controller="myCtrl">
+    <ul>
+        <li data-ng-repeat="row in data">   // 파이썬의 반복문 같은역할
+            <div class="num float_left">{{row.num}}</div>
+            <div class="title float_left"></div>
+            <div class="comment float_left">답변 </div>
+            <div class="name float_left"></div>
+            <div class="time float_left"></div>
+        </li>
+    </ul>
+    <script>
+        var app = angular.module('myApp', []);
+        app.controller('myCtrl', function($scope) {
+            $scope.data = [{"num":100},{"num":200},{"num":300}]
+            $.ajax({
+				url : "data/data.json", // 호출 주소(URL)
+				dataType : "json"       // 가져올 데이터 타입설정 (json)
+		    }).done(function(d, s, x) {     // 성공 했을때 실행
+			    console.log(d.list);
+                $scope.data = d.list;
+                console.log($scope.data);
+	        });
+        });
+    </script>
+</body>
+
+앵귤러만으로 연결하는법
+    <script>
+        var app = angular.module('myApp', []);
+        app.controller('myCtrl', function($scope, $http) {
+            $scope.data = [{"num":100},{"num":200},{"num":300}]
+                $http({
+                method : "GET",
+                url : "data/data.json"
+            }).then(function mySuccess(response) {
+                console.log(response);
+            }, function myError(response) {
+                $scope.myWelcome = response.statusText;
+            });            
+            
+        });
+    </script>
+
+
+앵귤러 장점 : 양방향 
+# 자바스크립트에서  연결만을 담당하고 html문을 body에서 연결을 해준후
+ 다양한 data-... 문을 사용해서 쓴다.
+
+ 엥규러 body에 연결한 예) 
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title> Angular List </title>
+    <script src="lib/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+        
+	<link rel="shortcut icon" href="img/icon_goodee.png">
+	<link rel="stylesheet" href="list.css">
+</head>
+
+<body data-ng-app="myApp" data-ng-controller="myCtrl">
+    <ul>
+        <li data-ng-repeat="row in data">
+            <div class="num float_left" data-ng-if="row.num != ''">{{row.num}}</div>
+            <div class="float_left" 
+            data-ng-class="{title: row.num != '', title_long: row.num == ''}">{{row.title}}</div>
+            <div class="comment float_left">답변 {{row.comment}}</div>
+            <div class="name float_left">{{row.name}}</div>
+            <div class="time float_left">{{row.time}}</div>
+        </li>
+    </ul>
+    <script>
+        var app = angular.module('myApp', []);
+        app.controller('myCtrl', function($scope, $http) {
+            $http({method : "GET",
+                   url : "data/data.json"
+            }).then(function mySuccess(response) {
+               $scope.data = response.data.list;
+            });
+        });
+    </script>
+</body>
+</html>
+------------
+data-ng-app="" body에 엥귤러 사용시 무조건 사용해줘야한다.
+data-ng-init="data='test'" 초기값지정
+data-ng-model="data" 초기값을 집어넣어줄때 model을사용한다
+ value="{{data}}"    표현식을 사용해서도 표현이 가능한데, ng-model의 값을 바꾸면 data의 값이 바뀐다.(양방향)
+
+엥귤러 양방향 예)
+ <body data-ng-app="" data-ng-init="data='test'">
+    <input type="text" data-ng-model="data">        엥귤러의 값을바꾸면 init에 사용한 data변수에 영향을 준다.
+    <input type="text" value="{{data}}">                    
+</body>
+
+강사님이 회사가서는 jquery를 많이쓰이고 엥귤러는 알면좋다캄
+
+이제부터 2주간 jquery나가기로함 : 투표로 jquery 앵귤러 node중
+-------------------------------------------------------------------
+이전까지한건 강사님꺼 오늘날짜에 넣어둘겨
+
+
+
+2. Jquery
+    함수
+    1) .on : 이벤트에 click과 key 이벤트만 부여가능
+    2) .off : 들어간 이벤트를 지운다.
+     # 이벤트를 부여할때 중첩을 해결하기 위해서 .off().on() 으로 다시 이벤트를 부여한다.
+    3) bind() = on = click : 이벤트를 부여가능 (on이 생기기전 사용하던게 bind라고함) 
+    4) this 로 자기자신 확인가능
+            $("button").on("click",function(){
+                console.log($(this));
+            })
+    5) eq() : 인덱스를 이용해서 값을 찾을때 사용
+            $("button").on("click",function(){
+                console.log($(this).eq(0).text()); // 0번째 버튼의 자식들의 글자 추출
+            })
+    6) index : 자신의 인덱스 찾기
+            $("button").on("click",function(){
+                var index = $("button").index($(this));
+                console.log(index);
+            })    
+
+    7) text() : 자식들의 글자를 뽑을수있다.
+            var event = $(this).text();
+    
+    8) each() : jquery의 반복문, 셀렉터를 중심으로 반복 #참고 : http://annotations.tistory.com/59
+            list.forEach(row){
+                $("ul").append("<li>"+row.title+"</li>");
+            }    
+            방식 1) $("ul").append("<li>"+row.key+"</li>");
+            방식 2) var html = "";
+                    html += '<tr>';
+                    html += '<td style="text-align: center;">'+row.key+'</td>'
+                    html += '<td>'+row.title+'</td>'
+                    html += '</tr>';
+                    $("table").append(html);
+    # 배열안에 객체가 들어가있는걸 json이라캄
+
+    9) .empty() : 해당 셀렉터의 내용을 지움
+    

@@ -1,0 +1,91 @@
+빅데이터수집(180627~180705)
+수집에 대한 이론설명--
+
+
+# coding:UTF-8
+print("test")
+url = 'https://www.melon.com/search/keyword/index.json?'
+param = {
+    'jscallback':'jQuery19108995509696942201_1530067769790',
+    'query':'GIRLSGENERATION',
+    '_':1530067769804
+}
+print(param['jscallback'])
+print(param.get('jscallback'))
+print('{jscallback}'.format(**param))
+
+꺼낼때 다양하게 꺼낼수있다.
+
+*. 정규화 도우미 : https://regexr.com/
+
+# 멜론 노래가사출력하는 소스
+# coding:UTF-8
+def m_search(q) :
+    url = 'https://www.melon.com/search/keyword/index.json'
+    param = {
+        'jscallback':'jQuery19109386915816974519_1530080497902',
+        'query': q,
+        '_':'1530080497905'
+    }
+    print(param['jscallback'])
+    print(param.get('jscallback'))
+    print('{jscallback}'.format(**param))
+
+    dir = 'D:/GDJ10/201806/0627/test1.txt'
+
+    print(url+'?jscallback={jscallback}&query={query}&_={_}'.format(**param))
+
+    # 이방식으로는 cros설정을 안한 보안이강한 웹페이지는 가져오지못한다 그래서 대체할수있는 모듈이있다.
+    #import urllib.request
+    #urllib.request.urlretrieve(url, dir+'jscallback={jscallback}&query={query}&_={_}'.format(**param))
+
+    # 설치 : pip install requests  필요한 모듈 다운(콘솔창에 입력)
+    # requests.get은 주소와 파라메터만 json객체로 만들어서 보내주면 자동으로 연결시켜줘서 보내준다.
+    # 여러개 import할땐 , json모듈 : 결과 json형식으로 바꾸기위해서사용
+    
+    
+    1.py
+    import requests, json
+
+    headers = {'user-agent' : 'my-app/0.0.1'} # useragent를 탑재시켜서 보낸다, 이게 없을경우 로봇으로 인식해서 접근을 막을경우도 있다.
+    response = requests.get(url,params=param,headers=headers) 
+    status = response.status_code
+    req_url = response.url
+    result = response.text
+    print(result) #리턴받은걸 문자로 만들어준다.
+
+    print('\n')
+    json_string = result.replace(param["jscallback"]+'(','').replace(');','') #문
+    result_json = json.loads(json_string)
+    print(result_json)
+    print(type(result_json))
+    songList = []
+    for row in result_json['SONGCONTENTS'] :
+        song_nm =row['SONGNAME']
+        song_url ='https://www.melon.com/song/detail.htm?songId={SONGID}'.format(**row)
+        songList.append({'song_nm':song_nm, 'song_url':song_url})
+        print(songList)
+
+    index = 1
+    for song in songList :
+        print('{0}. {1}'.format(index,song['song_nm']))
+        index += 1
+
+
+    song_index = input('곡 번호를 선택하세요')
+
+    print(song_index, songList[int(song_index) - 1])
+    select_song = songList[int(song_index)-1]
+    print(select_song['song_url'])
+
+    response = requests.get(select_song['song_url'],headers=headers) 
+    result = response.text
+
+
+    import re       #정규표현식을 위한 모듈
+    data = re.findall(r"(\<div class\=\"lyric\" id\=\"d_video_summary\"\>)([\s\S]+?)(\<\/div\>)", result)    
+    # (\<div class\=\"lyric on\" id\=\"d_video_summary\" tabindex=\"0\"\>)([\s\S]+?)(\<\/div\>)
+    lyric = data[0][1].replace('<BR>','\n')
+    print(lyric)
+
+m_search(input('검색할 노래르 입력하세요.'))

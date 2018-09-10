@@ -1,0 +1,114 @@
+UI
+
+1. 왼쪽에 이미지 고정시키기 : position: fixed;
+    1) 일단 이미지의 크기는 옆으로 40퍼 위로는 100vh로 설정한다.
+    2) 사이트의 이미지의 기준점은 중간이다 그것을 설정할려면 position을 설정한다.
+    3) 이미지를 왼쪽에 고정시키기위해 position: fixed를 준다
+    4) 왼쪽과 오른쪽에 float으로 각각 배치해준다.
+    5) 버튼은 상단에 고정되있다 제일위에 해준다. 고정해준다.
+
+2. 버튼이미지 꾸미기 
+    1) 수업중에는 div를 꾸몄다.
+
+3. 카드형으로 꾸미기
+        <div id="contants2">
+            <h2>My Portfolio</h2>
+            <hr>
+            <div id="img_list">
+                <div id="columns">
+                    <figure>
+                        <img src="img/wedding.jpg">
+                    </figure>
+                    <figure>
+                        <img src="img/rocks.jpg">
+                    </figure>
+                    <figure>
+                        <img src="img/sailboat.jpg">
+                    </figure>
+                    <figure>
+                        <img src="img/underwater.jpg">
+                    </figure>
+                    <figure>
+                        <img src="img/chef.jpg">
+                    </figure>
+                    <figure>
+                        <img src="img/wedding.jpg">
+                    </figure>
+                    <figure>
+                        <img src="img/p6.jpg">
+                    </figure>
+                </div>
+            </div>            
+        </div>
+
+        스타일
+        #columns {
+            column-width: calc(30vw - 30px);
+            column-gap: 10px;
+            width: calc(100% - 20px);
+            max-width: 60vw;
+            padding: 0 10px;
+            max-height: calc(60vw * 1.53);
+        }
+        div#columns figure {
+            margin: 0 2px 15px;
+        }
+
+        div#columns figure img {
+            width: 100%; 
+            height: auto;
+        }        
+
+#카드형 참고 : https://codepen.io/dudleystorey/full/yqrhw
+
+4. css로 바만들기(퍼센트바) // 클래스 다중으로 주기는 띄워쓰기로
+        <div>
+            <h2>My Skills</h2>
+            <div class="padding_10">
+                <h3>Photography</h3>
+                <div class="bar_100">
+                    <div class="sub_bar_95 bar">95%</div>
+                </div>
+            </div>
+            <div class="padding_10">
+                <h3>Web Design</h3>
+                <div class="bar_100">
+                    <div class="sub_bar_85 bar">85%</div>
+                </div>
+            </div>
+            <div class="padding_10">
+                <h3>Photoshop</h3>
+                <div class="bar_100">
+                    <div class="sub_bar_80 bar">80%</div>
+                </div>
+            </div>            
+        </div>
+        스타일    
+        .padding_10 {
+            padding: 0 10px;
+        }
+        .bar_100 {
+            background-color: silver;
+        }
+        .bar{
+            height: calc(30px - 5px);
+            padding: 5px;
+            background-color: black;
+            color: white;            
+        }
+        .sub_bar_95 {
+            width: 95%;
+        }
+        .sub_bar_85 {
+            width: 85%;
+
+        }
+        .sub_bar_80 {
+            width: 80%;
+        }        
+                
+#            
+background-size: cover;      : 이미지의 사이즈조절
+background-position: center; : 이미지의 포커스변경
+position: fixed;             : fixed를 주면 공중에 뜨게된다. 다른영역으로 이동한다
+

@@ -1,0 +1,66 @@
+빅데이터 ETL
+1) ETL툴 설치하는법
+    1. SSDT : https://docs.microsoft.com/ko-kr/sql/ssdt/download-sql-server-data-tools-ssdt?view=sql-server-2017 받기
+
+    2. 다 체크하고 설치
+
+    3. SQLServer2017-SSEI-Expr 설치
+
+    4. SSMS-Setup-KOR 설치
+
+2) SSMS (관리툴)
+연결은 "." : local를 의미
+
+새 데이터베이스 만들기 - 옵션 - 데이터정렬 : encoding을 의미 설치시 사용자지정을하면 안건들여도 된다함
+                      - 복구모델 : (로그쪽에 쌓이는 데이터가 전체면 엄청많이 쌓여서 단순으로 한다함)
+                      - 호환성 수준 : 2008버전부터 있는데 이전 버전은 불안정하기 때문이다. SQLServer버전에 맞춰서 설정해주면 된다.
+
+
+테이블 만들기 - 테이블 우클릭 테이블 [간단] 하지만 배우는입장이라 쿼리문으로 만듬(새 쿼리버튼 메뉴바아래쪽)
+    * 쿼리를 쓸때 주의할 사항은 실행 왼쪽이 수행대상인데 확인 해야한다함
+
+
+유저의 스키마 변경하기) 보안 - 로그인 - 유저명 속성 - 사용자 매핑 
+
+
+데이터베이스 우클릭 복원하기 - 장치 선택후 ...클릭 - .bak선택후 확인
+
+SSDT
+다른데이터베이스 테이블 옮기기) 
+    SSDT - 새로만들기 - 비즈니스 인텔리전스 - integration Services - integration services project (솔루션용 디렉터리 만들기 체크해제)   
+    *. SSIS패키지의 파일로 작업
+
+    연결관리자 우클릭 추가 - OLEDB 추가 - 새로만들기 - 공급자 SQL Server Native 서버이름 . 데이터베이스 이름 : 가져올 데이터베이스 이름
+    
+    *. 왼쪽 SSIS도구상자의 즐겨찾기 부분이 제일 많이사용한다캄
+    *. OLE DB 대상에서 매핑에서 어떻게 매핑이되나 확인가능
+    즐겨차직 데이터흐름태스크 - 더블클릭 - 도구상자 기타에서  OLE DB 원본 과 OLEDB 대상 옮기기 - 원본 우클릭 편집 테이블 설정
+    - 대상 우클릭 편집 새로만들기로 테이블 생성가능 - f5실행
+
+    일반 - 파생열로 컬럼을 추가할수있고, 데이터변환으로 사본을 만들면서 타입이나 설정들을 바꿔줄수있다.
+
+
+패키지 2개이상 실행하기)
+    SSIS패키지 2개이상 돌릴떄에는 SSIS도구상자의 일반 - 패키지 실행테스크로 설정한다.
+
+
+반복해서 사용하기
+sql실행테스크 - 
+select 'Product' as tbNm
+union all
+select 'ProductCategory' as tbNm
+union all
+select 'Productescription' as tbNm
+- 결과집합 결과이름 : 0, 변숭름 oRow
+foreach 루프 컨테이너  컬렉션 : ADO 열거자,    변수매핑 변수 : oROw, 인덱스 : 0
+
+스크립트 테스크 -
+    속성 - Excutable : C:\Program Files\Microsoft SQL Server\140\DTS\Binn\DTExec.exe
+         - 
+
+변수생성
+    SSIS - 변수 - 생성
+
+
+
+

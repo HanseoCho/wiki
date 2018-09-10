@@ -1,0 +1,85 @@
+1. 깃허브사용법
+깃헙에서 url 가져와서 sts 메뉴의 window - show view - git Repositories
+ - 추가되는창에 cloen git re... 클릭
+다이나믹웹프로젝트 추가해서 깃허브 파일이름과 동일하게 작성하면 깃허브와 연동이됨
+//깃허브의 파일을 설치하는것과 웹프로젝트의 경로는 같아야한다.
+
+-예외처리)) 버전이달라서 발생하는 충돌을 방지하기위해 해야한다.
+sts window - navigator src와 webcontent제외하고 우클릭 team - 이그노어하면 앞으로 깃허브에 올라가지않음
+
+깃허브올리기시작))
+프로젝트클릭 - 팀 - addindex 
+
+올리는파일설정))
+프로젝트클릭 - 팀 -  commit
+
+2. 서블릿 - 서블렛은 특정주소값으로 만들어줘야 접근이 가능하다.
+서블릿 경로는 src안쪽에다 만들어줌
+서블릿작성 - 클래스파일에 상속으로 HttpServlet을 상속받고 만들어준다.(소스줄 우클릭 - 소스하면 상속받은 메소드들을 보여줌)
+doget, dopost메소드를 가져옴 // post방식으로 따로호출하지않는이상 get방식으로 접근..
+
+서블릿등록은 web.xml에서 
+
+  <sevlet>                      //  클래스와 연동시켜주는역할
+  	<servlet-name>Main</servlet-name>
+  	<servlet-class>kr.gudi.Main</servlet-class>
+  </servlet>
+  <servlet-mapping>             // 위에 만들어진 주소와 서블렛을 연동시켜주는역할
+   <servlet-name>Main</servlet-name>
+   <url-pattern>/</url-pattern> // 접근주소 루트를 기준으로쓴다. /m으로 할경우 localhost/m으로만 접근이 가능하다.
+  </servlet-mapping> 
+
+!!!! 톰캣이 잘안될때 서버 우클릭 - clean과 clean tomcat work dir... 
+     디렉토리가 삭제시에도 남아있을때에는 프로젝트 - clean
+
+Enumeration - new 연산자로 생성할 수 없으며, Vector를 이용하여 생성
+쓰는법
+Enumeration<String> names = req.getParameterNames();
+while(names.hasMoreElements()) {
+	String paraName = (String) names.nextElement();
+	String value = req.getParameter(paraName);
+	System.out.println(paraName+value);	
+}
+
+뭔가보낼때 한글이 깨지면 req.setCharacterEncoding("utf-8"); 에서 설정을해준다
+//이걸 사용안하면 post에 담겨 전송하면서 한글이 깨짐 그래서 설정해줌
+
+3. 내보내기
+프로젝트 우클릭 Export web-war [체크하는게있는데 그중 하나는 자바파일까지 올린다는것]
+//개발툴에 개발하고 war파일로 특정위치에 갖다두면 톰캣실행시 자동으로 압축이 풀린다.(디폴로이드라함)
+
+4. 서비스 - 리눅스에서 서비스하기
+<이전에 확인해야할것>
+: systemctl status httpd //httpd돌아가는것을 확인하고 안돌아가고있으면 시작을해준다.
+
+☆1-- .war을 이용해서 서버에 클래스파일 전체로 설치 --
+1. 아파치톰캣 8 맨위 .gz다운 파이질라로 리눅스로 옮기고 tar -zxvf 파일이름으로 압축해제
+2. bin폴더로 경로이동, ./startup.sh로 실행
+3. 리눅스 아파치톰캣은 logs 폴더의 contalina.out폴더를 읽기
+ 웹에서 돌아가는 로그확인 = (tail -500f catarina.out 밑에서부터 500줄)
+4. 윈도우에서 작업한 서블렛(.war)파일을 파일질라로 리눅스 아파치톰캣의 webapps로 옮긴다.
+5. firewall-cmd --zone=public --add-port=8080/tcp=8080/tcp --permanent //포트열기
+6. firewall-cmd --reload					
+http://myserver:8080/Sevlet/k 로 확인가능
+
+☆2-- 서버에서 클래스파일 하나만 수정하기(서버의 파일수정하기)--
+(서블렛)클래스파일을 수정시 리눅스의 아파치 톰캣을 종료해주고 .war파일을 지워주고(war파일을 안지워주면 톰캣이 구동할때마다 war파일의 압축을 해제함)
+바꿀 클래스파일을 파일질라로 갱신시켜준후 다시 ./start...sh로 실행해준다
+tail -500f ../logs/catalina.out
+
+☆3-- 서버를 항상 최신화를 유지해주는 방법 ( 깃을 이용한다. ) 
+https://git-scm.com/book/ko/v1/%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-Git-%EC%84%A4%EC%B9%98 - 시작하기전 깃 설치
+
+    1. yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel //깃허브 설치
+    2. webapps에 git clone https://github.com/trullo/Servlet.git                           //깃허브에서 다운받을 소스를 골라서 https주소를 딴다.
+    3. bin폴더에서 ./shoutdown.sh 를 실행해서 서버를 종료시켜주고                //파일을 갱신시켜주기전에는 종료시켜줘야함
+    4. webapps에서 rm -rf 파일이름으로 기존파일을 삭제시켜준다. 
+    5. 다시 서버를 가동시킨다. 							
+ 	 //이후 크롬에서 확인해보면 404에러가 뜬다. 이렇게하면 컴파일이 안되서 class파일이 실행이 안된다.
+----------------------------------------------------------------------------------
+    6. git pull로 아까받은 git clone을 최신화 해준다.
+    7. 이제 받은파일안에 .war파일을 아파치톰캣 webapps으로 옮겨준다
+    8. 서버를 다시시작하면 .war파일을 자동으로 풀고 알아서 해준다.
+   //그냥 1번이랑 동일한데 다운을 git을 통해서 받는다고 보면됨
+    
+

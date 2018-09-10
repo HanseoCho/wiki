@@ -1,0 +1,132 @@
+- hadoop 기반의 기술
+ 1) MapReduce : 자바로 개발
+ 2) hadoop streaming : 펄, 파이썬 등 다른 언어로 개발
+ 3) Hive : HiveSL (SQL) - 페이스북
+ 4) Pig : pig script - 트위터
+
+ Hive (567p) 하이브는 하둡이 있어야 돌릴수있다.
+ 설치 
+  바이너리파일 받아서 설치 (http://mirror.apache-kr.org/hive/ 2.3.3버전 사용)
+ 환경설정 
+    1. /root/.bash_profile
+        export HADOOP_HOME=/root/hadoop
+        export HIVE_HOME=/root/hive
+        export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HIVE_HOME/bin
+    2. /root/hive/conf/
+        cp hive-env.sh.template hive-env.sh  #재구성
+        vi /root/hive/conf/hive-env.sh
+        48줄 하둡경로설정 HADOOP_HOME=/root/hadoop  // 하이브는 하둡이 있어야지 돌아감
+    
+        vi /root/hive/conf/hive-site.xml 작성
+            <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+            <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+            <configuration>
+            <property>
+                <name>hive.metastore.local</name>
+                <value>true</value>
+            </property>
+            <property>
+                <name>javax.jdo.option.ConnectionURL</name>
+                <value>jdbc:mysql://192.168.1.110:3306/hive?createDatabaseIfNotExist=true</value> # ?뒤쪽은 데이터베이스가 없으면 만들라는 의미
+            </property>
+            <property>
+                <name>javax.jdo.option.ConnectionDriverName</name>
+                <value>org.mariadb.jdbc.Driver</value>
+            </property>
+            <property>
+                <name>javax.jdo.option.ConnectionUserName</name>
+                <value>hive</value>
+            </property>
+            <property>
+                <name>javax.jdo.option.ConnectionPassword</name>
+                <value>1234</value>
+            </property>
+            </configuration>
+    
+    3. /root/hive/lib/
+        마리아db connection드라이버를 넣어준다.
+        C:\Users\goodee\.m2\repository\org\mariadb\jdbc\mariadb-java-client\2.2.5 #이클립스에서 사용하는 마리아db jar파일이 존재한다.
+
+    4. heidsql
+        데이터베이스 추가후 도구 - 사용자관리자 - 사용자 추가
+    
+    5. schematool -initSchema -dbType mysql : 하이브메타데이터를 만드는작업
+
+    6. 하이브가 저장될 공간만들기
+        hdfs dfs -ls /
+        hdfs dfs -mkdir /user
+        hdfs dfs -mkdir /user/hive
+
+    7. hive : hive로 명령프롬프트가 바뀐다. 기본적으로 사용하는건 sql쿼리문 쓰는영역 이라한다
+        hive
+        create table testUser3 (userNo int,id string,pwd string,name string,age int,delYn string) row format delimited fields terminated by ','; #들어오는 데이터를 구분할 문장
+        show tables;
+        load data local inpath '/root/user.csv' overwrite into table testUser; #/root/user.csv를 testUser로 옮긴다. (테이블에 row format설정을 안하면 null값만 들어간다.)
+        //데이터는 hadoop안에 데이터를 넣는순간 /user/hive/warehouse/테이블이름에 저장된다.
+        set hive.cli.print.header=true; #select할때 컬럼도 보이게하기
+
+    *. 리눅스에서 하이브 돌리는법 ㅣ hive -e "명령어"
+        -데이터 집어넣기 
+            for((i=1987;i<=2008;i++)); do
+            hive -e "load data local inpath '/root/csv/$i.csv' overwrite into table ontime partition (delayyear = '$i')"
+            done
+        
+     find . -name airports.csv -exec perl -p -i -e 's/"//g' {} \; //따옴표를 제거
+     find . -name carriers.csv -exec perl -p -i -e 's/"//g' {} \;
+     
+    create table carrier_code (code string, description string) row format delimited  fields terminated by ',' lines terminated by '\n' stored as textfile; 
+    create table airport_code (iata string, airport string, city string, state string, country string, lat double, longitude double) row format delimited  fields terminated by ',' lines terminated by '\n' stored as textfile; 
+
+    hive -e "load data local inpath '/root/csv/carriers.csv' overwrite into table carrier_code"
+    hive -e "load data local inpath '/root/csv/airports.csv' overwrite into table airport_code"
+
+
+select o.year, o.month, c.description,
+a1.airport as orgin_airport,a2.airport as dest_airport, count(*) as cnt 
+from ontime as o left outer join carrier_code as c on (o.UniqueCarrier = c.code) and o.UniqueCarrier = 'EA'
+left outer join airport_code as a1 on (o.Origin = a1.iata)
+left outer join airport_code as a2 on (o.Desc = a2.iata)
+GROUP by o.year, o.month, c.description, a1.airport, a2.airport
+order by o.year, o.month
+limit 20;
+
+select o.year, o.month, c.description, 
+a1.airport as origin_airport, 
+a2.airport as dest_airport, 
+count(*) as cnt
+from ontime as o
+inner join carrier_code as c
+on (o.UniqueCarrier = c.code and c.code = 'EA')
+left outer join airport_code as a1
+on (o.Origin = a1.iata)
+left outer join airport_code as a2
+on (o.Dest = a2.iata)
+group by o.year, o.month, c.description, 
+a1.airport, a2.airport
+order by o.year, o.month
+limit 20;
+
+
+select c.description, count(*) as total from ontime as o INNER JOIN carrier_code as c where o.Diverted = 1 group by c.description order by total desc;
+
+
+# 테이블 생성
+create table Diverted_total (carrier string, cnt int);
+
+# 집계 데이터 테이블에 넣기
+insert overwrite table Diverted_total
+select c.description, count(*) as cnt
+from ontime as o
+inner join carrier_code as c
+on (o.UniqueCarrier = c.code)
+where o.Diverted = 1
+group by c.description;
+
+# 테이블에 있는 데이터를 hadoop에 파일로 만들기
+insert overwrite directory '/tmp/dive_result'
+select * from Diverted_total;
+
+# 테이블에 있는 데이터를 로컬에 파일로 만들기
+insert overwrite local directory '/root/dive_result'
+select * from Diverted_total;
+

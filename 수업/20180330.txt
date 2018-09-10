@@ -1,0 +1,62 @@
+super()는 부모의 생성자를 의미
+super.a12.함수로 부모클래스에잇는 인스턴스안의 메소드에 접촉가능하다.
+
+!!!!!!상속클래스를 건들지못하고 같은 값을 가져야하는 경우에는 인스턴스를 메인에서 이용할수 있다.
+!!!!!!(신선한 아이디어다)
+
+자바
+	
+접근제한자 ( 클래스 내부, 동일 패키지, 하위 클래스, 그 외의 영역 )
+public	  -      o             o            o           o
+protected -      o             o            o           x
+default -        o             o            x           x
+private -        o             x            x           x
+
+일반 한정자
+static  -  메모리 할당을 미리한다. (생성자를 사용안하고도 사용할경우 사용)
+final   -  더 이상 변경할수 없도록 선언하는 한정자
+abstract  - 추상 클래스를 선언하는데 사용하는 한정자
+synchronized/volatile - 스레드 프로그래밍에서 여러스레드가 동시에 자원에 접근할때 발생하는 데이터 동기화를 처리하는 한정자
+
+
+배열
+String[] a = new String[5]; 선언
+a[0] = "" a[0]에 데이터삽입
+
+계속늘어나는배열
+import java.util.ArrayList;  클래스
+import java.util.List;       앞에는 인터페이스 
+List list = new ArrayList<>();  // 배열은 오브젝트로 아무값이나 넣어도 된다. 사용할때 형변환해야함!!
+list.add(v1);			// 결국 그렇다는건 배열에는 주소값을 레퍼런스로 참조하게 해준다.
+list.add(v2);
+list.add(v3);
+list.add(v4);
+list.add(v5);		
+System.out.println(list.get(0));
+
+List tempList = new ArrayList<>();
+tempList.add("12345");
+System.out.println(tempList);
+list.add(tempList);				//배열을 집어넣을수 있다. 2차원배열처럼
+
+위에서 list 5번 인덱스에 추가된 배열에 값을 추가할려면 어떻게 해야할까??
+맨위에 !!!!!!를 참조하자 힌트)) 메모리
+
+List a = (List) list.get(5);       // 배열에서 값을뺄때에는 형변환을 해줘야하는데 그것은 넣거나 뺄때 오브젝트로 바뀌기 때문이다. 메모리 값을 받아오면 추가도 됨
+a.add("3333");                     
+System.out.println(list+"\n"+a);
+tempList.add("12345");		   // 기존에 있던 배열에 값을 추가해도 list배열의 5번 배열에 값이 추가되는걸 확인가능하다.
+System.out.println(tempList);
+
+abstract 추상적
+추상클래스      - 인스턴스의 생성이 불가능하며, 해당 클래스를 extends 하여 추상 메소드를 구현해야만 사용 가능
+		-   원래는 상수만 넣어갔는데 지금은 변수선언가능 
+인터페이스      - 메소드에 대한 명세와 상수만 존재
+                - 상속받은 클래스는 인터페이스에 있는 모든 메소드를 구현해야 함 
+
+추상클래스 vs 인터페이스 차이점 설명
+https://trello.com/c/lj861K3L/5-%EC%B6%94%EC%83%81%ED%81%B4%EB%9E%98%EC%8A%A4abstract-vs-%EC%9D%B8%ED%84%B0%ED%8E%98%EC%9D%B4%EC%8A%A4interface
+
+오늘의핵심 :: 주소로 접근하면 계속 사용가능하고 기존값에 접근이 가능하다..
+
+

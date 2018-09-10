@@ -1,0 +1,100 @@
+리눅스
+
+함수 만들기
+myFune(){
+ echo "함수실행"
+}
+
+함수 호출
+myFune
+
+함수에 값넣기 : 위치값으로 매칭
+myFune(){
+ echo $*
+}
+myFune aaa bbb ccc
+
+옆으로 미는 명령어 shift
+myFune(){
+ while [ "" != "$1"  ]
+ do
+  echo $1
+  shift
+ done
+}
+myFune aaa bbb ccc
+--------------------------------------
+ls -l \*.sh의 결과가 ls -l오른쪽에 나열되면서 ls -l 먼저 저장되고 파일이름.sh가 모두 순차적으로 저장된다.
+str=""
+myFune(){
+ while [ "" != "$1"  ]
+ do
+  str="$str $1"
+  shift
+ done
+ eval $str
+}
+myFune ls -l \*.sh      
+
+쉘스크립트 호출하기 sh
+1) sh ./test21-1.sh
+2) sh ./test21-1.sh ls  호출할때 파라미터도 호출가능하다.
+echo "21-1 호출되었습니다."
+echo "파라메터는 $1"
+eval $1 -l
+
+
+밖에서도 쓸수있게 만드는함수 export    // 스크립트 에서만 쓸수있는 전역변수 //전체에쓸려면 환경변수에 만들어주고 source로 실행 시켜줘야한다.
+AA="안녕!!"
+BB="나야나!!"
+export BB
+sh ./test22-1.sh            //외부에서도 BB를 사용가능하게 만들어준다.
+
+---------------------------------------
+쉘스크립트를 이용한 환경설정 자동화
+----- setup.sh
+yum update -y
+
+echo가 파일에다 사용할시 파일에 씀
+echo "" >> ~/.bash_profile          // > 덮어씌우기 >> append
+
+변수들은 사용하기위해서 $abc를 \$abc로 변수가아닌 문자열이 들어가도록 만든다.
+sh안에서 사용하는 환경변수들은 source .bash_profile에서 그 쉘스크립트안에서만 사용할때는 그냥 사용해주면 되는데
+밖에서도 계속 사용해줄려면 source .bash_profile을 사용하지않고 재부팅을 해주면 된다.
+--------------------------------------------------------------
+#!/bin/sh
+
+yum update -y
+
+jdkDir=~/jdk1.8.0_161
+apacheDir=~/apache-tomcat-8.5.29
+
+if [ -d $jdkDir ]
+ then
+   echo " 자바가 이미 존재 합니다. "
+ else
+   tar -zxvf jdk-8u161-linux-x64.tar.gz
+   ls -l ~/
+  #자바 환경변수 설정
+  echo "JAVA_HOME=~/jdk1.8.0_161" >> ~/.bash_profile
+  echo "export JAVA_HOME" >> ~/.bash_profile
+  echo "export PATH=\$PATH:\$JAVA_HOME/bin" >> ~/.bash_profile                //변수로 사용되는걸 막기위해 \를 사용
+  source ~/.bash_profile
+fi
+
+if [ -d $apacheDir ]
+ then
+   echo "아파치가 이미 존재합니다."
+ else
+   tar -zxvf apache-tomcat-8.5.29.tar.gz
+   ls -l ~/
+fi
+#포트열기 8080
+firewall-cmd --zone=public --add-port=8080/tcp --permanent
+firewall-cmd --reload
+
+# tomcat시작
+sh $apacheDir/bin/startup.sh
+
+init 6
+

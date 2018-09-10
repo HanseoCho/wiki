@@ -1,0 +1,69 @@
+상속 :: 상속은 부모클래스에서 자식클래스로 멤버변수와 메소드를 전해준다
+        상속을 주용도는 +에서 추가하면서 관리하는것이다
+
+
+파이썬 
+
+#condig-utf-8
+class C1:
+    def a(self) :
+        return "a"
+class C2(C1) :
+    def b(self):
+        return "b"
+class C3(C2) :
+    def c(self):
+        return "c"
+    def a(self):
+        return "A"
+    def superA(self) :
+        return super().a()   # C1에서 사용한 a를 호출간으
+
+c3 =C3()
+c3.a()
+c3.b()
+c3.c()
+
+
+자바
+## 조상클래스 타입의 참조변수로 자손클래스의 인스턴스를 참조간으하다
+public class Test{
+	public static void main(String[] args) {
+		Gudi gi = new Gudi();
+		Goodie gd = new Goodie();
+		gd.getString();
+		gd.getint();
+		
+		KB kb = new KB();
+		Gudi kbgi = new KB();   		//원형 Gudi로 데이터타입을 만들고 KB를 참조하면 안에있던 getString의 내용이 바뀐다.
+		System.out.println(kb.getString());
+		System.out.println(kbgi.getString());
+		System.out.println(kb.superString());     제일 자식인 KB클래스에서 super로 오버라이드 하기전인 getString을 참조가능하다.
+	}
+}
+
+
+
+public class test2 {
+	public static void main(String[] args) {
+		Object ob1 = "";		// 오브젝트로 오른쪽에 값을 대입하겠다 라고해서
+		Object ob2 = 0;			// 오브젝트 객체로 구성된다 왼쪽은 담길그릇
+		Object ob3 = 0.0;
+		Object ob4 = false;
+		
+		Object ob5 = new c1();		// ob5. 을 해보면 c1이 
+		Object ob6 = new int[5];
+		
+
+		System.out.println(ob1);
+		System.out.println(ob2);
+		System.out.println(ob3);
+		System.out.println(ob4);
+		System.out.println(ob5);	//위의 4까지는 단순값만 들어있어서 바로 값을 보여주지만 5번이랑 6번은 주소만 알려준다.
+		System.out.println(ob6);
+	}
+}
+
+객체는 Object ob1 = "";	 에서 오른쪽 값이 객체라고 보는것이 맞다.
+오브젝트는 최상위 객체라서 뭐든지 담을수있따. 
+오브젝트로 사용할때에는 형변환을 사용해줘야한다.

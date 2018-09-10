@@ -1,0 +1,90 @@
+튜플 = 리스트와 유사하나, 값만 변경할수없음
+	Arrt = (1,2,3)  
+리스트는 Arr = [1,2,3] 
+
+ㅁㅁㅁㅁ실제로 튜플로 조건문들을 고정하나??
+
+-----------------------------------------------------
+
+파일처리
+d = open("text.txt","r",encoding="utf8") #r 리드 w쓰기 a 추가모드
+           파일명   읽기용    인코딩
+
+d = open("D:/GDJ10/201803/20180319/text.txt","r") #r 리드
+print(d, d.read())
+
+실행결과
+D:\GDJ10\201803\20180319>2.py
+<_io.TextIOWrapper name='D:/GDJ10/201803/20180319/text.txt' mode='r' encoding='cp949'> asdfasdfasfd
+가나다라마바사												텍스트의 엔터도 인지
+----------------------------------
+with open("D:/GDJ10/201803/20180319/text.txt","r",encoding="utf8") as my_file : #as 별명을지었다? 
+    print(type(my_file), my_file.read(),type(my_file.read()))      
+
+<class '_io.TextIOWrapper'> 12345
+가나다라마바사아자차카타파하 <class 'str'> 
+
+
+관련함수
+open("파일명","읽기/쓰기용설정",encoding="utf8")
+파일 객체 = open(파일 이름, 파일 열기 모드)
+파일 객체.close()
+파일 객체.read() - 스트링타입 자동 줄바꿈하면서 출력
+파일 객체.readline() 배열형식으로 한줄만 한줄만 출력
+파일 객체.readlines() 배열형식으로 엔터를 기준으로 나눠서 모두 출력 ※리드라인을 이용하여 배열처럼 이용할수 있다.
+
+※※※파일객체는 한번 읽어들이면 그 부분은 날아간다..
+
+d.read().split() 특수기호 지우기 // 전체에 split함수를 사용하면 띄어쓰기나 엔터를 기준으로 자른다
+print(d.read().lines())  특수기호 지우   //한줄을 기준으로 자	른다 배열형식에 readlines에 포함된 \n같은 결과가없다
+d.read().splitlines() 
+
+with open("D:/GDJ10/201803/20180319/text.txt","r",encoding="utf8") as my_file : #with문의 실행결과를 as my_file에 저장
+
+read일 경우
+with open(file_nm,"r",encoding="utf8") as my_file : 
+    contents = my_file.read()
+    print(contents.count("A"),contents.count("B"),contents.count("C"))    #키워드 검색이 된다.
+    print(contents.split("A"))		     #키워드 검색이 안된다.
+    print(contents.split("\n").count("A"))   #\n으로 나눔 배열로된것들은 .count로 키워드 검색이 안된다.
+					     #read로 읽고 split을 하면 배열로인식되서 찾을때도 배열로 찾아줘야한다.
+					     #빅데이터에서 키워드찾을때에는 그냥 read후 count로 키워드를 찾아줘야할거같다
+
+
+
+
+radline일 경우
+with open(file_nm,"r",encoding="utf8") as my_file :
+    i=0
+    while True :
+        line = my_file.readline()			#리드라인은 한줄씩 읽어들인다. 리트라인특성상 와일문안에서 사용해야한다
+        if line.strip() != "" :
+            print(str(i) + "===" + line.strip())
+        if not line :
+            break
+        i+=1
+
+readlines일 경우  
+f = open("C:/Python/새파일.txt", 'r')
+lines = f.readlines()
+for line in lines:
+    print(line)
+f.close()
+
+☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆ 배열처럼 사용할수 있다.!!!!!!
+mfReads = my_file.readlines()
+for i in range(0,len(mfReads)) :
+   print(mfReads[i])
+    
+★★★★ with문을 사용하는 이유는 끝나면은 자동으로 close 해주기 때문이다
+
+배열의 중복제거
+l = [7,2,3,4,5,6,5,1,2,3,4,5,2,3,4,5]
+ll = list(set(l))  			 #set중복제거와 동시에 순서
+
+배열의 정렬
+strList.sort()
+print(strList)       
+
+[:][1]
+[0:1]

@@ -1,0 +1,150 @@
+UI구현
+디자인이 약하면 참조용으로 부트스트랩을 참고하면 좋다 (회사에서는 이걸못쓰기 때문이다.).
+
+브라켓 - 디자이너들이 많이사용하는 에디터툴이라고 함, 코드수정시 즉각적으로 표시해준다.
+         html, css, js는 여기서 할거라함
+    다운 : http://brackets.io/
+    #보조기능 : brackets Icons
+               Extension Highlighter
+               HTML5 template - 편집의 맨아래 html기본양식을 만들어준다.
+               HTMLHint
+               JSHint
+
+CSS : head영역 안쪽에서 사용 <style>
+#참고 : https://ofcourse.kr/css-course/clear-%EC%86%8D%EC%84%B1
+#디자인참고 : https://www.w3schools.com/bootstrap/bootstrap_templates.asp
+#디자인참고2 : https://envato.com/websites/designs
+    <head>
+        <style>
+            h1{
+                font-size: 1.5em;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>h1</h1>
+        <h2>h2</h2>
+        <h3>h3</h3>
+        <h4>h4</h4>
+        <h5>h5</h5>
+        <h6>h6</h6>       
+    </body>
+
+1. 스타일을 주는방식
+    1) css를 줄때에는 css파일을 만들어서 불러와서 적용하는방식을 많이사용한다
+        <link rel="stylesheet" type="text/css" href="style.css">   
+        -----style.css---
+        h1{
+            font-size: 1.5em;
+        }
+    2) 스타일 페이지에서 직접 주기
+        <style>
+        h1{
+            font-size: 1.5em;
+        }
+        </style>
+    3) 태그에 직접주기
+    <h1 style="font-size: 3em;">h1</h1>
+        
+2. 자바스크립트
+    1) 펑션만들기
+    <script>
+        function h1_event(){
+            alert("안녕");
+            console.log("안녕!");
+        }
+    </script>
+    2) 다른것에 부여
+        <h2 onclick="h1_event()">h2</h2>
+
+    3) 자바스크립트 불러오기 - 현업에서 개발을할때 이런방식을 추구함 
+    <script src="Script.js"></script>
+    --------Script.js--------------
+    h1_event2 = () => alert("hello");
+
+3. html
+    1) table : 테이블 태그는 많이 쓰이지 않는데 예전에는 컴퓨터에서만 보여줬지만
+       지금에서는 보는 디바이스의 크기가 달라지면서 사용하기가 힘들다.
+       현재에는 테이블은 리스트를 보여주는 게시판에만 사용한다
+       예전방식이라서 회사에서 사용하면 예전방식이라구 생각하면서 쓰면됨
+       <table><tr><td></td><td></td></tr></table>
+
+4. CSS 사용한 함수들
+    1) div : 디브태그 특성은 하나만써주면 화면을 100프로 차지한다.
+             디브4개로 화면을구성할려면 100%차지하는 특성을 바꿔주고 정렬을 해주면 된다.
+
+    2) display : inline-block - 내가가지고있는 크기만큼만 차지,  줄바꿈은 되지 않지만 크기를 지정
+                 inline - 인라인박스, <span><b><i>태그 등이 이에 해당 줄바꿈 X
+                 block - 블록박스, <div><p> 줄바꿈
+                 none - 보이지않음, 태그가 보이지 않게 되는데, visibility 속성을 hidden으로 설정한 것과 달리 영역도 차지하지 않는다.
+
+    3) float : 어느방향으로 정렬을 할거라고 쓴다. 투명한 박스를 만들고 left정렬이면 본문의 내용은 오른쪽에 배치한다.
+        inherit - 부모 요소에서 상속
+        left - 왼쪽에 부유하는 블록박스를 생성, 페이지 내용은 박스 오른쪽에 위치하며 위에서 아래로 흐름
+        right - 오른쪽에 부유하는 블록박스를 생성, 페이지 내용은 박스 왼쪽에 위치하며 위에서 아래로 흐름
+        #이후 요소에 clear속성이 잇으면 페이지 흐름이 달라짐 none이 아니라며 display속성은 무시된다.
+        none - 요소를 부유시키지 않음
+
+    4) clear : 속성을 통해 태그를 부유시킨 이후 문서의 흐름을 제거하기 위해 사용
+               방향에따라 3가지 속성을 사용
+        left - 좌측 부유제거
+        right - 우측 부유제거
+        both - 양쪽 모두 제거
+
+    5) text-align : 텍스트 정렬
+
+    6) padding - 커지는거,바깥쪽여백
+        #padding: 30px 10px 2px 0; // 위 오른쪽 아래 왼쪽, 한번에 사용하기
+
+    7) magin - 밀리는거, 안쪽여백
+
+    8) height : 1em은 16px, 퍼센트vh 
+    9) width : %, px 
+    10) position: 태그의 위치를 어떻게 위치시킬지를 정의
+         static - 기본값, 다른태그와의 관계에 의해 자동으로 배치되며 위치를 임의로 설정 불가능하다.
+         relative - 원래있던 위치를 기준으로 좌표를 지정
+         absolute - 절대좌표와 함께 위치를 지정
+         fixed - 스크롤과 상관없이 항상 문서 최 좌측상단 기준으로 좌표 고정
+         inherit - 부모태그의 속성값을 상속
+
+    11) overflow : 자식요소가 부모요소의 범위를 초과할때 어떻게 처리할지를 결정
+         visible : 박스를 넘어가도 그대로 보여준다.
+         hidden : 넘어가는 부분을 보이지 않도록 처리한다.
+         scroll : 부모요소의 범위를 넘어가는 자식요소의 부분은 보이지않고 스크롤바를 표시
+         auto : 넘어가는 부분을 보이지 않도록 처리하고, 스크롤바를 표시해준다
+        #overflow-x 와 overflow-y : hidden visible등을 사용해서 x축 y축 각각에 적용할수있다.
+
+5. css 스타일 id와 클래스로주기
+    1) id로 css스타일 주기 (하나만 줄수있다.)
+    <div id="div1">div1</div>
+    #div1{
+    background-color: aquamarine;}
+    2) class로 css스타일 주기 (중복이 가능하다)
+    <div class="div2_4">div2</div>
+    <div class="div2_4">div4</div>
+    .div2_4{
+     display: inline-block; width: 100px; float: left;}
+
+6. 중단점(breakpoint) : 반응형 웹 개발
+  #참조 : https://www.w3schools.com/css/css3_mediaqueries.asp
+  #사용법 : 1. @media not|only mediatype and (expressions) {CSS-Code;}
+           2. <link rel="stylesheet" media="mediatype and|not|only (expressions)" href="print.css">
+  #유형 : (mediatype 적용)
+         1. all    -> 모든 미디어 유형 장치에 사용됩니다.
+         2. print  -> 프린터에 사용됩니다.
+         3. screen -> 컴퓨터 화면, 태블릿, 스마트 폰 등에 사용됩니다.
+         4. speech -> 화면 판독기가 페이지를 크게 읽는 데 사용됩니다.
+  #범위 : (Bootstrap 기준) //기준을 넘어가면 인식이 달라진다.
+         1. phones         -> 768px 이하
+         2. tablets        -> 768px
+         3. 소형 노트북     -> 992px
+         4. 노트북, 일반 PC -> 1200px
+    #반응형을 만들게되면 다양한디바이스에 맞춰서 화면이 조작되도록 해야한다.
+    #반응형을 만들때 가장 중요한건 기준이다. (큰것인지 작은것인지)
+    #수업중에는 데스크탑으로 시작해서 작게 간다.
+    예) 이렇게 적용되면 400이하면 style3 900이하면 style2 이상이면 style.css를 불러들인다.
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" media="only screen and (max-width: 900px)" href="style2.css">  
+    <link rel="stylesheet" type="text/css" media="only screen and (max-width: 400px)" href="style3.css">
+    

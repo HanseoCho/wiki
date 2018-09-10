@@ -1,0 +1,148 @@
+CentOS - 젠킨스
+톰캣2 서버 젠킨스 - trullo 1234
+
+문자열 - (${TEST_LIST//\n/}) 한가지 추출?
+소프트 링크 - ln -s 링크할원본 생성할경로
+
+깃에서 웹다이나믹과 파일로 된거 두가지 타입의 html이 있는데 웹다이나믹은 안에 여러종류의 파일이 더 있다
+차이는 웹다이나믹은 바로바로 적용이 되는것에 비해 파일로된 친구들은 서버를 껏다 켜줘야한다.
+
+오늘 결론 - 아파치톰캣의 webapps에 직접 폴더를 배치안하고 다른경로에 두고 심볼릭링크로 배치를 해서 접근해서 사용할수 있다.
+
+1. 다른이름으로 파일을추가해주고 지난파일을 삭제해주기
+~/sh/test1.sh ---------------------
+# 변 수 선 언
+RP_DIR=/root/repo                        //경로를 매게변수로 입력받게할려면 /root/repo를 /root/$1로 변환하고 sh test1.sh repo rese로 사용해주면 된다.
+RS_DIR=/root/rese 
+C_TIME=$(date +"%Y-%m-%d-%H-%M-%S-%s")
+
+echo $C_TIME
+# 파일복사
+cp $RP_DIR/test1.txt $RS_DIR/$C_TIME.txt
+
+#복사내용보기
+ls -l $RS_DIR
+echo "내용 확인"
+#복사한 목록 출력
+TEST_LIST=$(ls -1tr $RS_DIR)       // -1tr 한줄씩 시간순서대로 역순 정렬 빨리생성된 파일이 삭제된다.
+echo $TEST_LIST
+
+echo "리스트 나누기"
+TEST=(${TEST_LIST//\n/})           // ${}를 쓸때 안쪽에는 $가 적용되고있어서 $TEMP_LIST로 안써도 된다.
+echo $TEST
+
+#삭제
+rm -rf $RS_DIR/$TEST
+ls -l $RS_DIR
+-------------------------------------
+역할별로 나눠서 main과 remove로 나눌수있다.
+---------main.sh---------
+RP_DIR=/root/repo                        //경로를 매게변수로 입력받게할려면 /root/repo를 /root/$1로 변환하고 sh test1.sh repo rese로 사용해주면 된다.
+RS_DIR=/root/rese 
+C_TIME=$(date +"%Y-%m-%d-%H-%M-%S-%s")
+#공유를위한 export
+export RS_DIR
+
+#복사확인
+if [ -e $RS_DIR/$C_TIME.txt ]
+  then
+    echo "파일 복사가 정상 처리되었습니다."
+  else
+    echo "파일 복사가 되지 않았습니다."
+fi
+
+#삭제 스크립트 실행(리턴값을 $?로 받을수있다. 함수실행은 거기서해야함)
+sh /root/sh/remove.sh
+
+if [ "0" = $?  ]
+  then
+   echo "삭제가 되지 않았습니다."
+  else
+   echo "정상 처리 되었습니다."
+fi
+
+echo "종료"
+
+---------remove.sh-----------------
+function remove(){
+TEST_LIST=$(ls -1tr $RS_DIR)
+TEST=(${TEST_LIST//\n/})
+
+#rm -rf $RS_DIR/$TEST
+
+if [ -e $RS_DIR/$TEST ]
+  then
+   return 0
+  else
+   return 1
+fi
+}
+
+remove
+----------------------------
+
+2. 폴더를 통째로 복사하고 이름바꾸면서 등록하고 링크로 webapps에 넣기------------------------------
+main.sh
+RP_DIR=/root/$1
+RS_DIR=/root/$2
+C_TIME=$(date +"%Y-%m-%d-%H-%M-%S-%s")
+
+#공유를위한 export
+export RS_DIR
+
+# 파일복사
+cp -Rf $RP_DIR/Sevlet $RS_DIR/$C_TIME
+
+#복사확인
+if [ -d $RS_DIR/$C_TIME ]
+  then
+    echo "폴더 복사가 정상 처리되었습니다."
+  else
+    echo "폴더 복사가 되지 않았습니다."
+fi
+
+#삭제 스크립트 실행(리턴값을 $?로 받을수있다. 함수실행은 거기서해야함)
+sh /root/sh/remove.sh
+
+if [ "0" = $?  ]
+  then
+   echo "삭제가 되지 않았습니다."
+  else
+   echo "정상 처리 되었습니다."
+fi
+
+#링크삭제
+rm -rf /root/apache-tomcat-8.5.29/webapps/Sevlet
+
+#링크등록
+ln -s $RS_DIR/$C_TIME/ /root/apache-tomcat-8.5.29/webapps/Sevlet
+
+echo "종료"
+
+
+----------------remove.sh-------------------
+function remove(){
+TEST_LIST=$(ls -1tr $RS_DIR)
+TEST=(${TEST_LIST//\n/})
+echo $RS_DIR / $TEST
+
+rm -rf $RS_DIR/$TEST
+
+if [ -d $RS_DIR/$TEST ]
+  then
+   return 0
+  else
+   return 1
+fi
+}
+
+remove
+
+----------------------------------------------
+
+3. 젠킨슨으로 홈페이지 갱신하기
+sh ~/sh/main.sh repo rese Servlet
+
+새프로젝트 - 파일
+sh /root/sh/main.sh repo rese Web
+

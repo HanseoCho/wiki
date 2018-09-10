@@ -1,0 +1,164 @@
+
+☆☆☆파이썬에서 들여쓰기는 어떤언어끼리 묶는다는뜻(자바의 대괄호대신) 들여쓰기 잘못쓰면 에러
++if문 사용법
+if 조건 : 
+	실행문
+elif 조건 :
+	실행문
+else : 
+	실행문
+
++for문 사용법
+for <타겟> in <객체>:
+	<문1>
+else:
+	<문2>
++while문 사용법
+while <조건식>:
+	<문1>
+else:
+	<문2>
+print("%d a는 여기 %d b는 여기" %(a,b))
+
+'''로 문장 이어쓰기가능
+title = '''why do you want to learn programing?\n
+1. for my kids\n
+2. make money\n
+'''
+T_name = input(title)
+
+파이선 명령어
+print("") 문자출력 print() 연산
+exit() 파이선 종료
+print(" 안녕" *3)  >>안녕 안녕 안녕
+a=input("첫번째 값을 입력하세요\n")  입력받기 //\t 탭 \n 다음줄
+type(a) 타입알아내기
+
+자료형 (Fundamental Data Types) : 파이썬이 처리하는 기본데이터 유형
+- 수치자료형 : 정수(Integer), 실수(Float)
+- 문자형 (String)
+ - 논리형 (Boolean)
+형변환 str(), int(),float(), bool()
+
+print 사용시 문자열 포맷 코드
+-> %s : 문자열 (%10s : 왼쪽 빈공간 10칸 후 문자열 시작 설정)
+-> %c : 문자 1개
+-> %d : 정수
+-> %f : 부동소수 (%0.2f : 소수점 2자리까지 설정)
+-> %o : 8진수
+-> %x : 16진수
+-> %% : Literal % (문자 % 자체)
+
+문자열 관련 함수 (https://wikidocs.net/13)
+-> 문자 개수 세기 : a.count("b")
+-> 위치 알려주기 : a.find("b")
+-> 위치 알려주기 : a.index("b")
+-> 문자열 삽입 : a.join("1234")
+-> 소문자를 대문자로 바꾸기 : a.upper()
+-> 대문자를 소문자로 바꾸기 : a.lower()
+-> 왼쪽 공백 지우기 : a.lstrip()
+-> 오른쪽 공백 지우기 : a.strip()
+-> 문자열 바꾸기 : a.replace("[", "(")
+-> 문자열 나누기 : a.split()
+-> 특정값 바로 대입하기 : "----{0}----".format(값) & "{name}\n{age}".format(name="", age=10)
+
+조건 판단
+  -> <, >, ==, !=, >=, <=
+  -> 논리 키워드 사용 : and, or, not()
+
+
+배열
+- 슬라이싱 (slicing) : a[0:5], a[:], a[-10:10], a[::2], a[::-1]
+ -> list의 값들을 잘라서 쓰는 것이 슬라이싱
+ -> list의 주소 값을 기반으로 부분 값을 반환
+- List 추가와 삭제 : a.append(""), a.extend([]), a.insert(0, ""), a.remove(), del a[0]
+- 패킹과 언패킹
+ -> 패킹 : 한 변수에 여러 개의 데이터를 넣는 것를 말한다. t  = [1,2,3]
+ -> 언패킹 : 한 변수의 데이터를 각각의 변수로 반환 하는 것를 말한다. a, b, c = t #언패킹은 대입되는 변수의 크기만큼 만들어줘야 한다.
+- 배열의 중복제거
+ ->l = [7,2,3,4,5,6,5,1,2,3,4,5,2,3,4,5]
+ ->ll = list(set(l))  			          #set중복제거와 동시에 순서
+- 배열의 정렬
+ -> strList.sort() 				  #파이썬에서 이중으로 정려할려면 한번정렬후 직접 바꿔줘야한다.
+
+
+루프
+- for문
+ -> for 변수명 in [1,2,3,4,5]: print(변수명)	  # 아래와 같은결과
+ -> for 변수명 in "12345": print(변수명)	  # 1,2,3,4,5 순서대로 출력
+ -> for 변수명 in range(0, 5): print(변수명)	  # 0부터 4까지
+ -> for 변수명 in range(1, 10, 2): print(변수명)  # 1부터 9까지 2씩 증가
+ -> for 변수명 in range(10, 1, -1): print(변수명) # 10부터 2까지 -1씩 감소
+
+사망연산자 사용법 [변수 =  조건문 and true or false]
+result2 = z%2 == 0 and result2 + result + "\n" or result + "\n" + result2
+
+튜플 - 리스트와 유사하나, 값만 변경할수없음  Arrt = (1,2,3) #Arrt[0]으로 값변경시 에러 
+리스트는 Arr = [1,2,3] 
+
+파일처리
+d = open("text.txt","r",encoding="utf8") #r 리드 w쓰기 a 추가모드
+           파일명   읽기용    인코딩
+with open(경로,타입,인코딩) as 변수
+
+::: 문서종류중 csv(엑셀의 확장자중 하나)는 txt와 비슷하지만 주로 사용은 와일문을 이용해서 했다.
+            while True :
+                stl  = f.readline()            
+                if not stl :
+                    break
+                datelist.append(stl.replace(",","\n").split())
+
+관련함수
+open("파일명","읽기/쓰기용설정",encoding="utf8")
+파일 객체 = open(파일 이름, 파일 열기 모드)
+파일 객체.close()
+파일 객체.read() - 스트링타입 자동 줄바꿈하면서 출력
+파일 객체.readline() 사용시 문자열형식으로 한줄만 읽어옴
+파일 객체.readlines() 배열형식으로 엔터를 기준으로 나눠서 모두 출력 ※리드라인스를 이용하면 배열처럼 이용할수 있다.
+파일객체.read().split("a") a로 문자를 나눔 - 아무런 값도 넣어 주지 않으면 공백(스페이스, 탭, 엔터)를 기준으로 문자열을 나누어줌
+	       .replace("a","b") a를 b로 변환
+	       .strip() 공백제거
+※※※파일객체는 한번 읽어들이면 그 부분은 날아간다..
+
+print(contents.split("\n").count("A"))   #\n으로 나눔 배열로된것들은 .count로 키워드 검색이 안된다.
+		      	 	         #read로 읽고 split을 하면 배열로인식되서 찾을때도 배열로 찾아줘야한다.
+					 #빅데이터에서 키워드찾을때에는 그냥 read후 count로 키워드를 찾아줘야할거같다
+
+
+모듈화 : 기능의 독립적으로 할수있게 구분하고 다른곳에서 별다른 변수없이 호출할수 있으면 된다. ::: 공통성 기능성 효율성
+def(매게변수) :
+구조
+def adder1(num):
+    global result1	#글로벌변수로 결과값을 저장가능
+    result1 += num
+    return result1
+
+외장함수 
+import.os
+os.path.isdir
+os.path.isfile 로 해당 경로 파일이나 폴더 확인가능
+
+import datetime
+datetime.datetime.now() 현재시간
+#외장함수도 as로 이름을 바꿔서 사용가능하다
+
+
+
+클래스 
+구조 및 사용법
+class Calculator:
+    def __init__(self):
+        self.result = 0
+
+    def adder(self, num):
+        self.result += num
+        return self.result
+
+cal1 = Calculator()
+cal2 = Calculator()
+
+print(cal1.adder(3))
+print(cal1.adder(4))
+print(cal2.adder(3))
+print(cal2.adder(7))
+

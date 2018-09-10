@@ -1,0 +1,64 @@
+﻿데이터베이스 - MariaDB 
+#몸상태때문에 대충정리함 이것만 보고 다시 정리하면 될듯
+1. 마리아DB sts에서 모듈화
+    1) DB에 연결하는 부분 DBConnection    
+    public class DBConnection {
+        String url = "jdbc:mysql://192.168.1.233:3306/test";
+        String user = "root";
+        String pwd = "1234";
+        
+        public Connection openDB() throws Exception  {
+            Class.forName("org.mariadb.jdbc.Driver");
+            return DriverManager.getConnection(url, user, pwd);
+        }
+    }
+    #throws 부분을 ClassNotFoundException, SQLException를 상위인 Exception으로 줄였다.
+    
+    2) 셀렉트 함수
+    	public static List<HashMap<String, Object>> select(Connection con, String sql) throws Exception {
+		list = new ArrayList<HashMap<String, Object>>();
+		
+		PreparedStatement ps = con.prepareStatement(sql);
+		ResultSet rs = ps.executeQuery();
+		ResultSetMetaData rm = rs.getMetaData();       // 메타데이터로 구조에 대한 정보를 받고
+		
+		while(rs.next()) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			for(int i=1;i<=rm.getColumnCount();i++) {
+				String column = rm.getColumnName(i);
+				System.out.println(rm.getColumnClassName(i));  //classname은 결국 컬럼의 타입이다. String값을 리턴시킴
+				Object value = null;
+				if("java.lang.String".equals(rm.getColumnClassName(i))){
+					value = rs.getString(column);
+				}else if ("java.lang.Integer".equals(rm.getColumnClassName(i))){
+					value = rs.getInt(column);
+				}
+				map.put(column, value);
+			}
+			list.add(map);
+		}
+		rs.close(); 							//작업이 끝나면 자원의 낭비를 줄이기위해 역순으로 close 해준다. 
+		ps.close();
+				
+		
+		return list;		
+	}
+    3) edit 함수 - 수정삭제 업데이트
+    	//원래 삽입 삭제 수정 을 각각 만들었으나 구현하는게 같아서 하나의 메소드로 통합시킴
+        public static int edit(Connection con,String sql, List dataList) throws Exception {
+            PreparedStatement ps = con.prepareStatement(sql);
+            for(int i=1;i<=dataList.size();i++) { 			// DB에서 가져오는건 1부터 가져온다 0은 헤더
+                ps.setString(i, dataList.get(i-1).toString());
+            }
+
+            int result = ps.executeUpdate();
+            ps.close();
+            return result;
+        }
+
+
+    데이터 모두 지우기 => truncate table user;
+
+                    
+2. 웹에서 사용할려면 다이나믹웹 프로젝트의 WebContent/Web-INF/lib에 mariadb-java-client-2.2.3.jar 넣는다
+    

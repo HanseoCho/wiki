@@ -1,0 +1,47 @@
+Jquery 
+
+1. 입력한 키 알아내기 (코드표 참고 : https://blog.outsider.ne.kr/322)
+    - 입력한 값들마다 숫자로 변환됨 (아스키코드로 변환됨)
+        기본 사용방법)
+            $(document)).keydown(function(e){
+            var key = e.keyCode;
+            console.log(key);
+            })
+
+# .css로 값을 넣어줄때  +로 추가해서 넣어줄수있다.
+    $("div").css("left",(x * x_index)+"px"); 
+  
+2. css적용하는 방법
+    1) 하나씩 만들어주기
+        if(key == 37) {
+            x_index--;
+            xy_check()
+            console.log("왼");
+            $("div").css("left",(x * x_index)+"px");
+        }
+    2) 객체로 만들고 아래에서 한번에 움직이기
+        var css = {};
+        css.left = (x * x_index)+"px";
+        $("div").css(css)로 한번에 실행가능
+    3) 더 효율적이게하기 : 어차피 인덱스로 하니깐 마지막에 적용하면되
+        움직일때 index에 + 나 -
+        var css = {};
+        css.top = (y * y_index)+"px"
+        css.left = (x * x_index)+"px"    
+        $("div").css(css); 
+
+
+
+
+#####
+.keydown() : 눌린상태로 변경 하거나 눌렸으면
+screen.width : 좌우값, 모니터에 보여주는 높이, 팝업창 띄울때 위치제어하기위해 사용
+screen.height : 높이값
+window.innerheight : 브라우저에서 보여주는 디스플레이 높이
+window.innerwidth 
+number() : 숫자로 취급
+
+css 
+z-index: 쌓임속성을 지정할때 사용 position속성을 지정하고 z-index
+
+

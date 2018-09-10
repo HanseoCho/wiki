@@ -1,0 +1,111 @@
+리눅스
+r w x 
+읽기 쓰기 실행권한
+
+[파일의 user] [파일의 group] [관계없는자들]
+
+/위치에
+boot는 실행과 관계있다.
+dev는 디바이스를 지칭
+
+
+서버에 접속하기위해 ssh를 사용한다.
+1.
+yum 설치
+yumupdate  업데이트
+yum install openssh-server
+ps -ef | grep ssh  프로세스확인
+systemctl status sshd    sshd상태확인 
+ip addr		ip확인
+윈도우에서 ping으로 인터넷 연결확인
+
+ssh를 하기위해 putty를 다운로드받음(아래 바이너리파일로 다운받으면 설치안해도됨
+
+/etc/ 디렉토리에서 깔려있는 패키지 확인가능
+2.
+리눅스에서 서버를 하기위해서 httpd를 설치해준다
+yum install -y httpd httpd
+systemctl start httpd
+systemctl status httpd 
+를 설치후 기동시켜주고 확인한다.
+설치후 웹브라우저를 접속할려면 포트를 열어줘야한다.
+포트열기 -> firewall-cmd --zone=pulbic --add-port=80/tcp --permanent
+포트적용 -> firewall-cmd --reload
+80번 포트를 새로 열어주고 다시 시작해준다.
+정리
+sshd 포트 업데이트후 확인
+서버설치 httpd
+포트열기 
+
+자바 설치 방법
+1) yum 이용해서 설치 			
+##yum list*jdk*   모든 java파일 다운로드
+//하고 스냅샷으로 백업합  사유 :: 정식판이 아닌 소규모 그룹이 만든 버전임
+2) 오라클 사이트에서 다운받아서 설치
+오라클 정식사이트에서 java se 개발자버전 8u버전 리눅스 64비트 자리 파일 .rpm .gz 둘다 다운받음
+
+리눅스에서 SFTP를 사용하기위해 파일질라를 사용 
+
+파일질라에서 호스트 아이피를 입력할때 sftp://를 입력해줘야한다. 포트는 22 ssh를 이용해서 접속한다.
+파일의 올리는데에도 권한이 필요함..
+->rpm을 이용해서 설치하는법 
+yum localinstall jdk-8u161-linux-x64.rpm
+->tar.gz로 압축된 파일 해제해서 설치 //파일경로는 무조건 root/java/안쪽에 있어야한다.
+tar -zxvf jdk-8u161-linux-x64.tar.gz
+->rpm삭제
+yum list installed jdk* <--- 패키지확인
+yum remove (패키지명) 	<--- 패키지 삭제
+
+
+ -> vi 편집프로그램
+ -> 환경변수 설정
+    cd ~
+    vi ./.bash_profile에서 맨아래에 
+    JAVA_HOME=/root/java/jdk1.8.0_161
+    export JAVA_HOME
+    export PATH=$PATH:$JAVA_HOME/bin 
+    작성
+!!! source ./.bash_profile로 소스를 실행시켜주면 자바가 돌아가는걸 확인할수있다.
+####사회에서는 압축으로풀고 환경변수 설정하는걸 많이 사용한다함 왜냐하면 경로를 자유롭게 사용할수 있기떄문이다.
+
+3. 깃허브
+ 1. yum install git //깃허브 설치
+ 2. git clone 주소  //깃허브 다운로드
+ 3. 그 파일안에서 git pull로 업로드 가능
+----------------------------------------
+git add 파일이름
+git commit -m "변경내용(주석)"
+git push
+-----------------------------------------
+
+
+배치프로그램 - install은 없는상태에서 설치하는거고 배치는 있는상태에서 업그레이드
+   //실제로는 윈도우 보다 리눅스나 유닉스로 서비스를 많이함
+
+리눅스 명령어
+- 현재 위치 값 확인 : pwd
+- 환경 변수 확인 : env
+- 현재 위치 또는 다른 위치의 폴더 내용 보기 : ls
+- 현재 사용자의 홈 디렉토리 위치 값 : ~
+
+화면에 출력방법  : echo 명령
+- 현재 사용자 변수 : echo $USER          //환경변수
+- 현재 사용자의 홈디렉토리 : echo $HOME
+
+리눅스 방화벽끄기
+/etc/sysconfig/selinux 파일을 실행해서 방화벽을 꺼줌 SELINUX=disabled 
+
+sshd로 접속시 루트계정로그인 막는법 (putty접속 유저로만 제한)
+vi /etc/ssh/sshd_config
+---------------
+# Authentication:
+
+#LoginGraceTime 2m
+PermitRootLogin no  // sshd로 접속시 루트계정 로그인못하게한다. default는 yes
+#StrictModes yes
+#MaxAuthTries 6
+#MaxSessions 10
+----------------------------
+
+4월 9일자 정리에 기본개념과 문법 사용방법 나와있슴
+4월 10일에 함수를 사용한것과 sh파일안에서 다른 sh파일 읽어들이기 및 기본환경설정 자동화

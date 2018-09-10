@@ -1,0 +1,35 @@
+24. 내용 미입력시 막기
+    1) 프론트 쪽에서 jquery로 막기
+        그냥 jquery로 막음
+    2) 백에서 자바로 막기
+        파라미터값을 확인해서 비어있을시 스테이터스에 특정값과 메시지를 주고, ajax성공시 그값을 확인후 처리
+
+25. 쿠키 설정 삭제하기 (참고 : w3s js cookie)
+function setCookie(cname, cvalue) {
+    var d = new Date();
+    d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function delCookie(cname) {
+    var d = new Date();
+    d.setTime(d.getTime() + (0 * 24 * 60 * 60 * 1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=;" + expires + ";path=/";
+}

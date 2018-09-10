@@ -1,0 +1,74 @@
+파이썬에서는 자바의 겍터랑 섹터랑 비슷하게 클래스의 변수에 public설정한거같이 그냥 접근이 가능하다	
+class c1:
+    v1 = 0
+print(c1.v1)   # v1 = 0
+c1 = c1()
+c1.v1 = 10
+print(c1.v1)   # v1 = 10
+
+class c1:
+    v1 = 0
+    v2 = ""
+    def getV1(self) :
+        return self.v1
+    def setV1(self, v1):
+        self.v1 =v1
+    def getV2(self) :
+        return self.v2
+    def setV2(self, v2):
+        self.v2 =v2
+    def getResult(self) :
+        return "C1 : " + str(self.v1) + ", " + self.v2
+
+자바의 클래스 
+public class c1 { #클래스
+	int v1 = 0;
+	c1(){
+	System.out.print("C1 생성");
+	}	
+	int getV1() {
+		return this.v1;    //v1만 썼을시 매개값이 v1로 있을경우 충돌할수가 있어서 this를 써준다.
+	}
+	void setV1(int v1) {
+		this.v1 = v1;
+	}
+}
+public class m1 { #메인
+
+	public static void main(String[] args) {
+		c1 a1 = new c1(); //c1 a 는 데이터형 선언만 new c1은 할당을 한다고하면 
+		c2 a2 = new c2();
+		System.out.println(a1.v1);
+		a1.v1 = 10;
+		System.out.println(a1.getV1());
+		a1.setV1(20);
+		System.out.println(a1.getV1());
+	}
+
+}
+:::정형화된 틀을만들기 위해 겍터와 섹터를 사용
+이클립스 - 클래스에서 데이터타입만 선언하고 마우스 우클릭 - 소스 - 겍터엔드 섹터로 간단하게 만들수있다.
+	                                                         - 제너럴 투 스트링으로 전체를 출력할수있다.
+
+static 메모리에 미리할당
+
+자바의 특징 
+오버로드   = 같은 메소드에 다른매개변수를 받을떄마다 
+오버라이딩 =  extend로 상속을 해주면 부모개체에서 사용한 멤버변수를 this.변수로 자유자재로 사용할수있고, 
+              상속 관계간에 있는 같은 이름의 메소드를 하위클래스에서 재정의해서 사용하는 기술
+
+메인메소드가 상속을 받아서 사용할때 상위클래스에서 스태틱을 해줘야한다.
+하지만 다른 클래스가 상속을 받으면 내가 인스턴스화해서 상속을 받은것을 사용할수 있다.
+
+
+
+파이썬에서의 상속은 ()안에서 이루어진다.
+class C1():
+    def a(self):
+        return "a"
+class C2(C1) :
+    pass #밑에 아무것도 없어도 동작해라 임시적으로 사용
+c2 = C2()
+c2.a()
+
+

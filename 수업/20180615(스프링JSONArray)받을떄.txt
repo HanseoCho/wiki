@@ -1,0 +1,29 @@
+*. $.ajax로 배열을 보낼려면 JSON.stringify()로 JSON문자로 변환해서 보내면 가능하다.
+    - 받을때 : JSONArray.fromObject(); 이용 : List<HashMap<String, Object>> list = JSONArray.fromObject(data);
+
+
+*. ☆☆☆☆☆☆ sql자체에서 필요한 값 select해서 값 집어넣기
+	<insert id="fileinsert2" parameterType="HashMap">   
+		<selectKey keyProperty="boardNo" resultType="Integer" order="BEFORE">   //selectKey는 db에서 필요한것을 찾아서 값을 집어넣어주는것같음
+			insert into files                                                   //keyProperty는 insert문 어디에 집어넣을지 order는 수행전에 실행할지
+				(boardNo, fileName, fileURL, userNo, regDate)
+			values
+				(#{boardNo},#{fileName},#{fileURL},#{userNo},DATE_FORMAT(NOW(),'%Y%m%d'));
+		</selectKey>>
+		insert into files
+			(boardNo, fileName, fileURL, userNo, regDate)
+		values
+			(#{boardNo},#{fileName},#{fileURL},#{userNo},DATE_FORMAT(NOW(),'%Y%m%d'));
+	</insert>	
+
+
+*. jstl로 넘겨준 get방식으로 넘겨준 값 받기 : "${param.boardNo}"
+    1. ${param.value} == request.getParameter("value")
+    2. ${value} == request.getAttribute("value");
+
+	$(function(){
+		var boardNo = "${param.boardNo}";
+		alert(boardNo);
+	});
+
+*. 

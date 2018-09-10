@@ -1,0 +1,77 @@
+#3주차 내용
+1) 함수, 모듈
+2) 클래스
+
+1) 함수 : 중복제거, 기능, 관리
+   모듈 : 함수관리 (구조화)
+
+모듈사용
+->import 모듈을 전체다 가져온다
+
+->from test import a 모듈중 일부를 가져옴
+->print(a())
+실제 사용시에는 속도측면에서는 가져올 데이터가 많을시 from으로 지정해서 가져오는게 효율이좋다
+import문은 전체다 가져와서 만들고 from은 a는 a만 가져와서 작업하기 때문이다
+
+import a as b 로 별명설정가능 기존의 a는 사용불가 #as를쓸때에는 모듈안에 중복되는 이름이 없게 한다
+
+
+-모듈이 폴더안에 존재할시
+ ->메인폴더에서 __init__.py에 
+ ->__all__ = ["test"]  폴더이름
+ ->from . import test			#.은여기서 실행한다는의미
+ ->그 폴더안에서 __init__.py에
+ ->__all__ = ["test","test2"] 파일이름
+ ->from . import test
+ ->from . import test2
+:::__init__에서 폴더 이름이 같을시 이중으로 들어간다. main/test/test 일경우 가장 안쪽으로 들어가고 폴더먼저 찾고 그다음에는 파일을 찾는다.
+   그래서 폴더앞에는 d_폴더이름 으로 폴더란걸 명시할수 있어야한다.
+
+---------------------------------------- 파이썬
+
+자바설치 ) 오라클사이트 java se 8u버전(업데이트가 많이됨) jdk설치 - 환경변수 path에 C:\Program Files\Java\jdk1.8.0_161\bin 추가 
+           도스창에서 java -version확인
+
+나중에 프레임워크 사용할거니 sts에서 다운받음 이클립스에 프레임워크 적용한게 sts임
+
+자바
+::static 메모리 할당 자동실행됨
+void 리턴타입
+main(String[] args){ #메인메소드에는 반드시 String[] args 프로그램시작을 위한 옵션처리
+}
+
+자바의 이니트는 환경설정??
+
+자바의 bin에있는 클래스파일은 src에 내가 작성하는 소스파일이 변형되는 것이다.
+강제로 bin에있는 클래스파일을 지우면 많은 영향을 준다. 
+대처방안. 메뉴 - 프로젝트 - 클린 
+
+-------------------------------------------다시파이썬 
+파이썬에서는 메인메소드 개념이없음
+-파이썬 생성자 작성법
+class main :
+    def __init__(self,a1,a2) : #첫 호출시 생성하는 생성자
+        self.a1 = a1
+        self.a2 = a2
+    def main(self) :
+        print("main",self.a1, self.a2)
+main1 = main(1,2)		#객체화의 형태 자바와는 다르다 
+main1.main()
+-자바의 생성자
+public class aa {
+	public static void main(String[] args) {
+		test t = new test();   //파이썬에서는 new를 안써줘도됨 //객체화
+		t.result();
+	}
+}
+
+public class test {
+	test() { //생성자	
+	}
+	void result() {
+		System.out.println("결과값!");
+	}
+}
+자바랑 파이썬 둘다 초기값을 설정해줄려면 생성자를 만들어줘야한다 
+
+

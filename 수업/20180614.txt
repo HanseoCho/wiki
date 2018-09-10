@@ -1,0 +1,30 @@
+dafdofpsadf
+
+*. 데이터베이스에 selectOne할때 여러가지가 조회되서 에러가 발생할때
+    //아래 예는 5개 가져오기  
+    SELECT * FROM [TABLE NAME] LIMIT 5;  
+    
+    // LIMIT 시작점, 갯수 (아래 예의 경우 5번째부터 10개 추출. 첫번째 파라미터는 0 부터 시작함!)  
+    SELECT * FROM [TABLE NAME] LIMIT 4, 10;  
+    
+
+*. selectOne으로 값을찾을때 쿼리문이 찾은값이 두가지이상이면 문제가 발생하는데 
+    이떄 해결방법으로는 try catch문으로 로그를 남겨서 확인하는 방법은 과장님께서 로그가 길게 남기 때문에 
+    slq문 조회할때 limit로 제한을 해주는게 좋다고 하셨다.   
+
+
+*. redirect할때 값넘기기 (model로 값을 전달해주면 redirect할시에는 바로 jsp로 가는게아니라 사라진다.)
+    RedirectAttributes ria
+    ria.addFlashAttribute("data",result);
+    return "redirect:/";
+
+    이렇게 넘겨주면 /매핑해서 메소드를 실행할때 따로 값을 받아주지않아도 페이지가 이동되면서 값을 전달해준다.
+
+*. jstl if문 사용하기
+	<c:if test="${not empty data}"> : ${조건}
+		가나다라
+	</c:if>
+
+
+* 상수 같은경우는 클래스하나 만들어서 사용해도 꽤 편한것같음
+    public static final 사용할 변수;

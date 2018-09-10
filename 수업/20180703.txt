@@ -1,0 +1,6 @@
+웹으로 올리기
+#!python
+# coding: utf-8
+print("Content-Type: text/html; charset=utf-8\n\n")
+
+내용 옮기기

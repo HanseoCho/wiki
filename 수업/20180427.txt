@@ -1,0 +1,51 @@
+뷰 생성
+create View `tables` AS select table_schema, table_name, create_time from information_schema.tables;
+
+# 유니온 - test테이블과 mysql테이블을 한번에 표기 (순서대로 붙여진다.)
+select table_name from test.tables where table_schema = 'information_schema' and table_name ='tables'
+#union all은 대소문자를 구별하지않고 중복 제거
+union all
+select table_name from test.tables where table_schema = 'test' and table_name ='tables';
+
+union all은 중복제거를 하지않고 다 출력
+union은 중복을 제거하고 출력
+
+----------------------------------------------------------------
+#testcreate View `tables` AS select table_schema, table_name, table_type ,create_time from information_schema.tables;
+#use test;
+#select * from tables where table_schema = 'test';
+#select table_schema, table_type, count(table_type) as cnt from tables 
+#where table_schem='test' 
+#group by table_schema,table_type; 
+#서브쿼리
+#select * from tables where table_type in (select table_type from tables where table_schema='test');
+#
+#select * , (select updat_time from information_schema.`ABLES where table_schema =  ) as update_time
+#from tables
+
+#select t.*,(
+#select update_time
+#from information_schema.TABLES
+#where table_schema = t.table_schema
+#and table_name = t.table_name
+#) as update_time
+#from test.table as t;
+
+# 조인
+#use mysql;
+
+# outer join 
+#select t.*, i.update_time 
+#from test.tables`tables` as t
+#left outer join (select * from information_schema.TABLES) as i 
+#on (t.table_schema = i.table_schema and t.table_name = i.table_name and i.table_schema = 'mysql')
+#where t.table_schema = 'test'
+
+# 유니온 - test테이블과 mysql테이블을 한번에 표기 (순서대로 붙여진다.)
+#select table_name from test.tables where table_schema = 'information_schema' and table_name ='tables'
+#union all은 대소문자를 구별하지않고 중복 제거
+#union all
+#select table_name from test.tables where table_schema = 'test' and table_name ='tables';
+
+----------------------------------------------------------------------
+

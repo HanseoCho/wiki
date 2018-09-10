@@ -1,0 +1,53 @@
+cd /var/www 에서 ls -lZ하면 
+drwxr-xr-x. root root system_u:object_r:httpd_sys_script_exec_t:s0 cgi-bin
+drwxr-xr-x. root root system_u:object_r:httpd_sys_content_t:s0 html
+이렇게 나온다 cgi-bin의 폴더를 보면 httpd_sys_script_exec_t:s0이렇게 되있는데
+cgi를 사용해주기 위해서는 폴더를 cgi-bin처럼 바꿔줘야한다.
+1. -> yum install policycoreutils-python 설치
+
+2. /var/www/html/python폴더를 cgi처리를 해주기위해서
+   ->chcon -t httpd_sys_script_exec_t python/ 를 해준다 // python파일의 타입을 바꿔준다.
+
+cgi처리한 파이선의 vhost설정
+<VirtualHost *:80>
+  ServerName 'pythonServer'
+  DocumentRoot '/var/www/html/python'
+  <Directory '/var/www/html/python'>
+   Options ExecCGI
+   AddHandler cgi-script .py
+  </Directory>
+</VirtualHost>
+
+이후 Python폴더로 들어가서 
+--------------index.py를 만들고 ----------
+#!/bin/python
+# coding:UTF-8
+print("content-type: text/html; charset=utf-8\n\n")
+print("안녕")
+------------------------------------------------
+chmod 755 index.py로 실행권한을 준다. // 7all 5 rwx rx rx
+
+------------------------------
+파이썬 버전변경 (기조버전은 너무 낮아서 안돌아가는 명령어들이 더러 있다)
+-> 설치 : https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tgz
+-> 압축 풀기는 : tar -xf Python-3.6.4
+-> 환경설정을 해주기 위해서 파이선 폴더로 들어가서 ./configure && make && make install을 해준다.
+-> python3 -V 로 버전확인을 해준다.
+-> 리눅스의 파이선3 선언시에 #!/usr/local/bin/python3  로 선언한다.
+
+한글꺠짐현상 조치
+vi /etc/httpd/conf/httpd.conf 에서 기본적으로 AddDefaultCharset UTF-8 이 있는데 그아래에
+SetEnv PYTHONIOENCODING utf8  한줄을 추가해주자
+
+
+
+
+
+
+
+
+
+
+
+
+

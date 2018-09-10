@@ -1,0 +1,20 @@
+로그만들기
+해당겨올에 파일 있는지확인
+import os
+not os.path.isdir(DIR_NM+"log") 
+not os.path.exists(DIR_NM+"log/log.txt")
+
+시간남기기
+import datetime
+stamp = str(datetime.datetime.now())
+
+import문 이름바꾸기
+import log as l    # as로 이름바꿀수있씀
+
+
+
+----
+
+문서의 종류여러가지있는데 엑셀 csv를 사용하기도 한다
+
+with open("경로"+"파일명.csv") 확장자만 바꿔주면 가능하고

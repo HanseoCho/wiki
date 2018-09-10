@@ -1,0 +1,153 @@
+1. 메이븐웹프로젝트에 서블릿 넣기
+src 안에 java폴더안에 pom.xml로 경로를 확인해서 src/main/java/kr/co/gdu안에 서블릿파일을 넣어두었따.
+test안에도 똑같이 만들고 /test/java/kr/gdu/ 
+웹에서 localhost:8080/MavenWebProject/singB
+                         프로젝트      서블릿이름
+
+src/main/webapp/WEB-INF 에서 web.xml에 등록된 서블릿을 확인가능하다 (url과 파일이름 수정가능)
+
+서블릿은 post나 get방식으로 일단 전송을해야지 작동을한다.
+
+***
+프로젝트 우클릭 자바 컴파일 - 1.8로 수정함 (스위치문에서 스트링이 1.5에서는 안들어가서 바꿈)
+             ㄴ Project Facets - java버전을 1.8로 바꿈
+***
+
+2. 서블릿화면을 웹에서 출력
+response.setContentType("text/html; charset=UTF-8") 어떤 문자를 사용할지 명시해준다
+response.getWriter().append("result :"+result);  // 리스폰스에서 출력하는걸 가져옴, 거기다 추가함
+
+*. dopost랑 doget에 표기하지말고 메소드화해서 호출하면 된담.
+
+** 오류들의 제일상위가 Exception
+
+
+
+3. html 출력방식
+1] 소스에 문자열로 추가
+String html = "<h1>결과값 : "+result+"</h1>";
+html += "<a href='index.jsp'>계산기로 이동</a>";
+response.setContentType("text/html; charset=UTF-8"); // 어떤문자를 사용할지 명시
+response.getWriter().append(html);  // 리스폰스에서 출력하는걸 가져옴, 거기다 추가함
+
+2] jsp파일로 추가
+RequestDispatcher rd = request.getRequestDispatcher("result.jsp"); //처리하기위한 라이브러리중 하나
+rd.forward(request, response); //담아서 보내주면 화면에 result.jsp를 표기해준다.
+/ 세션을 이용해서 값을 서로 넘나들수있고, result.jsp를 가져와서 실행해준다.
+
+jsp 양식
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=UTF-8">
+<title>Result</title>
+</head>
+<body>
+	<h1>결과 :<%=request.getAttribute("result")%></h1>
+	<a href="index.html">계산기로 이동</a>
+</body>
+</html>
+
+4. JSTL - 라이브러리
+jstl은 결과화면에서 사용하기 편하게 해준다. 스코에있는걸 ${}출력해줌
+pom.xml에 추가하기
+	<dependency>
+	    <groupId>javax.servlet</groupId>
+	    <artifactId>jstl</artifactId>
+	    <version>1.2</version>
+	</dependency>
+	<dependency>
+	    <groupId>taglibs</groupId>
+	    <artifactId>standard</artifactId>
+	    <version>1.1.2</version>
+	</dependency>
+
+${}로 사용해준다.
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page isELIgnored="false" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=UTF-8">
+<title>Result</title>
+</head>
+<body>
+	<h1>결과 : ${requestScope.result}</h1> // 그냥 ${result}로도 사용가능하다
+
+	<a href="index.html">계산기로 이동</a>
+</body>	
+</html>
+
+response.sendRedirect("index.html"); //리다이렉트는 a태그 누른거랑 같다.
+
+			if(check) {
+			request.setAttribute("result", result);
+			RequestDispatcher rd = request.getRequestDispatcher("result.jsp");
+			rd.forward(request, response); //담아서 보냄
+			}else {
+			response.sendRedirect("index.html"); //리다이렉트는 a태그 누른거랑 같다.
+			}
+
+5. mockito - 인기많은 라이브러리
+j유닛에서
+public class CalculatorWebTest {
+
+	@Mock 
+	HttpServletRequest request;
+	@Mock 
+	HttpServletResponse response;
+
+	@Before
+	public void befor() {
+		MockitoAnnotations.initMocks(this);
+	}
+	
+	@Test
+	public void test() throws ServletException, IOException  {
+		when(request.getParameter("a")).thenReturn("3"); //파라미터를 재구성시킴 값을 바꿈
+		when(request.getParameter("b")).thenReturn("2");
+		when(request.getParameter("key")).thenReturn("add");
+		
+		StringWriter sw = new StringWriter();  //문자를 쓸부분을 만듬
+		PrintWriter pw = new PrintWriter(sw);  //출력하기위한 부분을 만듬
+		
+		when(response.getWriter()).thenReturn(pw); //출력물을 담음, 리다이렉트나 포워드만 조심해서 만들어줘야함.
+		
+		singB singb = new singB();
+		singb.doGet(request, response);
+		
+		System.out.println(sw);
+	}
+}
+
+---------------------------------
+서블릿 junit 테스트
+
+public class CalculatorWebTest2 {
+	@Mock 
+	HttpServletRequest request;
+	@Mock 
+	HttpServletResponse response;
+	@Before
+	public void before() {
+		MockitoAnnotations.initMocks(this);
+	}
+	@Test
+	public void test() throws ServletException, IOException {
+//		when(request.getParameter("a")).thenReturn("3");
+//		when(request.getParameter("b")).thenReturn("2");
+//		when(request.getParameter("key")).thenReturn("add");
+//		
+//		StringWriter sw = new StringWriter();
+//		PrintWriter pw = new PrintWriter(sw);
+//		
+//		when(response.getWriter()).thenReturn(pw);
+//		
+//		Calc calc = new Calc();
+//		calc.doGet(request, response);
+//		
+//		System.out.println(sw);

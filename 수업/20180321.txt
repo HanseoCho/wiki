@@ -1,0 +1,31 @@
+모듈화 - oop, 여러가지 펑션
+
+함수 def(매게변수) :
+구조
+def adder1(num):
+    global result1	#글로벌변수로 결과값을 저장가능
+    result1 += num
+    return result1
+
+	
+클래스 
+구조 및 사용법
+class Calculator:
+    def __init__(self):
+        self.result = 0
+
+    def adder(self, num):
+        self.result += num
+        return self.result
+
+cal1 = Calculator()
+cal2 = Calculator()
+
+print(cal1.adder(3))
+print(cal1.adder(4))
+print(cal2.adder(3))
+print(cal2.adder(7))
+
+목적 : 기능의 독립적으로 할수있게 구분하고 다른곳에서 별다른 변수없이 호출할수 있으면 된다.
+
+   고통성 기능성 효율성

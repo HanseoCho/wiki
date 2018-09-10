@@ -1,0 +1,32 @@
+파이썬 배열
+
+bado = [5, [1,1,1,1,1,0,1,1,1,0,0,0,1,0,0]] 더 효율적인 방법은
+bado = [[1,1,1,1,1],[0,1,1,1,0],[0,0,1,0,0]]
+
+
+사망연산자 사용법 [변수 =  조건문 and true or false]
+result2 = z%2 == 0 and result2 + result + "\n" or result + "\n" + result2
+
+예)
+if d==1 and z%2==0 :
+   result = t==0 and " " + result or "*" + result
+else :
+   result = t==0 and result + " " or result + "*"
+
+변수 =  (조건  ) and (조건) and (true 조건안 true false ) or (false)
+
+result = d==1 and z%2 ==0 and (t==0 and " " + result or "*" + result) or t==0 and result + " " or result + "*" 4줄을 1줄로 압축가능
+
+
+print(z<3 and (0) or (1)) 1만나옴 (추론하면 값이 바로나오게하면 안되는것같음)  print(int(z<3) and (0) or (1)) 캐스팅을하거나 
+
+회원가입 and 로그인
+
+
+
+1.로그인 -> 수정 탈퇴
+2.회원가입
+중복가입 배제
+
+아이디를입력하세요
+

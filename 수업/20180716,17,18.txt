@@ -1,0 +1,257 @@
+빅데이터 하둡
+
+하둡은 리눅스로 분산데이터처리?
+
+환경설정)
+
+리눅스 - 
+    1) jdk설치, yum install -y update
+
+    2) 네트워크 ip 고정 (나머지 컴퓨터도 자신의 ip로 고정)
+    /etc/sysconfig/network-scripts/ifcfg-enp0s3
+
+    #BOOTPROTO="dhcp"
+    BOOTPROTO="static"
+    IPADDR=192.168.1.33
+    NETMASK=255.255.255.0
+    GATEWAY=192.168.1.1
+    DNS1=168.126.63.1
+    DNS2=168.126.63.2
+
+    3) 하둡 받기 (http://hadoop.apache.org/releases.html) 2.9.0 바이너리 받음
+    4) 하둡 압축풀기
+    5) 하둡 환경설정
+        .bash_profile추가
+        export HADOOP_HOME=/root/hadoop
+        export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+
+        export HDFS_NAMENODE_USER="root"
+        export HDFS_DATANODE_USER="root"
+        export HDFS_SECONDARYNAMENODE_USER="root"
+        export YARN_RESOURCEMANAGER_USER="root"
+        export YARN_NODEMANAGER_USER="root"
+
+
+    6)  hadoop namenode -foramt
+
+    7) hadoop/sbin안에 있음(책에는 bin안에 다있지만 나뉘어져있다.)            
+        *. 하둡폴더안/etc/hadoop에 환경설정 파일들이 있다. (미리 백업을해둠)
+
+    8) hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.9.0.jar wordcount $HADOOP_HOME/etc/hadoop/hadoop-env.sh wordcount_output
+    9) 수행확인 : cd wordcount_output/ 에 SUCCES생성
+
+    10) http://hadoop.apache.org/docs/r2.9.0/hadoop-mapreduce-client/hadoop-mapreduce-client-core/MapReduceTutorial.html#Example:_WordCount_v1.0 (싱글코테이션) 소스파일 이클립스 maven으로 생성
+        소스 옮기고 jar파일로 export하기
+
+    11) hadoop jar hadoop/wc.jar WordCount $HADOOP_HOME/etc/hadoop/hadoop-env.sh wc_output
+        hadoop jar wc.jar WordCount $HADOOP_HOME/etc/hadoop/hadoop-env.sh wc_output
+        * hadoop fs -rmr 디렉토리 : 디렉토리 삭제
+
+    *. 명령어 여기까지 쓴거 cmd.txt로 저장해놈 (금요일 평가할때 필요하다함)
+
+17일 (분산 모드) 4가지 리눅스 사용(메인,서브1,서브2,서브3)
+    컴퓨터 클러스터 - 근거리통신망을 이용해서 여러컴퓨터를 하나의 시스템처럼 동작
+    
+    1. 메인) root에서 키만들기 :  ssh-keygen -t rsa -P ""
+    2.  root/.ssh 디렉토리안에 id_rea, id_rea.pub 파일 생성 (이거가지고 공유 .pub : 공개키 )
+    3.  cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys 복사 (인증키등록 과정이라캄)
+    4.  ssh localhost -> yes : ssh 연결할친구 (네트워크연결)
+    5.  exit 로 logout
+    6.  환경변수추가 .bash_profile    
+            HD_SAMPLE=/root/hadoop/share/hadoop/mapreduce
+            export HD_SAMPLE    
+    7.  source ~/.bash_profile 
+    8.  ls $HD_SAMPLE 로 확인
+    9.  hdfs dfs -mkdir /user : 하둡에 유저폴더생성
+    10.  hdfs dfs -ls / 하둡폴더 확인
+    12.  hdfs dfs -mkdir /input
+    13.   hdfs dfs -copyFromLocal $HADOOP_HOME/etc/hadoop/hadoop-env.sh /input : 하둡에 복사
+    14.  hadoop jar $HD_SAMPLE/hadoop-mapreduce-examples-2.9.0.jar wordcount /input/hadoop-env.sh /user/root/wc_output
+    15.   cd $HADOOP_HOME/etc/hadoop 경로이동
+    16.  vi hadoop-env.sh 수정
+            export JAVA_HOME=${JAVA_HOME} ->/root/jdk
+    17.  vi /root/hadoop/etc/hadoop/core-site.xml 내용 추가
+            <configuration>
+            <property>
+            <name>fs.defaultFS</name>
+            <value>hdfs://localhost:9000</value>
+            </property>
+            </configuration>
+    18.   vi /root/hadoop/etc/hdfs-site.xml 내용추가
+            <configuration>
+            <property>
+            <name>dfs.replication</name>
+            <value>1</value>
+            </property>
+            </configuration>
+
+
+    19. hdfs namenode -foramt 재구성 (재구성하면 파일인식을못해서 기존파일지우고 새로 만들어줘야함)
+    *. hadoop/sbin안의 start-all.sh는 모두다 켜지지만 예전명령어라 각각키는걸 권장한닿마
+    20. start-dfs.sh
+    21. start-yarn.sh
+    22. jps : 실행확인
+    23. 192.168.1.33:50070로 접속가능 (포트열어야함)
+    24. firewall-cmd --zone=public --add-port=50070/tcp --permanent
+    24. firewall-cmd --zone=public --add-port=8088/tcp --permanent
+    25 firewall-cmd --reload
+    hdfs dfs -mkdir /user
+    hdfs dfs -mkdir /user/root
+    hdfs dfs -mkdir /input
+    hdfs dfs -copyFromLocal $HADOOP_HOME/etc/hadoop/hadoop-env.sh /input
+
+    26. hadoop jar $HD_SAMPLE/hadoop-mapreduce-examples-2.9.0.jar wordcount /input/hadoop-env.sh /user/root/wc_output
+    27. hdfs dfs -ls /user/root/wc_output
+
+    hdfs dfs -copyFromLocal $HADOOP_HOME/etc/hadoop/hadoop-env.sh /input
+
+    서브) 하둡 환경설정하고 실행만 확인
+
+    전체) vi /etc/hosts : 윈도우의 hosts설정(아이피매핑, 기존에있는건 주석처리)
+            127.0.0.1 localhost
+            192.168.1.33 name
+            192.168.1.63 data1
+            192.168.1.64 data2
+            192.168.1.65 data3
+    전체) vi /etc/hostname : name으로 바꿈 (기존에있던 텍스트는 지워야한다 주석이 안통해서..)
+    전체) /bin/hostname -F /etc/hostname : 적용하고 재부팅시 도스창에 @뒤에 적용한 이름이 나온다.
+
+    28. scp -rp ~/.ssh/authorized_keys root@data1:~/.ssh/authorized_keys : 서브컴들에게 키전송
+    
+    29. ssh 이름 : 이름에 = [name, data1, data2, data3]으로 접속확인
+        *. name노드는 data들에게 접속할때에는 비밀번호를 묻지않는다 data들은 name노드만을 바라보기 때문이다.
+    
+
+    서브) 자바세팅 vi $HADOOP_HOME/etc/hadoop/hadoop-env.sh : /root/jdk  자바경로설정 
+
+    메인) vi $HADOOP_HOME/etc/hadoop/hadoop-env.sh 
+            :set number 
+            104줄 export 함수 경로 변경  export HADOOP_PID_DIR=/root/hadoop/pids
+    
+    전체) vi $HADOOP_HOME/etc/hadoop/core-site.xml
+            value에 기존에 설정한 lcoalhost를 name으로 바꾼다.
+            
+
+    메인) ~/hadoop/namenode : 파일 생성후 모든권한을 준다
+    서브) ~/hadoop/datanode : 모든 서브컴마다 datanode 파일생성후 모든권한을 준다
+    
+    *. chown -Rf root:root 디렉토리 : 디렉토리 하위포함 모두 root권한을 주는법
+
+    전체) vi $HADOOP_HOME/etc/hadoop/hdfs-site.xml 내용 수정
+        <configuration>
+        <property>
+        <name>dfs.replication</name>
+        <value>2</value>            #저장될 데이터의 복사본 개수를 의미 최대 3개로 설정한다함 그러면 데이터노드 6개정도 되야한닿마
+        </property>
+        <property>
+        <name>dfs.permissions</name>
+        <value>false</value>
+        </property>
+        <property>
+        <name>dfs.namenode.name.dir</name>          # 서브는 dfs.datanode.data.dir
+        <value>file:/root/hadoop/namenode</value>   #        datanode로 수정
+        </property>
+        </configuration>
+잡트레커 
+    전체) cp ~/hadoop/etc/hadoop/mapred-site.xml.template ~/hadoop/etc/hadoop/mapred-site.xml # 이름에 .template부분을 지우고 복사
+    전체) vi ~/hadoop/etc/hadoop/mapred-site.xml # 내용추가
+            <configuration>
+            <property>
+            <name>mapreduce.framework.name</name>
+            <value>yarn</value>
+            </property>
+            </configuration>
+    전체) vi ~/hadoop/etc/hadoop/yarn-site.xml #내용추가
+            <configuration>
+                <property>
+                    <name>yarn.nodemanager.aux-services</name>
+                    <value>mapreduce_shuffle</value>
+                </property>
+                <property>
+                    <name>yarn.nodemanager.auxservices.mapreduce.shuffle.class</name>
+                    <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+                </property>
+            </configuration>
+
+    메인)  vi ~/hadoop/etc/hadoop/masters -> name 입력
+           vi ~/hadoop/etc/hadoop/slaves -> data1 
+                                            data2
+                                            data3 입력
+
+    메인) start-dfs.sh start-yarn.sh 실행후 jps로 namenode와 secondnamenode있는지 확인하기
+        hdfs dfs -mkdir /result
+        hdfs dfs -mkdir /input
+        ls -l ~/hadoop/README.txt
+        
+
+        stop-dfs.sh stop-yarn.sh 중지
+    전체) systemctl stop firewalld.service
+        start-dfs.sh start-yarn.sh 실행
+
+    hdfs dfs -copyFromLocal /root/hadoop/README.txt /input/
+
+    
+    메인) 분산처리 실행 : hadoop jar $HD_SAMPLE/hadoop-mapreduce-examples-2.9.0.jar wordcount /input/README.txt /result/wc_output
+
+18일.
+
+    어제 분산처리가 안된것이 yarn 문제같다고함
+    전체)  mv ~/hadoop/etc/hadoop/mapred-site.xml ~/hadoop/etc/hadoop/mapred-site.xml.bak 
+        
+          hadoop jar $HD_SAMPLE/hadoop-mapreduce-examples-2.9.0.jar wordcount /input/a.txt /result/a
+
+
+    *. 에러시
+        메인노드만 켜지고 나머지가 안켜지면 초기화를 해야함
+            서브) hadoop/datanode 삭제하고 재생성후 권한이 root인지 확인
+            메인) hadoop/namenode과 pids 삭제후 재생성 권한 root인지 확인
+                hdfs namenode -format : 새롭게 폴더를 만들어주면 포멧을 해줄필요가 있다
+        
+        이래도 안되면
+            vi ~/hadoop/etc/hadoop hdfs-site.xml 확인하기
+
+        safemode 에러 발생 시
+            hadoop dfsadmin -safemode leave
+
+    *. 리눅스 -> 하둡 복사명령어
+        hdfs dfs -put /root/hadoop/README.txt /input/a.txt
+        hdfs dfs -copyFromLocal /root/hadoop/README.txt /input/
+
+    *. 하둡 -> 리눅스 복사명령어
+        hdfs dfs -copyToLocal /result/a/part-r-00000 /root
+        hdfs dfs -get /result/a/part-r-00000 /root/a
+
+    *. 하둡 -> 하둡 복사명령어
+        hdfs dfs -cp /input/README.txt /input/b.txt
+
+    *. 하둡 용량확인
+        hdfs dfs -du /
+    
+    *. 파일합쳐서 가져오기
+        hdfs dfs -getmerge /input /root/marge.txt
+
+    *. 카운트값 조회
+        hdfs dfs -count /input 
+    
+    *. 통계정보조회
+        hdfs dfs -stat %b-%f-%n-%o-%r-%y-%Y /result/a/part-r-00000
+
+
+    *. 자세히 알고싶은건 책 참고 : 하둡명령어 책 80p 
+
+    하둡의 라이브러리를 활용하여 이클립스 작성하기
+    이클립스 - 자바프로젝트 - lib폴더생성 
+    - 리눅스의 ~/hadoop/share/hadoop/폴더안의 common과 mapreduce의 jar파일을 옮긴다.
+    - 프로젝트 우클릭 속성 - 자바빌드패스 add jars로 옮긴 라이브러리 추가
+    - src폴더에 HdfsFile 클래스추가 - sysout("Hello World : HdfsFile");
+    - export .jar 리눅스로 옮긴다 -  hadoop jar /root/hd.jar hd.HdfsFile
+
+    이클립스 소스작성예) 
+
+19일 
+    systemctl stop firewalld.service : 서비스 중지
+    systemctl disable firewalld.service : 서비스 자동 시장 막기
+
+    엑셀파일은 다른이름으로 저장해서 csv나 텍스트파일로 변환해야한다.
+
+    

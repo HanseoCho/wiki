@@ -1,0 +1,13 @@
+*. 아파치에 권한줘서 확인하기 
+    cd /etc/httpd/conf/httpd.conf
+
+    아파치의 그룹을 root로 바꾸는것같음 그래서 접근할수이쓴 권한을 상승시킴  
+    User apache
+    Group root
+
+1. 파일업로드 root-context.xml에 db연결하는 빈 추가
+
+
+*. 경로설정 (리눅스로 사용할경우 경로는 리눅스의 주소가 중심이 되야한다 모든 참조경로들을 확인해야한다)
+
+

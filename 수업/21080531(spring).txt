@@ -1,0 +1,186 @@
+Spring
+
+11. IOC (참고 : http://limmmee.tistory.com/13)
+    컨테이너 : 인스턴스의 생명주기를 관리하며, 생성된 인스턴스들에게 추가적인 기능을 제공하도록 하는것
+        - 컨테이너의 종류)
+            : Servlet 컨테이너, EJB컨테이너 ...
+            : Servlet 컨테이너는 Servlet의 생성, 생성 후 초기화, 서비스 실행, 소멸에 관한 모든 권한을 가지고 있다.
+            -> Servlet 컨테이너의 web.xml을 보면 JSP/Servlet 접근 권한에 대한 추가적인 서비스를 제공
+        
+    Spring 컨테이너 : 스프링 프레임워크의 핵심부에 위치하며, 종속객체 주입을 이용하여 애플리케이션을 구성하는 컴포넌트를 관리
+        - Spring 컨테이너의 종류
+            : BeanFactory
+            : ApplicationContext
+
+    IoC : 보통 IOC를 제어의 역전 의존적주입이라 부른다, 외부에서 제어를 한다는것 (IoC == 컨테이너)
+
+12. xml과 자바 함께사용하기
+    1. src/main/webapp/WEB-INF/spring안의 root-contetext.xml에 bean을 만들어준다.
+    2. 자바에서 메인문에서  이렇게 가져옴
+		String config="file:src/main/webapp/WEB-INF/spring/root-context.xml";
+		AbstractApplicationContext ac = new GenericXmlApplicationContext(config); //컨테이너 생성
+		TestService ts = ac.getBean("testService",TestService.class);
+		System.out.println(ts.test3());    
+
+13. xml에 bean에 변수 값 설정 : 클래스 변수에 set메소드를 사용하고 <property name="type" value="select"/>를 사용 (Spring파일에 잘 정리됨)
+
+14. 네임스페이스 : <p:변수="값"> 짦게 property를 쓸수있다 생성자넣는건 c임 (이거는 Spring_y에 있을듯)
+
+15. 어노테이션
+    @Autowired  : 자동주입
+    @Resource(name="해당 bean id") : 누구를 주입한다 target으로 생성자의 값을 넣을수 있다캄, mybatis 할때 이거 사용할거라함 이외에는 autowired 사용
+
+16. 스프링 자바 db연결하기 
+    1. maven 레파스토리지에서 mybatis와 mybatis-spring, MariaDB Java Client,spring-jdbc( Spring Context와 같은버전으로 받기)를 pom.xml에 넣어준다
+
+    2. root-context.xml에서 마리아 db를 연결 해주기 위해 아래내용을 적어준다.    
+        <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">  // db연결
+            <property name="url" value="jdbc:mysql://127.0.0.1:3306/test"/>
+            <property name="driverClassName" value="org.mariadb.jdbc.Driver"/>
+            <property name="username" value="root"/>
+            <property name="password" value="1234"/>
+        </bean>
+        
+        <bean id="factoryBean" class="org.mybatis.spring.SqlSessionFactoryBean"> // src/main/Resource/sql패키지 에서 xml문을 가져온다.
+            <property name="mapperLocations" value="classpath:/sql/*.xml" />     
+            <property name="dataSource" ref="dataSource"/>                        
+        </bean>
+        
+        <bean id="session" class="org.mybatis.spring.SqlSessionTemplate">       // 자바에서 사용해주기 위해 이렇게 사용
+            <constructor-arg name="sqlSessionFactory" ref="factoryBean"/>
+        </bean>
+
+    3. src/main/Resource/sql패키지에서 test.xml문 만들어주기  (참고 : http://www.mybatis.org/mybatis-3/ko/configuration.html)
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper
+            PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+            "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+            <mapper namespace="test">
+                <select id="select" resultType="HashMap">
+                    select * from test.user
+                </select>
+                <insert id="insert" parameterType="HashMap" resultMap="HashMap">
+                    insert into test.user(id,pw) values ('asbc','1234');
+                </insert>
+            </mapper>        
+
+    4. 자바에서 db가져와서 사용하기		
+		SqlSessionTemplate session = ac.getBean("session",SqlSessionTemplate.class);
+		java.util.List<HashMap<String, Object>> list = session.selectList("test.select");
+		System.out.println(list.size());
+		
+		for(int i=0;i<list.size();i++) {
+			System.out.println(list.get(i));
+		}    
+
+17. 스프링 mvc웹 디비연결
+    1. 모델부분에서 데이터베이스랑 연결을 해준다 (xml에 bean은 등록됬단 가정하이다.)
+        @Resource(name="session")
+        SqlSession session;
+        
+        public List<HashMap<String, Object>> test5() {
+            List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+            list = session.selectList("test.select");
+            return list;
+        }    
+
+    2. 컨트롤러에서 모델부분에서 받아온값으로 뷰로 보내준다.
+        @RequestMapping("/work_5")
+        public String test5(Model model) {
+            List<HashMap<String, Object>> map = ts.test5();
+            model.addAttribute("result", map);
+            return "test";
+        }	        
+
+    * 실제로 db연결시키는 객체는 dao이다
+    3. 그래서 TestDao라는 클래스에 db연결에 필요한 모든작업을 적어둔다.
+        @Repository
+        public class TestDao {
+            @Resource(name="session")
+            SqlSession session;
+            public List<HashMap<String, Object>> test5() {
+                List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+                list = session.selectList("test.select");
+                System.out.println(list);
+                return list;
+            }	
+            public List<HashMap<String, Object>> selectList() {
+                return session.selectList("test.seelct");
+            }
+            public HashMap<String, Object> selectOne(HashMap<String, Object> param){
+                return session.selectOne("test.selectOne",param);
+            }
+            public int insert(HashMap<String, Object> param) {
+                return session.insert("test.insert",param);
+            }
+            public int update(HashMap<String, Object> param) {
+                return session.update("test.update",param);
+            }
+            public int delete(HashMap<String, Object> param) {
+                return session.update("test.delete",param);
+            }        
+        }    
+        * 필요한 객체만 리턴시켜서 작업을 이어서 한다.
+
+    4. 컨트롤러에 추가
+            @RequestMapping("/selectList")
+            public String selectList(Model model) {
+                model.addAttribute("data",ts.selectList());
+                return "boardList";
+            }
+            
+            @RequestMapping("/selectOne")
+            public String selectOne(Model model,HttpServletRequest req) {
+                param = new HashMap<String, Object>();
+                param.put("boardNo", req.getParameter("boardNo"));
+                model.addAttribute("data",ts.selecOne(param));
+                return "boardOne";
+            }	
+            @RequestMapping("/insert")
+            public String insert(Model model,HttpServletRequest req) {
+                param = new HashMap<String, Object>();
+                param.put("title", req.getParameter("title"));
+                param.put("content", req.getParameter("content"));
+                param.put("regUser", Integer.parseInt(req.getParameter("regUser")));
+                model.addAttribute("data",ts.Insert(param));
+                return "boardList";
+            }	
+            @RequestMapping("/update")
+            public String update(Model model,HttpServletRequest req) {
+                param = new HashMap<String, Object>();
+                param.put("title", req.getParameter("title"));
+                param.put("content", req.getParameter("content"));
+                param.put("boardNo", Integer.parseInt(req.getParameter("boardNo")));
+                model.addAttribute("data",ts.Insert(param));
+                return "boardList";
+            }	
+            @RequestMapping("/delete")
+            public String delete(Model model,HttpServletRequest req) {
+                param = new HashMap<String, Object>();
+                param.put("boardNo", req.getParameter("boardNo"));
+                model.addAttribute("data",ts.Insert(param));
+                return "boardList";
+            }	    
+    
+    5. view에 model로 값을 넘겨준다.
+    6. 이번엔 잘 사용안하는 방법으로 jsp를 구성함
+            <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+            <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+            <%@ page session="false" %>
+            <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+            <html>
+            <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <title>Insert title here</title>
+            </head>
+            <body>
+            ${data}
+            <ul>
+                <c:forEach var="row" items="${data.result}">
+                    <li><a href="selectOne?boardNo=${row.boardNo}">${row.title}</a></li>
+                </c:forEach>
+            </ul>
+            </body>
+            </html>    
+
+18. 

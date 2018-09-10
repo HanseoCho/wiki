@@ -1,0 +1,21 @@
+리엑트
+
+ ES6 
+1. const - 상수
+2. let 지역변수 - (기존의 var은 전역변수)
+3. 템플릿문자열 - ${변수이름}  ex) console.log('${lastName}, $firstName} ${middleName}')
+4. 디폴트 파라미터 - 함수의 인자로 디폴트값을 선언할수 있다.
+ex) var defaultPerson = {
+    name: {
+    first: "성원",
+    last : "오"
+    },
+    favActivity: "테니스"
+    }
+    fybctuib kigActivity(p=defaultPerson){
+    console.log('${p.name.first}은(는) ${p.favActivity}를 좋아합니다.')
+    }
+5. 화살표 함수 - function 키워드 없이 함수를 만들수 있으며, return을 사용하지않아도 식을 계산한값이 자동으로 반환
+ex) var lordify = firstname => '캔터베리의 ${firstname}' //긴내용은 {}를 사용 p35
+
+ES6 트랜스파일링 - 모든웹 브라우저가 es6를 지원하지않는다. 그러므로 트랜스파이링 도구인 바벨이 필요

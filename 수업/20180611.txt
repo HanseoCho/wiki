@@ -1,0 +1,7 @@
+27. 아파치 http를 이용한 서버를 톰캣이랑연결해서 마리아db랑 연동하기
+    1) 앱서버 (mybatis, mariaDB, JQuery, Json)
+
+    2) 파일서버 (mybatis, mariaDB, Json, Commons lib (file upload))
+        - 파일업로드용
+
+28. 

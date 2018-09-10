@@ -1,0 +1,33 @@
+pymysql : 파이썬에서 데이터베이스 연결하기 위한 모듈
+
+1)pip install pymysqlt 모듈설정
+    import pymysql
+    #Mysql Connection 연결
+    conn = pymysql.connect(host='localhost',port=3306,user='root',password='1234',db='test3',charset='utf8')
+    #Connection 으로부터 Cursor생성 (dirctionary cursor 생성) = json,map 가져올 타입을 지정가능
+    curs = conn.cursor(pymysql.cursors.DictCursor)
+
+    #가져올타입을 지정을 안하면 값만 가지고온다.
+    #curs = conn.cursor()
+
+    # SQL문 실행
+    curs.execute('select * from service')
+    source = curs.fetchall()
+    curs.execute('select * from params')
+    params = curs.fetchall()
+    # 데이터 fetch
+    # 1) 하나 : fetchone()
+    # 2) 갯수제한 : fetchmany(n)
+    # 3) 전체 : fetchall()
+    params = curs.fetchall()
+    data = {
+        "source" : source,
+        "param" : params
+    }
+    print(data)
+
+
+
+*. json.loads는 줄바꿈이 있으면 안된다.
+
+*. from db import excuteDB 일부메소드만 가져와서 사용하기

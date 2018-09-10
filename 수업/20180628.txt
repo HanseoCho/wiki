@@ -1,0 +1,19 @@
+공공api사용하기
+사용할 api활용신청후 기본키도 발급받는다.
+http://openapi.tour.go.kr/openapi/service/EdrcntTourismStatsService/getEdrcntTourismStatsList?ServiceKey=IRQXxLsPnSjL0QMQtCNavq9YiuyyOFe1Bs8NsgESLaP6O%2Bd4qHufr1JnpK%2FvmupHoBuMVqM6Pd2ZpmEzuXcWIg%3D%3D&region=%205%EC%9B%94&_type=json&NAT_CD=324&ED_CD=E
+
+데이터 가져오는 모듈
+1) urllib.request모듈
+    dir = 'd:/test.txt'
+    req =  urllib.request
+    data = req.urlopen(url+'?ServiceKey={ServiceKey}&region={region}&_type=json&NAT_CD={NAT_CD}&YM={YM}'.format(**params)).read().decode('utf-8')+'\n' #url의 가져와서 utf-8변환해서 담는다.
+    print(data);
+
+2) requests모듈 (참고: http://dgkim5360.tistory.com/entry/python-requests)
+    res = requests.get(dns+path+'ServiceKey={0}'.format(params))
+    #서비스키같은 %같은 문자들은 url로 넘어갈때 변환 된다고 한다. 그래서 params로는 값을 넘겨주지 못한다.
+    print(res.text)
+
+
+
+import requests,urllib.request, json

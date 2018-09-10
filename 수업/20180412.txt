@@ -1,0 +1,42 @@
+리눅스
+다른 아파치톰캣에 접속이 안될때  외부 Port 허용을 해야한다.
+-> yum install -y policycoreutils-python setroubleshoot-server selinux-policy-devel
+-> semanage port -a -t http_port_t -p tcp 8009    포트등록  대행하는플러쉬포트 // 기본포트
+-> semanage port -l | grep http_port_t 등록된 포트 확인
+
+
+* 한대의 서버에서 나머지 서버의 아파치톰캣 이용하기
+웹쪽에서 리눅스의 etc/httpd/conf.d/에 vhost와 worker.... 파일을 추가해준다.
+<VirtualHost *:80>
+  ServerName 'subServer'
+  JkMount /* sub
+</VirtualHost>
+worker.list=sub를 맨 위에 추가해주고
+worker.sub.port=8009             // 아파치톰캣의 포트
+worker.sub.host=192.168.1.76     // 대상의 아이피를 설정해주자
+worker.sub.type=ajp13
+------------------------------------
+yum install -y httpd wget setroubleshoot-server selinux-policy-devel policycoreutils-python
+yum install -y gcc gcc-c++ httpd-devel
+wget https://archive.apache.org/dist/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.42-src.tar.gz
+tar -zxvf tomcat-connectors-1.2.42-src.tar.gz
+cd ~/tomcat-connectors-1.2.42-src/native
+./configure --with-apxs=/usr/bin/apxs && make && make install
+firewall-cmd --permanent --zone=public --add-port=80/tcp
+firewall-cmd --reload
+semanage port -a -t http_port_t -p tcp 8009
+-------------------------------------------------------------------
+젠킨슨 설정하기
+https://jenkins.io/download/의 맨아래에서 .war파일을 설치하자
+아파치톰캣의 webapps에 젠킨스.war파일을 넣어두고 톰켓을 실행하면 자동으로 압축을 풀어준다.
+vhost랑 worker... 파일을 127.0.0.1로 해주고 호스트까지 설정후 http://tomcatserver/jenkins/ 을 치면 
+
+http://tomcatserver/jenkins/         trullo / 1234
+
+젠킨슨의 기본경로는 ~/.jenkins/workspace/ 이다
+---
+젠킨슨 새로운아이템!!!!
+test 프리스타일 - ok
+Build - Execute Shell - pwd 입력후 저장  // Execute Shell에는 쉘명령어들을 입력하면 실행된다.
+Build Now로 돌려주고 구성에서 아까전 입력한 Execute Shell을 수정해줄수 있다.
+

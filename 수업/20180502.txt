@@ -1,0 +1,67 @@
+게시판 정리 
+//참고 : https://github.com/KimKyeongBean/MybatisWeb.git (마리아db Mybatis 게시판 예제) 
+         https://github.com/trullo/MybatisWeb.git
+//필요 라이브러리 : javax.servlet ,mysql-connector-java, mybatis
+순서 ㅣ 
+1. 사용자목록 
+ 1) DB연결 설정
+	String resource = "kr/co/gdu/mybatis-config.xml";
+	InputStream inputStream = Resources.getResourceAsStream(resource); // File Load (물리적 파일을 Byte 배열에 담아주는 작업)
+	SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream); // Mybatis에서 JDBC 연결해 주는 작업
+	SqlSession session = sqlSessionFactory.openSession(true); // JDBC 연결되어 있는 것중에 하나의 연결 통로를 생성
+ 2) user목록 가져오기
+    List<HashMap<String, Object>> list = session.selectList("user.selectUser"); //userMapper.xml의 user라는 namespace의 안의 selectUser를 호출한다
+    *) 	session.selectOne(""); -> 하나 행 가져오기 // HashMap<String, Object>
+		session.selectList(""); -> 여러개 행 가져오기 // List<HashMap<String, Object>>
+		session.insert(""); -> 데이터 입력 // int = 1, 0
+		session.update(""); -> 데이터 수정 // ?
+		session.delete(""); -> 데이터 삭제 // ?
+        // 결과같은 경우는 userMapper에서 리턴타입을 지정할수 있고,    
+ 3) 유저목록을 보여주는 페이지로 이동
+    request.setAttribute("list", list);
+    RequestDispatcher dis = request.getRequestDispatcher("userList.jsp");
+    dis.forward(request, response);
+ 4) (뷰)jsp에서 리스트로 결과를 보여준다. 
+    이때 다른테이블에서도 사용할 userNo을 get방식으로 념겨준다.
+    <%
+    List<HashMap<String, Object>> list = (List<HashMap<String, Object>>) request.getAttribute("list");
+    String html ="";
+    for(int i=0;i<list.size();i++){
+        html +="<a href='insert.jsp?userNo="+list.get(i).get("num")+"'>"+list.get(i).get("id") + "<br>";
+    }
+    %>
+    <%= html %>
+2. 글작성
+ 1) 글작성 뷰페이지
+    1.4에서 넘겨준 userNo은 board테이블의 regUser랑 비교해주기 위해 사용한다.
+    <%String userNo = request.getParameter("userNo");%>
+    <form action="BoardInsert">
+		<input type="text" name="title" placeholder="제목을 작성하세요.">
+		<input type="text" name="content" placeholder="내용을 작성하세요.">
+		<input type="hidden" name="regUser" value="<%=userNo%>"> 
+		<input type="submit" value="작성">
+	</form>
+ 2) 서블릿작성 - 넘겨주는 값받고 매핑을위한 map함수 작성
+    request.setCharacterEncoding("UTF-8"); // get방식으로 넘겨주는 한글들이 깨지는걸 방지해주기 위해 사용한다.
+    2.1에서 넘겨주는 값들을 받고 userMapper에서 매핑해주기 위해 map합수에 값들을 담아준다.
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("title", title);
+    map.put("content", content);
+    map.put("regUser", regUser); 
+ 3) 서블릿작성 - insert하기
+    db와 연결후 map함수를 넘겨주면 #{key} 랑 map의 key가 매칭되면서 되는것같음
+    DBCon con = new DBCon();
+    SqlSessionFactory sqlSessionFactory = con.getConn();
+    SqlSession session = sqlSessionFactory.openSession(true);
+    int cnt = session.insert("user.insertBoard",map); //정상적으로 insert 되면 1이 담김?
+ 4) 서블릿작성 - 페이지이동
+    List<HashMap<String, Object>> list = session.selectList("user.selectBoard",map);  //맵으로보내주면 userMapper에서 키값으로 찾아간다 #{regUser}에서 매칭.
+    request.setAttribute("list", list);
+    RequestDispatcher dis = request.getRequestDispatcher("boardList.jsp");
+    dis.forward(request, response);
+3. 작성자 글목록
+ 1) 글목록 보여주는 jsp페이지 작성 클릭시 해당글을 구별할수있게 값 넘겨주기
+ 2) 서블릿작성 - 1,2의 서블릿과 같은역할 (값받아오고 페이지이동)
+    List<HashMap<String, Object>> list = session.selectList("user.selectBoard", map);
+4. 선택한 글 내용
+ 1) 넘겨준 값을 받고 화면에 출력해준다.

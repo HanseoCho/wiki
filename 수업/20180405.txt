@@ -1,0 +1,50 @@
+1. httpd 파이썬웹
+
+    print("Location: list.py") - 페이지 이동 
+//  print("Content-Type: text/HTML; charset=utf-8 \n\n") 이것과 같이 사용할수 없다 이문은 html문법으로 만들어주기떄문이다.
+태그
+a - <a></a> <br>은 쓰부분에 내리지만 a태그는 사이에있는것을 독립시켜준다.
+
+textarea - 여러줄의 입력할시 사용
+
+문자열 format시 하나만 입력시에는 format을 지정안해줘도된다.
+print("<br>",data["key"].value,"<br>",'<a href="remove.py?file_name={}">삭제</a>'.format(data["key"].value,<br>))  
+
+import os
+remove() 두개의값이 들어간다.
+
+히든값을 보낼시 form으로보내면 f12상으로 확인이가능하다 그래서 섹션이나 쿠키로 대체한다.
+
+
+2. sts - 서블릿
+문법 - 이클립스에서 JSP와 HTML문 섞어쓰는 방법
+1. %>로 jsp문을끝내고 HTML문 작성하고 HTML문 작성이끝나면 <% JSP문을 작성하기
+
+2. 변수에 HTML문을 담고 jsp문을 작성할시에는 "를끝내고 jsp작성 다시 HTML문을이어쓸때에는 "이어쓰기
+html+= (i + 1) + ") <a href='list.jsp?key="+list.get(i).getTitle()+"'>"+list.get(i).getTitle()+"</a><br/>";
+
+
+jsp도 파이썬처럼 사용할때와 같이 jsp문법안에서 html문법을 담아서 화면에출력
+
+html= 결과를 담아서 한번에 화면에 출력(jsp문)
+	List<ListBean> list = new ArrayList<ListBean>();
+	list.add(new ListBean("HTML","HTML is..."));
+	list.add(new ListBean("CSS","CSS is..."));
+	list.add(new ListBean("JAVASCRIPT","js ....."));
+	System.out.print(list);
+	String html ="";
+	
+	for (int i=0; i < list.size();i++){
+		html+= (i + 1) + ") <a href='list.jsp?key="+list.get(i).getTitle()+"'>"+list.get(i).getTitle()+"</a><br/>";
+	}
+
+섹션안에 들어가는건 오브젝트라서 형변환을 꼭해주면서 사용해줘야함 
+List<ListBean> list = (ArrayList<ListBean>) request.getSession().getAttribute("list");
+
+세션사용방법
+
+List<ListBean> list = (ArrayList<ListBean>) request.getSession().getAttribute("list");
+- getSession은 만들어진 세션이있으면 가져오고 없으면 생성한다.
+
+
+

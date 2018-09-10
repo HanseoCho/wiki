@@ -1,0 +1,182 @@
+﻿case then end 조건문
+Limit - 게시판할때 주로 사용 원하는 페이지만 보여줄때 사용한다함
+
+관계형 데이터베이스를 만들때에는 키를 건내주는게 좋다
+
+user테이블과 board 테이블을 관계형 데이터베이스를 만들기위해 user의 기본키인 num타입과 같이 board도 int로 변경해준다
+그리고 heidSQL로 외래키 설정해줌 
+
+
+select b.* from test.board as b where b.regUser = (select num from test.user where id = 'gudi')
+//외래키 설정후 id가 조건인 사용자의 num과 reguser 가 같은것만 보여주라
+-------------------------------------------------------------------------------------------
+
+일단 명령어 모아둠
+# board 테이블의 컬러에 대한 정보
+select col.TABLE_NAME, col.ORDINAL_POSITION, col.COLUMN_NAME, col.COLUMN_TYPE, col.IS_NULLABLE,col.COLUMN_DEFAULT
+  from information_schema.COLUMNS as col
+ where col.table_schema = 'test'
+   and col.TABLE_NAME in (select tab.table_name
+  from information_schema.tables as tab
+ where tab.table_schema = col.table_schema
+   and tab.table_type = 'VIEW');
+#서브쿼리   
+select col.TABLE_NAME, col.ORDINAL_POSITION, col.COLUMN_NAME, col.COLUMN_TYPE, col.IS_NULLABLE,col.COLUMN_DEFAULT
+  from information_schema.COLUMNS as col
+ where col.table_schema = 'test'
+   and col.TABLE_NAME in (select tab.table_name
+  from information_schema.tables as tab
+ where tab.table_schema = col.table_schema
+   and tab.table_type = 'VIEW');  
+#exists 서브쿼리가 조건이 true면 출력 존재하지않으면 미출력 // 중요한건 조건절이다
+select col.TABLE_NAME, col.ORDINAL_POSITION, col.COLUMN_NAME, col.COLUMN_TYPE, col.IS_NULLABLE,col.COLUMN_DEFAULT
+  from information_schema.COLUMNS as col
+ where col.table_schema = 'test'
+   and exists (select 3
+  from information_schema.tables as tab
+ where tab.table_schema = col.table_schema
+  and tab.table_name = col.TABLE_NAME
+#   and tab.table_type = 'VIEW'
+	);
+select * from information_schema.tables;
+#concat으로 다른곳에서 정보를 뽑아낼수 있다.
+select concat('CREATE TABLE ', col.table_name, ' (', col.COLUMN_NAME,' ',col.COLUMN_TYPE,' ',case when col.IS_NULLABLE = 'YES' then 'NOT NULL' else 'NULL' end,
+		case when col.EXTRA = 'auto_increment'  then col.EXTRA when col.COLUMN_DEFAULT is not null then concat('DEFAULT \'', col.COLUMN_DEFAULT,'\'') else col.COLUMN_DEFAULT end
+      ) as str, col.TABLE_NAME, col.ORDINAL_POSITION, col.COLUMN_NAME, col.COLUMN_TYPE,
+       case when col.IS_NULLABLE = 'YES' then 'NOT NULL' else 'NULL' end as ct, col.IS_NULLABLE,col.COLUMN_DEFAULT,
+       case when col.EXTRA = 'auto_increment'  then col.EXTRA when col.COLUMN_DEFAULT is not null then concat('DEFAULT \'', col.COLUMN_DEFAULT,'\'') else col.COLUMN_DEFAULT end as cd
+  from information_schema.COLUMNS as col
+ where col.table_schema = 'test'
+   and col.TABLE_NAME = 'board';
+
+
+### 과장님거
+(select concat('CREATE TABLE ', table_name, ' ( ') as str
+  from information_schema.tables
+  where table_schema = 'test'
+    and table_name = 'board')
+
+union 
+
+(select concat(col.COLUMN_NAME, ' ', col.COLUMN_TYPE, 
+	       case 
+                   when col.IS_NULLABLE = 'YES' then ' NOT NULL '
+                   else ' NULL '
+	       end,
+	       case
+		   when col.EXTRA = 'auto_increment' then concat(col.EXTRA, ',')
+		   when col.COLUMN_DEFAULT is not null then concat('DEFAULT \'', col.COLUMN_DEFAULT, '\',')
+		   else ','
+	       end
+	) as str
+  from information_schema.COLUMNS as col
+ where col.table_schema = 'test'
+   and col.TABLE_NAME = 'board')
+
+union 
+
+(select case
+            when col.column_key = 'PRI' then concat('PRIMARY KEY (\'', col.COLUMN_NAME, '\')')
+	    else col.column_key
+        end
+  from information_schema.COLUMNS as col
+ where col.table_schema = 'test'
+   and col.TABLE_NAME = 'board'
+ LIMIT 0, 1)
+
+union 
+(select ')' as str);
+
+--------------------------------
+
+mybatis
+메이븐웹프로젝트 새로 생성 pom.xml에 servlet, mysql과 mybatis 라이브러리 추가
+    추가하는 라이브러리
+    -------------------------------
+	<dependency>
+	    <groupId>javax.servlet</groupId>
+	    <artifactId>javax.servlet-api</artifactId>
+	    <version>3.1.0</version>
+	    <scope>provided</scope>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+	<dependency>
+	    <groupId>mysql</groupId>
+	    <artifactId>mysql-connector-java</artifactId>
+	    <version>5.1.46</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+	<dependency>
+	    <groupId>org.mybatis</groupId>
+	    <artifactId>mybatis</artifactId>
+	    <version>3.4.6</version>
+	</dependency>	
+    -------------------------------
+
+    mybatis - db연결할때 개발을 편하게 해주는 라이브러리
+    참조 : http://www.mybatis.org/mybatis-3/ko/getting-started.html
+    나라에서 정한 환경설정 ->  http://www.egovframe.go.kr/EgovEnvRun.jsp?menu=1&submenu=3&leftsub=1 
+    
+    1. 라이브러리 넣어준후 그룹 id 경로에 맞게 src/main/resources폴더 안쪽에 kr/co/gdu로 폴더 추가
+     mybatis-config.xml 이름으로 파일생성후 참조사이트의 XML에서 SqlSessionFactory 빌드하기의 xml문 추가한다
+     xml 맨 아래쪽에 내 그룹id랑 xml파일명으로 수정후 sql폴더를 새로생성하고 그안에 xml파일도 만들어준다
+ <?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  <environments default="development">
+    <environment id="development">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="com.mysql.jdbc.Driver"/>    //maven Dependencies의 mysql-conector의 경로이다// 외우는것이 아님ㄴ
+        <property name="url" value="jdbc:mysql://192.168.1.233"/>
+        <property name="username" value="root"/>
+        <property name="password" value="1234"/>
+      </dataSource>
+    </environment>
+  </environments>
+  <mappers>
+    <mapper resource="kr/co/gdu/sql/TestMapper.xml"/> // 내경로로 수정 TestMapper.xml은 새로만들어줄 파일이다
+  </mappers>
+</configuration>
+
+
+
+TestMapper.xml-----
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="test">  
+  <select id="selectTest" resultType="HashMap">  //select id는 사용할 id resultType 리턴되는 데이터타입
+    select 1 as status
+  </select>
+</mapper>
+---------------------
+namespace는 유니크하게 해줘야한다. 중복이되면 톰켓이 실행 안된다.
+
+3) 서블릿파일 추가후 doget문에 작성
+-----
+String resource = "kr/co/gdu/mybatis-config.xml";
+InputStream inputStream = Resources.getResourceAsStream(resource);
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+----
+
+
+--------userMapper.xml-------
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user">
+  <select id="selectUser" resultType="HashMap">
+    select * from user
+  </select>
+  <insert id="insertBoard" parameterType="HashMap">
+   insert into board (title, content, regUser) values (#{title},#{content},#{regUser})
+  </insert>
+</mapper>
+
+// insert로 해주면 insert할때 타입을 HashMap으로 사용한다는거다
+// #{}로 매칭해준다

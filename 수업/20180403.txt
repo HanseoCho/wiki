@@ -1,0 +1,55 @@
+mvc 모델2 구조
+웹브라우저 요청 -> 컨트롤러(서블렛) <-> 모델(자바빈) <-> DB
+                           ↓           
+              <-응답       뷰
+
+파이썬에서 form 사용하기
+print('<form action="https://search.naver.com/search.naver" method="get">')
+print('<input type="text" name="where" value="nexearch">')
+print('<input type="text" name="query" value="파이썬">')
+print('<input type="submit" name="제출">')
+print('</form>')
+
+파이썬에서 하이퍼링크 사용하는법 	    
+print('<a href="http://test.testserver/test.py">test.testServer</a>')
+
+form method 전송방식
+get   - 주소줄에 포함해서 이동, QueeryString Parameters으로 전송
+post  - 넘겨주는값을 숨기면서 이동, form Data로 전송
+
+넘겨받는값 사용하기
+import cgi
+data = cgi.FieldStorage()
+print(data)	   //받은값을 배열로 모든값을표기
+print(data["txt"], //받은값중 txt아이디로 받은것들을 표기
+data["txt"].name   //txt의 name부분만 표시
+data["txt"].value  //txt의 value부분만 표시
+)
+
+실선으로 보이기
+<input type="text" placeholder="ㅁ"> 
+
+문자열포매팅 format // 문자열 대입
+    print('<a href="http://testserver/list.py?key={i}">{i}</a>'.format(i=i),"<br>")
+    print('<a href=%s>%s</a>'%(i,i))
+- %s 문자열 %c 문자1개 %d 정수 %f 부동소수 %o 8진수 %x 16진수 
+- %s같은 경우는  어떤 형태의 값이든 변환해 넣을 수 있다
+
+자바에서 서버-모듈에 edit로 경로를 바꿔줄수있다. 그렇게 경로를바꿔주면 접근할때에 localhost/testWEB이 그냥 localhost만으로도 호출이 가능하다.
+이렇게 바뀐 설정은 Server의 server.xml의 맨아래에 바뀐것을 확인할수 있다.
+
+-.jsp에서 문자열바꿀려면 해당jsp우클릭 속성에서 바꿔줘고 내부에서도 바꿔줘야한다.(프로젝트도 동일)
+-윈도우에서는 문제없는대 윈도우에서 리눅스나 유닉스로 보낼때에는 utf-8로 바꿔줘야한다
+
+환경설정 - 한글!!!!!!!
+General - Workspace에 Text file encoding과 New text file line delimiter를 utf-8과 unix로 바꿔줘야한다.
+Web - HTML JSP등등 여러가지에서도 utf-8로 바꿔줘야한다.
+
+jsp에서 서로 값을주고받을떄 받는건 무조건 리퀘스트 주는건 리스폰스라함
+request.getParameter("key");
+
+톰캣이 jsp에서 자바로 변환해주고 클래스로 변경을 해준다.
+// D:\GDJ10\IDE\sts-bundle\workspace\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\work\Catalina\localhost\ROOT\org\apache\jsp 에서 확인가능
+
+
+깃허브 아이디 KimKyeongBean

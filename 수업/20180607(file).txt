@@ -1,0 +1,160 @@
+파일업로드랑 aop
+26. 파일업로드
+    1) Apache Commons IO,Apache Commons FileUpload를 받아서 pom.xml에 넣기
+    2) root-context에 빈을 추가해준다.
+        <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+            <property name="maxUploadSize" value="10485760"/>       // 한번에 올릴수있는크기
+            <property name="maxInMemorySize" value="104857600"/>    // 올릴수있는 최대치
+        </bean>     
+
+    3) html form에 enctype에 위에 빈으로 추가한 id를 넣어주고 전송방식을 post로 바꿈으로서 파일업로드를 가능하게함(멀티파트파일은 post로만 전송된다.)
+        <form action="/test/file" enctype="multipart/form-data" method="post">
+            <input type="file" name="file">
+            <input type="submit" value="파일업로드">
+        </form>  
+
+    4) 컨트롤러에서 받을때 @RequestParam(이름) MultipartFile file을 이용해서 받아준다.
+        * 여러개를 받앚루려면 MultipartFile[] files만 써주면 된다.
+        * 이러한 파일업로드는 바이러스를 집어넣음으로서 보안에 취약해짐. 그래서 파일업로드용 서버를 분리시킴
+            @RequestMapping("/file")
+            public String file(@RequestParam("file") MultipartFile[] files) {
+                System.out.println(files.length);
+                
+                for(int i=0;i<files.length;i++) {
+                    String filenm = files[i].getOriginalFilename();
+                    System.out.println(filenm);
+                    
+                    try {
+                        byte[] bytes = files[i].getBytes();
+                        String path = "D:/GDJ10/IDE/eclipse/workspace/TestSpring/src/main/webapp/resources/upload/";
+        				//String path = "D:/GDJ10/IDE/workspace/FileServer/src/main/webapp/resources/" + dir + "/"; //이클립스로 설정
+        				//String path = "/var/www/html/resources/" + dir + "/";                                     //리눅스 서버일경우
+				        //String path = req.getSession().getServletContext().getRealPath("/") + "resources/" + dir + "/";  // 톰캣 서버일경우
+                        path=path+filenm;
+                        System.out.println(path);
+                        
+                        File f = new File(path);	//경로까지담은객체를 담아서
+                        OutputStream out = new FileOutputStream(f);	//어디에 담겠다
+                        out.write(bytes);   //파일쓰기
+                        out.close();
+                    } catch (IOException e) {
+                        e.printStackTrace(); //오류나낸용찍는거
+                    }
+                }
+                
+                return null;
+            }
+        * 바로추가가 안되는건 설정 - general - workspace - 맨위의 두번째 refresh using native hooks or polling 체크
+
+    5) 모듈로분리하기
+        Controller)
+            @Controller
+            public class fileController {
+                @Autowired
+                FileServiceInterface fsi;                
+                @RequestMapping("/file/{menu}")
+                public void fileUpload(@PathVariable("menu") String menu, @RequestParam("file") MultipartFile[] files,HttpServletResponse res) {
+                    HashMap<String, Object> resultMap = fsi.fileUpload(files, menu);		
+                    HttpUtil.makeJsonWriter(res, resultMap);
+                }
+            }        
+        Service)
+            @Service
+            public class fileService implements FileServiceInterface {
+
+                @Override
+                public HashMap<String, Object> fileUpload(MultipartFile[] files, String menu) {
+                    HashMap<String, Object> map = new HashMap<String, Object>();
+                    List<HashMap<String, Object>> list = new ArrayList<HashMap<String,Object>>();
+                    
+                    for(int i=0;i<files.length;i++) {
+                        HashMap<String, Object> fileMap = new HashMap<String, Object>();
+                        String filenm = files[i].getOriginalFilename();
+                        
+                        try {
+                            byte[] bytes = files[i].getBytes();
+                            String path = "D:/GDJ10/IDE/eclipse/workspace/TestSpring/src/main/webapp/resources/upload/"+menu+"/";
+                            File dir = new File(path);
+                            
+                            if(!dir.exists()) {dir.mkdirs();}	//파일이 존재하지않으면실행 mkdir() 도중경로가 없으면 안만듬,  mkdirs() 도중경로가 없어도 만듬 
+                            File f = new File(path+filenm);	//경로까지담은객체를 담아서
+                            OutputStream out = new FileOutputStream(f);	//어디에 담겠다
+                            out.write(bytes);
+                            out.close();
+                            
+                            fileMap.put("fileNmae", filenm);
+                            fileMap.put("filePath", path);
+                            list.add(fileMap);
+                            
+                        }catch (IOException e) {
+                            e.printStackTrace(); //오류나낸용찍는거
+                        }
+                    }
+                    map.put("upload", list);
+                    return map;
+                }
+    6) 스프링 한글설정 (참고 : http://hellogk.tistory.com/76) : 저장되는파일 한글처리
+            <filter>
+                    <filter-name>encodingFilter</filter-name>
+                    <filter-class>
+                        org.springframework.web.filter.CharacterEncodingFilter
+                </filter-class>
+                <init-param>
+                        <param-name>encoding</param-name>
+                        <param-value>UTF-8</param-value>
+                </init-param>
+            </filter>
+            <filter-mapping>
+                    <filter-name>encodingFilter</filter-name>
+                    <url-pattern>/*</url-pattern>
+            </filter-mapping>
+
+        * response로 화면을 작성시 한글이 깨질수있는데, 두줄을 넣어주면 한글이 잘나온다
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("text/html;charset=UTF-8");        
+        
+    7) input type="file"에서 files속성 빼오기 (파일이름과 정보를 담고있다.)
+        $(function(){
+            $("form").on("submit",function(event){
+                event.preventDefault();			 
+                $.ajax({type:"post",
+                    url:"/test/file/test",
+                    data:new FormData($(this)[0]),
+                    cache: false,
+                    contentType: false,
+                    processData: false})
+                .done(function(data){
+                    var json = JSON.parse(data);
+                    var list = json.upload;
+                    for(var i=0;i<list.length;i++){
+                        console.log(list[i].fileUrl);
+                        var html = "<img src='"+list[i].fileUrl+"'>";
+                        $("#view").append(html);
+                    }
+                });     
+            });
+        });    
+
+    *) 서버컴퓨터로 올리기
+        $(function(){
+            $("form").on("submit",function(event){
+                event.preventDefault();			 
+                $.ajax({type:"post",
+                    url:"http://192.168.1.6:8080/FileServer/file/cho",
+                    data:new FormData($(this)[0]),
+                    cache: false,
+                    contentType: false,
+                    processData: false})
+                .done(function(data){
+                    var json = JSON.parse(data);
+                    var list = json.upload;
+                    for(var i=0;i<list.length;i++){
+                        console.log(list[i]);
+                        var html = "<img src='http:\/\/192.168.1.6:8080\/FileServer\/"+list[i].fileUrl+"' width='100px'>";
+                        $("#view").append(html);
+                    }
+                });     
+            });
+        });    
+
+    *) 톰켓의 오토인플러그 라고 war파일의 삭제하면 webapps의 연관파일도 모두 날아간다.

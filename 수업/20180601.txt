@@ -1,0 +1,14 @@
+18. 컨트롤러에서 @RequestMapping부분에 return jsp이름을 
+    redirect를 붙여서 바로 컨트롤러로 다시 보낼수있다.(뷰로 요청이아닌 다시 컨트롤러로 요청?)
+
+19. 파라미터 받느넉 효율적으로하기
+	public HashMap<String, Object> getParamMap(HttpServletRequest req){
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		Enumeration<?> enums = req.getParameterNames();
+		while(enums.hasMoreElements()) {
+			String paramName = enums.nextElement().toString();
+			result.put(paramName, req.getParameter(paramName));
+		}
+		System.out.println("getParaMap : "+ result);
+		return result;
+	}

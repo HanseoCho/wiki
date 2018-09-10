@@ -1,0 +1,75 @@
+1. jquery다운받아서 사용하기
+    1) github에서 jquery다운받음
+    #주소 : https://github.com/jquery/jquery/releases
+    jquery를 다운받으면 일반 버전과 min버전두가지가 있다.
+    # min버전은 받는속도가 빠르다, 그리고 일반 jquery에는 mit라이센스가 있다. (mit라이센스 - 수정과 재배포가 가능)
+    # 일반적으로 링크로 인해 연결되느것중 min버전을 사용한다
+    # 외부인터넷이 안도는 곳에선 다운받아서 사용한다.
+
+2. Jquery 기능 (https://www.w3schools.com/jquery/default.asp 의 Effects는 많이사용하니 보라함)
+    1) hide / show : 보이게 사라지게하기 // 안보이는이유는 css의 display = "none"시킨다.
+        사용예) $("div").hide();
+
+    2) toggle() : 보이게사라지게하는걸 편하게 설정가능하다.
+        # toggle(speed,function) 일거다
+        사용예) $("button").click(function(){$ ("div").toggle(); })  
+
+    3) index() : 해당태그의 인덱스를 찾을때 사용
+        사용예) $("button").click(function(){
+                var index = $("button").index(this);    
+
+    4) location.href() : 페이지 이동
+        사용예) location.href = ("2.html")
+
+★중요    (비동기로 처리할려면 필수) : 이걸 사용하면 spa웹이라고 단일페이지로 이루어지는 사이트이다.
+    5) Ajax : 자바스크립트는 함수들의 집합체이다
+        #참고 : http://api.jquery.com/jQuery.ajax/
+        .1 기본통신사용법) abc매게변수 이름이 중요한게 아니라 어느 위치에 뭐가존재한지가 중요하다.
+        // a위치는 대상의 html문들의 text, b는 상태 c는 세부정보? 확인해야함
+            $.ajax({            //url실행되고, .done실행
+                url: "2_1.html" 
+            }).done(function(a,b,c){ // 성공했을때 실행  try
+                console.log(a,b,c)            
+            }).fail(function(a,b,c){ // 없을때 실행   catch
+                console.log(a,b,c)    
+            }).always(function(a,b,c){ // 마지막에 실행시켜준다.  finaly
+                console.log(a,b,c)
+            });
+
+        .2 매개변수 a인 html text로 자신의 body에 영향주기 : 링크는 그대로지만 html문을 바꾼다.
+            $("body").html(a);      
+        
+        .3 load() : 특정태그만 잘라서 가져온다. #Shorthand Methods라 이것만 사용해주면 ajax로 알아서 태그를 쏙 빼온다.
+        참고 : http://api.jquery.com/load/
+                $("body").load("2.html h1");        // 내 body태그에 2.html의 h1태그를 잘라와서 붙인다.
+                                                    // 물론 아이디나 클래스도 사용가능하다.
+            # 왼쪽에는 body태그를 쓸수있는데 load()안쪽에는 body태그를 찾을수 없다. 왜냐하면
+            # 실제로 사용할때는 태그들로만 구성시켜놓기 때문이다. 
+            # html이나 body같은건 없고 바로 <h1>abc</h1> 이런식으로 태그들로만 구성
+            # 그리고 왼쪽의 대상의 자식으로 들어간다.
+            주소를 보낼때 파라미터도 같이보낼수있다. 
+            $("body").load("2.html h1", { "choices[]": [ "Jon", "Susan" ] } );
+            $("body").load("2.html h1", { "choices[]": [ "Jon", "Susan" ] },function(){
+                alert("HelloWorld");
+            } );
+
+        #정리 : 전체를이용할땐 $.ajax를 사용하고 일부태그만 변동될때는 load()를 사용한다.
+
+    6) history.pushState() : 뒤로가기에 우클릭했을때 이걸적어두면 어느페이지를 눌렀는지 히스토리가 나온다
+        history.pushState(null,null,e.target.value); // 뒤로가기했을때 나오는 주소설정, 히스토리는 주소를 건들여야한다.
+        #다른 저장방법 : 확인은 f12 - Application에서 확인가능
+         .1 Coockies : 기간을 주어 얼마동안 저장할때 사용.
+         .2 Local Storage : 자바에서는 못만들어주고 지원을 안해주는 곳도있다.
+            -설정하기
+            localStorage.setItem("url",e.target.value); 
+            -가져오기
+        
+
+    7) 실제사용할때 가지고오는 부분의 스타일 비율이 제대로 맞지 않으면 화면이 꺠지는 결과를 볼수 있따.
+        자식노드가 부모노드를 초과할때는 css의 overflow를 사용하는 방법과
+        (div 스크롤없애기 검색) 하면나오는 -ms-overflow-style: none; 을 해당 div에 주고
+        -webkit-scrollbar {display:none;} 이렇게 만들어 주면된다.
+
+    8) 스크롤 현재위치를 기준으로 이동하는거 만들기
+        1) a태그에 아이디를 넣어주면 글로 이동해준다.
+            <ui><a href="#div1">div1</a></ui>    

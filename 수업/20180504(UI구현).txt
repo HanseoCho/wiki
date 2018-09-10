@@ -1,0 +1,136 @@
+UI
+
+1. # Semantic Web : '의미론적인 웹'이라는 뜻으로,현재의 인터넷과 같은 분산환경에서 리소스(웹 문서, 각종 화일, 서비스 등)에 대한 정보와 자원 사이의 관계-의미 정보(Semanteme)를 기계(컴퓨터)가 처리할 수 있는 온톨로지 형태로 표현하고, 이를 자동화된 기계(컴퓨터)가 처리하도록 하는 프레임워크이자 기술이다.
+    #참조 : https://ko.wikipedia.org/wiki/시맨틱_웹
+    1) 태그 종류
+    <header> : 웹사이트의 전체 혹은 일부의 머리말에 해당하는 부분. <head>와는 다르다
+
+    <hgroup> : 제목과 부제목을 묶어줌. 문서의 중요 뼈대를 구성
+
+    <nav> : 문서의 메뉴를 구성할때 사용. 어느 위치에나 사용 가능
+
+    <article> : 다른 곳으로 재배포될 수 있는 컨텐츠.
+
+    <section> : article태그와 마찬가지로 컨텐츠를 묶어줌. 그러나 재배포 불가.
+
+    <aside> : 사이드바를 구성.
+
+    <footer> : 저작권 정보나 제작자 정보가 들어감.
+
+    <figure>, <figcaption> : 그림이나 도표 등. figcaption: 설명글 붙임
+
+    <mark> : 텍스트 강조표시
+
+    <time> : 날짜/시간 정보 기록
+
+    <address> : 이름, 주소, 이메일, 연락처 등을 표시하기 위한 것
+
+    <i> : 전문용어, 지문, 생각 등 다른 텍스트와 구별되는 텍스트에 사용
+
+    <b> : 별로 중요하지 않지만 강조되어야 할 텍스트에 사용
+
+    <small> : 다른 텍스트보다 주목받지 않아야 할 텍스트에 사용
+
+    <hr> : 단락을 구분하는 곳에 사용 
+
+
+2. a태그로 버튼같이 만들기
+    <a href="#" id="a">링크</a>
+    #a:active로 a를클릭했을때의 설정을 줄수있다.
+    <style>
+        #a {
+            text-decoration: none;
+            color: black;
+            font-size: 13.3333px;
+            background-color: rgb(221,221,221);
+            padding: 5px 10px;
+            border: 4px solid black;
+            border-radius: 5px;                             //모서리 둥글게
+            border-top-left-radius: 3px;                    //모서리 둥글게
+            border-top-right-radius: 3px;                   //모서리 둥글게
+            display: inline-block;
+            border-bottom: 7px solid rgb(155,155,221);      // 테두리 바닥
+            transition: all 0.3s;                           // 누르는 이미지버튼 0.3초간 눌림 애플에서 적당하다고 생각함
+            text-shadow: 1px -2px green;                    // 그림자를 줘서 x축 y축 색깔로 그림자 주기
+        }
+        #a:active{
+            background-color: rgb(181, 147, 171);              
+            transform: translateY(5px);                     // 아래쪽으로 움직이게함
+            border-bottom: 2px solid #557155;               
+        }
+        #a:hover{                                           // 마우스를 올렸을때 글자색을 바꿈
+            color: red;
+        }
+    </style>
+
+3. 이미지태그와 div에 이미지 주기
+    <img src="http://cfile239.uf.daum.net/image/15321D4A4FBB71C9299090">
+    <div id="div1">
+    </div>
+
+    <style>
+        #div1{
+            background-image: url(http://cfile226.uf.daum.net/image/1633534A4FBB71CA249074);
+            background-repeat: no-repeat;                   // 이미지 반복설정
+            background-size: cover;                         // 이미지의 비율에따라 안깨지게 설정가능
+            height: 300px;                                  
+            width: 100%;
+        }    
+    </style>
+
+4. 가운데 글상자는 안움직이고 배경화면만 스크롤로 바꿔주기 
+    #section 을 이용해서 영역을 가져간다.
+    <body>
+        <section id="bi1">
+            <article>
+                <h1>hello world1</h1>
+                <p>good morning</p>
+            </article>
+        </section>
+    </body>
+
+    <style>
+        html, body,h1{margin: 0;}     
+        section{
+            height: 100vh;
+            background-size: cover;
+            background-attachment: fixed; /* 배경에 고정*/
+        }
+        article{
+            display: inline-block;
+            position: relative; /* 위치를 직접 조절한다고 한거 */
+            top: 50%;   /*부모를 기준으로 50%*/
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%); /* 내가가지고있는 영역의 50%*/
+        }
+        #bi1{
+            background-image: url(image/1.jpg)
+        }
+        #bi2{
+            background-image: url(image/2.jpg)
+        }
+        #bi3{
+            background-image: url(image/3.jpg)
+        }
+        #bi4{
+            background-image: url(image/4.jpg)
+        }        
+    </style>
+
+5. css할때 참고
+    1) nav안의 a태그랑 b태그에 적용할때
+     #nav a, #nav b{}
+     #세션의 class가 contents인 태그안의 p태그만 지정할때
+        section.contents p{}
+    2) a태그의 특성때문에 마음대로 설정이 되지않는다.
+    3) cursor: point 는 손모양으로 바꾼다.
+    4) 자식이 position: relative;를 쓰고싶으면 부모도 relative여야 한다. 이거는 상대적이라서 개체를 기준으로 움직임녀
+                        absolute;
+    5) 리스트를 사용할때 <ul><li></li></ul> 로 구성
+     # ul태그를 사용하면 기본적으로 앞에 동그라미가 오    는데 list-style-type: none;으로 사라지게 한다.
+     # 가로로 배치할려면 li태그에 float을 주면된다.
+    6) 포지션으로 위치를 바꾸면 부모가 파악을 못할수도 있어서 쓰면 안되는 상황도 있다.
+     # 부모의 위치가 고정적이면 포지션을 이용해서 고정하고 
+       부모가 고정이 아니라면 그냥 배치한다.
+
+

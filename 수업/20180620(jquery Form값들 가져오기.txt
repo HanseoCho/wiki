@@ -1,0 +1,2 @@
+*. form 한번에 전송하기
+    var queryString = $("#form").serialize();

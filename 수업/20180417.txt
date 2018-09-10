@@ -1,0 +1,106 @@
+리눅스 - 메이븐
+목록
+1. 메이븐프로젝트 등록하기
+2. 메이븐프로젝트로 웹으로 돌리고싶을때 
+3. 깃으로 추가하기
+
+
+1. 메이븐프로젝트 등록하기
+메이븐 뉴프로젝트 - 경로 workspace - 다음 - 다음 - group Id : kr.co.gdu , Artifact Id : MavenProject, Version : 1 , Package : 그룹ID랑 동일
+//group Id는 소속 
+//메이븐은 패키지익스플러에서 확인하는게 정확하다.
+
+메이븐 프로젝트 후 생성되는 pom.xml이 필수파일이다.
+
+
+아래탭의 2.Dependencies는 외부의 파일을 프로젝트로 등록할시 사용 (라이브러리를 다 가지고있을 필요가 없어진다.)
+//이거 때문에 가벼워지고, 라이브러리를 관리도 해준다.
+//필요한 파일들은 의존성으로 같이 다운받는다.
+
+제일마지막의 pom.xml만 추가해준다. (소스파일)
+라이브러리 추가 양식 // 메이븐 레파스토리 사이트에서 복사해서 붙이면 라이브러리가 추가된다.
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+   라이브러리 등록
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+2. 메이븐프로젝트로 웹으로 돌리고싶을때 
+src - main - new folder Web-INF 만들고 다른웹파일의 WEB-INF안에있는 web.xml을 옮긴다.
+그리고 main에 index.html 생성
+pom.xml에서 packaging을 war 바꿔준다.
+-- 다아님
+그냥 메이븐프로젝트에서 생성할때 두번째에서 가장아래인 webapp으로 바꿔준다. 처음에한것은 quick start 로 자바구조였는데 이번은 웹구조이다.
+
+이상이 발생하면 윈도우 - 쇼부 - 마커스에서 확인가능
+웹구조로 생성시 main안에 파일도 
+
+https://mvnrepository.com - 에서 servlet검색해서 pom.xml에 추가
+
+3. 깃으로 추가하기
+깃에서 프로젝트생성후 sts의 workspace에 추가해준다.
+기존 workspace에 있던 메이븐 프로젝트는 경로를 바꿔주고 깃레파토리에서 추가해준후
+우클릭 임폴트 프로젝트 해준다.
+프로젝트추가되면 기존에 존재하던 폴더 파일을 복사해서 추가하고 파일이 안뜨면 [우클릭 맨아래에 피니시?]를 해준다
+후에 .settings target .classpath .project 이그노어 걸어주면 된다.
+
+4. centOS에서 메이븐 하기
+https://maven.apache.org/download.cgi 에서 가장위에있는 링크복사해서 centOS에서 wget으로 다운
+tar -zxvf 로 압축을 풀고 .bash_profile에서 자바처럼 환경변수를 추가해준다.
+메이븐 환경변수 등록
+MAVEN_HOME=~/apache-maven-3.5.3    - 메이븐 변수 선언
+export MAVEN_HOME                  - 메이븐 변수 등록
+export PATH=$PATH:$MAVEN_HOME/bin  - 실행명령어 path에 등록
+mvn -version으로 실행 확인
+
+아파치톰캣의 webapps에 가서 git clone으로 메이븐프로젝트 다운
+그 폴더안으로 이동해서 mvn package 하면 target폴더와 target폴더 안쪽에 war과 폴더를 생성해준다
+이후로 심볼릭 링크로 아파치 톰캣 webapps에 넣어준다.
+ln -s /root/repo/MavenWebProject/target/MavenWebProject ~/apache-tomcat-8.5.29/webapps/MavenWebProject
+
+5. 수정한 메이븐파일 다시 받기
+다시 메이븐파일로 들어가서 git pull
+mvn clean 하면 target폴더를 만들어준다.
+
+
+6. sh파일로 만들기 (어제거에서 수정)
+
+
+
+
+---------------------------
+7. 젠킨스 rpm으로 설치하기
+젠킨슨은 루트권한을 가지고있어서 dvn 명령어를 수행할수 있지만 재부팅을 한번 해줘서 
+환경변수를 등록해줘야한다.
+
+8. 젠킨스 rpm으로 설치
+https://wiki.jenkins.io/display/JENKINS/Installing+Jenkins+on+Red+Hat+distributions
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.ke
+
+yum install -y jenkins
+
+yum install -y java    // jdk 
+
+systemctl start jenkins
+후에 젠킨스의 포트를 열어줘야함
+포트열기 -> firewall-cmd --zone=pulbic --add-port=8080/tcp --permanent
+포트적용 -> firewall-cmd --reload
+
+젠킨스의 포트변경하기
+cd /etc/sysconfig/
+vi jenkins 내리다보면 포트보임 바꾸면됨q
+
+
+
+

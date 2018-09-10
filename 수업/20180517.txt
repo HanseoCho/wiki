@@ -1,0 +1,104 @@
+HTML + CSS
+jquery를 다시 뺌 (ui부분 채울려고)
+#참고 : https://themeforest.net/category/site-templates , https://market.envato.com/
+
+1. 밑줄 원하는 부분에 끓기 
+    1) before와 after로 그 태그뒤나 앞에 뭔가를 위치하게 할수 있다.
+    2) 크기와 색깔을줘도 화면에 안나타나는데 content를 넣어야한다.(공간을 나타내줘야함)
+    3) 자식에서 바로 absolute를 쓰면 문서의 전체가 기준이되는데
+        부모한테 relative를 주면 부모를 기준으로 적용이된다.
+    <style>
+        div {
+            position: relative;
+        }
+        h1:before {
+            width: 30px;
+            height: 2px;
+            background-color: #c8c8c8;
+            content: "";
+            position: absolute;
+            bottom: -20px;            
+        }
+        h1:after {
+            width: 20px;
+            height: 2px;
+            background-color: #c8c8c8;            
+            content: "";
+            position: absolute;
+            bottom: -20px;
+            left: 40px;
+        }
+    </style>
+    <body>
+        <div>
+            <h1>내용확인하기</h1>
+        </div>
+    </body>
+
+
+2) 상단 메뉴버튼만들기 
+    시멘틱 구조에는 nav를 사용하고 ul li를 많이사용한다.
+        기본구조
+        <nav>
+            <ul>
+                <li>HOME</li>
+                <li>ABOUT US</li>
+                <li>OUR COURSE</li>
+                <li>BLOG</li>
+            </ul>
+            <img src="../20180509/4wh/img/big%20logo.png">            
+        </nav>       
+    #시멘트 구조에 대해서 더 정리하고 적어야할듯
+
+3) CSS만을 이용한 hover시 위에서 슬라이드로 생기게하기
+    
+    <style>
+        section {background-color: beige; height: 300px; position: relative;}
+        div {height: 100px; background-color: gray; opacity: 0; position: absolute; bottom: 0; left: 0; width: 100%; transform: translateY(200px)}
+        div:hover {
+            animation-name: slide;
+            -webkit-animation-name: slide;
+            animation-duration: 2s;
+            -webkit-animation-duration: 2s;
+            visibility: visible;
+        }
+        @keyframes slide { /*에니메이션 효과가 이것.*/
+            0% {
+                opacity: 0;
+                transform: translateY(0%);
+            } 
+            100% {
+                opacity: 1;
+                transform: translateY(200px);
+            }
+        }
+        @-webkit-keyframes slide { /*에니메이션 효과가 이것.*/
+            0% {
+                opacity: 0;
+                transform: translateY(70%);
+            } 
+            100% {
+                opacity: 1;
+                transform: translateY(0%);
+            }
+        }
+    </style>
+    <body>
+        <section>
+            <div></div>
+        </section>
+    </body>
+
+
+
+
+#hover는 pc에서만 적용이된다 테블릿이나 모바일은 hover가 아닌 터치라서...
+
+
+
+
+CSS함수
+opacity: 투명도조절 1 - 불투명 0 - 투명 
+
+js함수
+var windtop = $(this).offset().top : 맨위에서 지금까지 거리

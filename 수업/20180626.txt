@@ -1,0 +1,5 @@
+js
+history.bakc()은 먼저 파라미터가 없구요..바로 이전 문서로 돌아가는 것이구.
+history.go(0) : 현재 페이지 리로드
+history.go(-1) : histor.back() 동일
+history.go(-2) : 2단계 전 문서로. ^^

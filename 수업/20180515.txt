@@ -1,0 +1,65 @@
+Jquery
+
+w3s - bootstrap3 - get started에서 링크를 가지고온다
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    #이렇게 가지고온 스타일은 기본적으로 클래스가 들어가있다.
+html예)
+    <div class="container">                         //한디비는 container로 잡아준다
+        <form class="form-group row">               //한 row에는 12칸이 들어간다
+            <div class="col-xs-2 col-lg-12">        //xs lg 는 사이즈에따른 스타일 적용이다.
+                <label for="text">한줄평 :</label>
+            </div>
+            <div class="col-xs-8 col-lg-9">     
+                <input type="text" class="form-control" id="text" name="text" placeholder="입력하세요.">
+            </div>
+            <div class="col-xs-2 col-lg-3">
+                <button type="button" class="btn btn-default" id="submit">내용추가</button>
+            </div>            
+        </form>
+    </div>
+
+#어제처럼 테이블 두개만들어서 하는것보단 <thead><tbody>로 나눠주는게 좋다.
+
+#input이 하나만 들어가있는경우 엔터를 입력시 submit 역할을 할수있다.
+ 두개이상이면 input type="submit"을 넣어줘야한다.
+
+# html을 append로 추가해줬을때 이벤트를 콜백함수로 부여해줘야한다.
+
+$("tobdy input:checkbox") : :를입력하고 타입까지 정의할수있다.
+
+val() 에 값이없을때는 get 값이있으면 set이 된다.
+.closest("tr") : 부모를찾는변수
+    var tr = $("button").closest("tr") // 버튼이있는 tr태그의 부모찾음
+    tr.remove()                        // 찾은tr태그를 삭제시킴
+remove() : 자기자신을 지운다 (empty는 내용을지움)
+find() : 자식들중에 하나의 요소 찾기
+attr() : 태그의 주요소를 찾는다. (input type id같은것)
+    .attr(id,"abc") 그 id 값을 바꾸는것 같음
+    button.attr("disabled",false);                       // 삭제기능 활성화    
+prop("checked") : input타입인 라디오버튼
+
+splice : 첫번째는 몇번째 두번째는 몇개인지 세번째는 수정할값
+         세번째거 미입력시 삭제
+
+#$(this).closest("tr").find("button").attr("disabled",false);
+#$(this).closest("tr").remove();     
+
+--------- 오후수업 -----------
+LocalStorage : 로컬스토리지는 세션과는 달리 영구성의 차이가 있다.
+               세션은 껏다키면 사라지는데 로컬스토리지에 사용자가 지우지 않는이상 남아있다.         
+
+1. 로컬스토리지에 json데이터 넣어주기
+로컬스토리지에 리스트안의 객체(json형태)를 집어넣을려면 JSON.stringify로 
+변환해서 넣어줘야한다.
+
+localStorage.setItem("list",JSON.stringify(list));
+
+2. 로컬스토리지에서 json데이터 꺼내기
+JSON.parser(localStorage.getItem("list"));
+
+저녁시간에 앵귤러 강의들음 코드 15일날에 넣어둠 

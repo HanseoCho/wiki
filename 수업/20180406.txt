@@ -1,0 +1,50 @@
+1. 파일썬 url 이용해서 가져오기(url크롤링)
+  _전반지식
+->World Wide WEb(www) 웹이라고 부른다.
+->Hyper Text Markup Language(HTML)
+
+_sts의 아파치 톰캣 포트변경하기
+->Server의 톰켓서버 더블클릭 OverView - Ports - Https/1.1 - 포트수정
+
+ !_파이썬에서 파일받는법
+->import urllib.request
+->url = "http://localhost:8080/Servlet/0405/list.jsp"
+->urllib.request.urlretrieve(url, "test.txt")
+이렇게해서 가져오면 HTML영역만 가져온다
+이래서 사용해야하는게 정규식이다
+
+!!!!!!!!!!!!!!!!!특정태그찾기 (핵중요한부분)                   정규식은 패턴파악해서 원하는 것들은 쓸수있어야함 자주 볼것
+ _정규식이용법 - 패턴을 분석해서 원하는 값을 리턴해줌
+관련자료 : http://www.nextree.co.kr/p4327
+특수문자는 \ 쓰고 써줘야함
+
+정규식 연습장 : http://www.regexr.com       // 기본적으로 중괄호에 정규식을쓸때는 대괄호를 쓴다.
+  과장님 방식 = ([\<a])(\s\S+?)([a\>]) <a로 시작하고 a>로 끝나는 스틀이형식의 (?) 모든것을 찾아라
+                  시작   무엇    끝 
+정원이형 방식 = href.*\?.*" 
+
+파이썬 
+import re후 사용
+예) ([^\<]list.jsp\?)([\s\S]+?)([\"\'])
+#World Wide WEb(www) 웹이라고 부른다.
+#Hyper Text Markup Language(HTML)
+import urllib.request, re
+url = "http://localhost:8080/Sevlet/list.jsp"
+fileName = "D:/GDJ10/201803/20180406/test.txt"
+urllib.request.urlretrieve(url, "test.txt")
+#사용할 정규표현식 ([^\<]list.jsp\?)([\s\S]+?)([\"\'])
+파이선 예
+#World Wide WEb(www) 웹이라고 부른다.
+#Hyper Text Markup Language(HTML)
+import urllib.request, re
+url = "http://localhost:8080/Sevlet/list.jsp"
+fileName = "D:/GDJ10/201803/20180406/test.txt"
+urllib.request.urlretrieve(url, "test.txt")
+#사용할 정규표현식 ([^\<]list.jsp\?)([\s\S]+?)([\"\'])
+with open(fileName,"r",encoding="utf8") as f :
+    dataList = re.findall(r"([^\<]list.jsp\?)([\s\S]+?)([\"\'])",f.read())
+
+for txt in dataList :
+    print(txt[1])
+    downloadUrl = url + "?" + txt[1]
+    urllib.request.urlretrieve(downloadUrl, txt[1])

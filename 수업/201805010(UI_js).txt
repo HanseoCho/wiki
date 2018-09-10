@@ -1,0 +1,16 @@
+Dom 
+
+1) js - <body onload=""> : 바디를 다 불러오고 실행
+      - document.getElementById("number").value
+      - document.getElementByTagName("ul") : ul 태그가 배열로 받는다
+      - document.getElementByTagName("ul")[0] : ul태그를 지정해준다.
+    #하드코딩 : HTML로 이미 다 만들어진상태(틀이 짜여있음)
+
+    # ul li태그를 10개만 넣기
+    ul { list-style: none; text-align: center;}
+    li { float: left; width: calc(100% / 10); height: 30px;}    
+
+    # 뭔가 수정할때마다 바꿔야하는건 onchange에 펑션을 넣어준다.
+    <input type="number" id="number" onchange="inputnumber()" value="100">
+
+2) 빙고만들기 - 20180509/1.html참고

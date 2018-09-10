@@ -1,0 +1,191 @@
+27. AOP (spring_y)
+    11. AOP : 프로그래밍을 하다보면 공통적인 기능이 많이 발생한다, 이러한 공통기능을 모든 모듈에 적용하기 위해서 상속도 좋은 방법이지만, 자바에서는 다중상속이 불가능해서 한계가 있고
+                기능 구현부분에서 핵심기능코드와 공통기능 코드가 섞여있어서 효율성이 떨어진다.
+            - AOP란 : 핵심 기능과 공통기능을 분리 시켜놓고, 공통기능을 필요로하는 핵심기능들에서 사용하는 방식
+            - 구현방법 : proxy(대행)를 이용
+            - 구현방식)
+                1) XML스키마 기반의 AOP구현
+                    -1 의존설정 (pom.xml) : aspectj,aspectjweaver 받기
+                    -2 공통기능클래스제작(advice)
+                        public class TestAOP {
+                            public Object callAOP(ProceedingJoinPoint joinPoint) throws Throwable {
+                                String name = joinPoint.getSignature().toShortString();
+                                System.out.println(name + "시작");
+                                long st = System.currentTimeMillis();
+                                
+                                try {
+                                    Object obj = joinPoint.proceed();
+                                    return obj;
+                                }
+                                catch(Exception e){
+                                    e.printStackTrace();
+                                }finally {
+                                    long et=System.currentTimeMillis();
+                                    System.out.println(name+" 종료 : " + (et - st));
+                                }
+                                return null;
+                            }
+                        }
+                    -3 XML파일설정
+                        servlet-context.xml)
+                            <beans:bean id="testAOP" class="com.java.test.aop.TestAOP"/>
+                            
+                            <aop:config>
+                                <aop:aspect id="aop" ref="testAOP">
+                                    <aop:pointcut expression="within(com.java.test.board.*)" id="publicM"/>
+                                    <aop:around method="callAOP" pointcut-ref="publicM"/>
+                                </aop:aspect>
+                            </aop:config>
+                * 실제코드에 적용하는게아니라 xml설정으로 메소드가 실행되기전에 실행되게 설정함(관점지향)
+                2) @Aspect 어노테이션 기반의 AOP구현
+                    -1 의존설정
+                    -2 @Aspect 어노테이션을 이용한 Aspect클래스제작
+                        @Aspect
+                        public class Logapp {
+                            @Pointcut("within(com.javalec.ex.*)") //실행할 파일들 설정 
+                            private void pointcutMethod(){
+                            }
+
+                            @Around("pointcutMethod()")
+                            public Object loggerAop(ProceedingJoinPoint joinpoint) throws Throwable {   //조인포인트(핵심기능의 메소드) 가져옴
+                                String signatureStr = joinpoint.getSignature().toShortString(); //핵심기능 메소드 이름
+                                System.out.println(signatureStr + "is start");
+                                long st = System.currentTimeMills();
+
+                                try{
+                                    Object obj = joinpoint.proceed();  //핵심기능 실행
+                                    return obj;
+                                }finaly{
+                                    long et = System.currentTimeMills();
+                                    System.out.println(signatureStr + "is finished");
+                                    System.out.println(signatureStr + "경과시간 : " + (et-st));
+                                }
+                            }
+
+                            @Before("within(com.javalec.ex.*)")
+                            public void beforAdvice(){
+                                System.out.println("beforAdvice()"); 
+                            }
+                        }                
+                    -3 서블릿XML파일에 <aop:aspectj-autoproxy/> 설정
+                        <aop:aspectj-autoproxy/>
+                        <beans:bean id="testAOP" class="com.java.test.aop.TestAOP"/>       
+
+            *) aop사용 - 특정메뉴의 조회확인 할때 db에 조회수를 누적하는 특정 로그를 남길수 있고 접속자가 누군지도 알수있다.
+    - 과장님정리
+        - AOP (Aspect Oriented Programming) : 관점 지향 프로그래밍
+
+        - AOP 용어 정리
+        : Aspect      : 공통 기능
+        : Advice      : Aspect의 기능 자체
+        : Joinpoint : Advice를 적용해야 되는 부분 (메소드) <- 스프링은 메소드만
+        : Pointcut   : Joinpoint의 부분으로 실제로 Advice가 적용되는 부분
+        : Weaving   : Advice를 핵심 기능에 적용 하는 행위
+
+        - 스프링에서 AOP 구현 방법 : proxy 사용
+        : 호출부(client) -> 대행(Proxy) -> 핵심기능(Target)
+
+        - 스프링에서 AOP 구현 방식
+        : xml 스키마 기반의 AOP 구현
+        : @Aspect 어노테이션 기반의 AOP 구현
+
+        1. xml 기반의 AOP 구현
+        1) pom.xml으로 의존 설정
+        2) 공통 기능의 class 제작 - Advice 역할 class
+        3) xml설정 파일에 Aspect 설정
+        
+        2. 범위 작성
+        1) within(com.java.*) : com.java 패키지 안에 모든 메소드
+        2) within(com.java..*) : com.java 패키지 및 하위 패키지 안에 있는 모든 메소드
+        3) within(com.java.User) : com.java.User 모든 메소드
+
+        3. 사용한 종류
+        1) JoinPoint 인터페이스는 호출되는 대상 객체, 메서드 그리고 전달되는 파라미터 목록에 접근할 수 있는 메서드를 제공
+            * Signature getSignature( ) - 호출되는 메서드에 대한 정보를 구함
+            * Object getTarget( ) - 대상 객체를 구함
+            * Object[ ] getArgs( ) - 파라미터 목록을 구함
+        2) org.aspectj.lang.Signature 인터페이스는 호출되는 메서드와 관련된 정보를 제공하기 위해 다음과 같은 메서드를 정의
+            * String getName( ) - 메서드의 이름을 구함
+            * String toLongName( ) - 메서드를 완전하게 표현한 문장을 구함(메서드의 리턴 타입, 파라미터 타입 모두 표시)
+            * String toShortName( ) - 메서드를 축약해서 표현한 문장을 구함(메서드의 이름만 구함)
+
+        4. AspectJ Pointcut 표현식
+        1) Execution
+        : @Pointcut("execution(public void get*(..))")
+            <- public void인 모든 get메소드
+        : @Pointcut("execution(* com.java.*.*())")
+            <- com.java 패키지에 파라미터가 없는 모든 메소드
+        : @Pointcut("execution(* com.java..*.*())")
+            <- com.java 패키지 & com.java 하위 패키지에 파라미터가 없는 모든 메소드
+        : @Pointcut("execution(* com.java.User.*())")
+            <- com.java.User 안의 모든 메소드
+
+        2) within
+        : @Pointcut("within(com.java.*)")
+            <- com.java 패키지 안에 모든 메소드
+        : @Pointcut("within(com.java..*)")
+            <- com.java 패키지 및 하위 패키지 안에 있는 모든 메소드
+        : @Pointcut("within(com.java.User)")
+            <- com.java.User 모든 메소드
+
+        3) bean
+        : @Pointcut("bean(User)")   <- User 빈에만 적용
+        : @Pointcut("bean(*ser)")   <- ~ser로 끝나는 빈에만 적용
+
+    * around에서만 리턴이있어서 판단이 가능하다 
+
+*
+
+
+
+*aop로 중간에 파라미터값받아서 로그인 결정하는 로직 (실제로는 db로 호출해서함)
+@Controller
+public class UserController {
+	@RequestMapping("/login")
+	public ModelAndView login(HttpServletRequest req){      //리턴타입이 ModelAndView 
+		return HttpUtil.makeJsonView(HttpUtil.getParamMap(req));
+	}
+}
+
+@Aspect
+public class LoginAOP {
+	@Around("within(com.java.test.user..*)")
+	public Object loginCheck(ProceedingJoinPoint jp) throws Throwable{
+		try {
+			String name = jp.getSignature().getName();
+			System.out.println(name + " 호출됨!");
+			/*************************************************/
+			Object[] args = jp.getArgs();
+			for(int i=0;i<args.length;i++) {
+				if(args[i] instanceof HttpServletRequest) {
+					HttpServletRequest req = (HttpServletRequest) args[i];
+					HashMap<String, Object> params = HttpUtil.getParamMap(req);
+					String id = params.get("id").toString();
+					String pw = params.get("pw").toString();
+					
+					boolean check = true;
+					
+					if(!"admin".equals(id)) {
+						check = false;
+					}
+					if(!"1234".equals(pw)) {
+						check = false;
+					}
+					if(check) {
+						return jp.proceed();
+					}else {
+						HashMap<String, Object> map = new HashMap<String, Object>();
+						map.put("status", 0);
+						map.put("msg","누구세요?");
+						return HttpUtil.makeJsonView(map);
+					}
+				}
+			}
+			/*************************************************/
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+}
+*aop에서 리턴할때는 메소드랑 return타입을 같게해야한다.

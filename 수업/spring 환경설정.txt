@@ -1,0 +1,232 @@
+﻿기본설정 - db및 file업로드
+
+1. mavenrepository에서 받기
+    mybatis : mybatis, mybatis-spring, 
+	MariaDB : MariaDB Java Client,spring-jdbc( Spring Context와 같은버전으로 받기), 
+	JSON : json-lib-ext-spring (에러시 <classifier>jdk15</classifier> 추가)	
+	Jquery : Jquery, 
+	FileUpload : Apache Commons IO,Apache Commons FileUpload
+	AOP : xml(aspectj,aspectjweaver), 이노테이션(불필요)
+	security : spring-security-web, spring-security-config, spring-security-taglibs
+
+    를 pom.xml에 넣어준다
+
+2. src/main/webapp/WEB-INF/spring/root-context.xml (db연결위한설정)
+	<!-- DataSource 생성 -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="url" value="jdbc:mysql://192.168.1.220:3306/test" />
+		<property name="driverClassName" value="org.mariadb.jdbc.Driver" />
+		<property name="username" value="root" />
+	    <property name="password" value="1234" />
+	</bean>
+	
+	<!-- SqlSessionFactory 생성 -->
+	<bean id="factoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="mapperLocations" value="classpath:/sql/*.xml"/>
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<!-- SqlSession 생성 -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="factoryBean" />
+	</bean>
+    를 추가
+
+3. src/main/webapp/WEB-INF/spring/root-context.xml : file업로드를 위한 설정
+	<!-- 업로드를 위한 bean객체생성 -->
+        <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+            <property name="maxUploadSize" value="10485760"/>       // 한번에 올릴수있는크기
+            <property name="maxInMemorySize" value="104857600"/>    // 올릴수있는 최대치
+        </bean>  
+	-servlet-context에 추가해도된다 (root-context에 추가하는경우는 빈으로 사용해서 여러번 재사용할때 선언한다고한다 반대로 servlet-context에는 처음한번 설정만하는것같음(애매함).) 
+		<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+			<beans:property name="maxUploadSize" value="10485760"/>
+			<beans:property name="maxInMemorySize" value="104857600"/>
+		</beans:bean>
+
+4. src/main/resources/경로에 sql폴더를 생성후 reg.xml만들고 아래내용을 기입해준다.
+	* 기본적인 sql틀이다.
+	<?xml version="1.0" encoding="UTF-8" ?>
+	<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="board">
+	<select id="selectOne" parameterType="HashMap" resultType="HashMap">
+		select * from board where boardNo = #{boardNo}
+	</select>
+	<update id="update" parameterType="HashMap">
+		update board 
+		set title       = #{title},
+			content = #{content}
+		where boardNo = #{boardNo}
+	</update>
+	<update id="delete" parameterType="HashMap">
+		update board 
+		set delYn = 'Y'
+		where boardNo = #{boardNo}
+	</update>
+	</mapper>
+
+5. src/main/webapp/resources/WEB-INF/web.xml에 스프링 한글처리해주기
+	<filter>
+	        <filter-name>encodingFilter</filter-name>
+	        <filter-class>
+	            org.springframework.web.filter.CharacterEncodingFilter
+	    </filter-class>
+	    <init-param>
+	            <param-name>encoding</param-name>
+	            <param-value>UTF-8</param-value>
+	    </init-param>
+	</filter>
+	<filter-mapping>
+	        <filter-name>encodingFilter</filter-name>
+	        <url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+6. src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml 추가 : webjars안에있는 jquery를 사용하기 위해 사용함
+	<resources mapping="/webjars/**" location="/webjars/" />
+
+7.  pom.xml에서 메이븐에서 한글안깨지게하기       
+	<plugin>	
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<version>2.5.1</version>
+		<configuration>
+			<encoding>UTF-8</encoding>  //인코딩을 넣어줘야지 한글할때 안깨진다.
+			<source>1.8</source>		//1.8 을 $(java-version) 넣어줘도된다.
+			<target>1.8</target>
+			<compilerArgument>-Xlint:all</compilerArgument>
+			<showWarnings>true</showWarnings>
+			<showDeprecation>true</showDeprecation>
+		</configuration>
+	</plugin> 
+	
+	*. pom.xml 자바버전수정 : java-version 1.8로
+	*. 플러그인 3개중 중간 부분 수정 source target부분
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<source>${java-version}</source>
+					<target>${java-version}</target>
+					<compilerArgument>-Xlint:all</compilerArgument>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
+				</configuration>
+
+
+
+
+*. 	CROS설정(다른도메인에서 데이터를 가져올려면 보안상으로 걸려서 설정해줘야한다 : 파일서버에서만 설정해줄 필요가 있다.)
+	1) class생성
+		public class CORSFilter implements Filter {
+
+			@Override
+			public void init(FilterConfig filterConfig) throws ServletException {}
+
+			@Override
+			public void doFilter(ServletRequest servletRequest, ServletResponse servletRresponse, FilterChain chain) throws IOException, ServletException {
+				HttpServletRequest request = (HttpServletRequest) servletRequest;
+		//	    System.out.println("Request request.getMethod()");
+
+				HttpServletResponse resp = (HttpServletResponse) servletRresponse;
+				resp.addHeader("Access-Control-Allow-Origin","*");
+				resp.addHeader("Access-Control-Allow-Methods","GET,POST");
+				resp.addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
+
+				if ( request.getMethod().equals("OPTIONS") ) {
+					resp.setStatus(HttpServletResponse.SC_OK);
+					return;
+				}
+				chain.doFilter(request, servletRresponse);
+			}
+
+			@Override
+			public void destroy() {}
+
+		}
+	
+	2) web.xml생성
+		<filter>
+		<filter-name>CorsFilter</filter-name>
+		<filter-class>com.java.Spring_Server2.util.CORSFilter</filter-class> // 위 클래스 파일이있는경로
+		</filter>
+		<filter-mapping>
+		<filter-name>CorsFilter</filter-name>
+		<url-pattern>*</url-pattern>
+		</filter-mapping>	
+
+
+
+
+
+
+*. 자주사용하신 json변환법
+	public class HttpUtil {
+		private static final Logger logger = LoggerFactory.getLogger(HttpUtil.class);
+		
+		public static HashMap<String, Object> getParamMap(HttpServletRequest req){
+			HashMap<String, Object> result = new HashMap<String, Object>();
+			
+			Enumeration<?> enums = req.getParameterNames();
+			while(enums.hasMoreElements()) {
+				String paramName = enums.nextElement().toString();
+				
+				if("".equals(req.getParameter(paramName))) {
+					result = null;
+					break;
+				}
+							
+				result.put(paramName, req.getParameter(paramName));
+			}
+			
+			return result;
+		}
+		
+		public static ModelAndView makeJsonView(HashMap<String, Object> map) {
+			ModelAndView mav = new ModelAndView();
+			
+			JSONObject j = new JSONObject();
+			j = JSONObject.fromObject(JSONSerializer.toJSON(map));
+			
+			mav.addObject("json", j);
+			mav.setViewName("json");
+			
+			return mav;
+		}
+
+		public static void makeJsonWriter(HttpServletResponse res, HashMap<String, Object> map) {
+			
+			res.setCharacterEncoding("UTF-8");
+			res.setContentType("text/html;charset=utf-8");
+			
+			JSON j = new JSONObject();
+			j = JSONObject.fromObject(JSONSerializer.toJSON(map));
+			
+			try {
+				res.getWriter().write(j.toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		public static boolean checkLogin(HttpSession session) {
+			boolean check;
+			if(session == null) {
+				logger.info("세션 정보가 없습니다");
+			}
+			else {
+				HashMap<String, Object> userMap = (HashMap<String, Object>) session.getAttribute("user"); 			
+				if(userMap == null) {
+					logger.info("로그인 되어 있지않습니다.");
+					return false;
+				}
+				else {
+					for(String data : userMap.keySet()) {
+						logger.info("data :" + data +" data :"+userMap.get(data));
+					}
+					return true;
+				}
+			}
+			return false;
+		}
+	}

@@ -1,0 +1,40 @@
+yum update -y
+yum install -y httpd 
+systemctl start httpd 
+포트열기 -> firewall-cmd --zone=public --add-port=80/tcp --permanent
+포트적용 -> firewall-cmd --reload
+tar -zxvf jdk-8u161-linux-x64.tar.gz
+
+환경변수 -----
+vi ./.bash_profile에서 맨아래에 
+JAVA_HOME=/root/java/jdk1.8.0_161
+export JAVA_HOME
+export PATH=$PATH:$JAVA_HOME/bin 
+-----------------
+source ./.bash_profile
+
+
+
+apacheDir=~/apache-tomcat-8.5.29
+
+if [ -d $jdkDir ]
+ then
+   echo " 자바가 이미 존재 합니다. "
+ else
+   tar -zxvf jdk-8u161-linux-x64.tar.gz
+   ls -l ~/
+fi
+
+if [ -d $apacheDir ]
+ then
+   echo "아파치가 이미 존재합니다."
+ else
+   tar -zxvf apache-tomcat-8.5.29.tar.gz
+   ls -l ~/
+fi
+
+firewall-cmd --zone=public --add-port=8080/tcp --permanent
+firwall-cmd --reload
+exit 0
+~
+~

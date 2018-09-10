@@ -1,0 +1,9 @@
+R (분석) 138p
+미국 오픈데이터는 data.gov에서 제공
+
+MapReduce란
+Map : 조각을 내는 기능
+Reduce : 조각난 데이터를 합치는기능
+
+맵 (key:라인번호, value:문장열) -> 정렬과 병합(key:단어, value: 단어수) -> 리듀스(key:단어, value:단어수의 리스트) -> 실행결과 (key:단어, value:리스트의 합계)
+

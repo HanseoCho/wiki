@@ -1,0 +1,310 @@
+﻿##### 헷갈리는부분, 틀린부분 있을 수도 있으니 감안하고 읽어주시기 바람! #####
+ 
+ 
+# 싱글이 아닌 분산 모드로 하둡 돌리기
+ 
+ * 컴퓨터 클러스터
+ 컴퓨터 클러스터(computer cluster)는, 여러 대의 컴퓨터들이 연결되어
+ 하나의 시스템처럼 동작하는 컴퓨터들의 집합을 말한다
+
+# ssh
+큐어 셸(Secure Shell, SSH)은 네트워크 상의 다른 컴퓨터에 로그인하거나
+원격 시스템에서 명령을 실행하고 다른 시스템으로 파일을 복사할 수 있도록 해 주는
+응용 프로그램 또는 그 프로토콜
+
+하둡에선 ssh를 활용해야 하기에 윈도우에선 사용 불가.
+
+# 리눅스 ssh key 만들기 명령어
+ 인증용 키를 받는 방법이다.
+
+    ssh-keygen -t rsa -P ""
+
+    -t는 암호화 방식 선택 옵션. (rsa가 디폴트)
+
+    -P는 비밀번호 입력. 일단 ""로 해주자
+
+ 완료시 이미지 형태로 key가 뜬다.
+ 예시) 
+    +---[RSA 2048]----+
+    |                 |
+    |                 |
+    |          .      |
+    |       . +       |
+    |      . S .  .   |
+    |       o =..o...o|
+    |    . o ..++=o+E=|
+    |     =....o =B==X|
+    |    ..+o  .+o*B%=|
+    +----[SHA256]-----+
+
+완료되면 .ssh라는 비밀폴더가 생성
+폴더안에는 id_rsa(개인키), id_rsa.pub(공개키) 가 생성된다.
+
+# 공개키 등록하기
+    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+#ssh로 연결하기
+    ssh localhost(혹은 원하는 ip)
+    뭔가 물어보면 yes를 누르고, 성공시 Last login 기록이 뜬다.
+
+    logout은 exit로 해주면 된다.
+
+
+# 하둡 jar파일 폴더 환경변수 등록하기
+    hadoop-mapreduce-examples-2.9.0.jar
+    파일이 있는 위치는
+    /root/hadoop/share/hadoop/mapreduce
+    로 되어있는데 너무 길다. bash_profile쪽에 등록해서 간단히 쓰자
+
+    HD_SAMPLE=/root/hadoop/share/hadoop/mapreduce
+    export HD_SAMPLE
+
+    라고 적어주면
+
+$HD_SAMPLE 형태로 간단히 사용가능.
+
+
+# test 폴더가 아닌 작업 output용으로 user라는 폴더를 생성.
+    hdfs dfs -mkdir /user
+
+    user폴더안에 root폴더를 만들고, /에 input 폴더도 만들어주자(원본이 담길 폴더)
+
+ 어제 쓴 원본파일을 복사해오자.
+ hdfs dfs -copyFromLocal $HADOOP_HOME/etc/hadoop/hadoop-env.sh /input
+
+# 새로 만든 폴더들로 wordcount 하기
+ hadoop jar $HD_SAMPLE/hadoop-mapreduce-examples-2.9.0.jar wordcount /input/hadoop-env.sh /user/root/wc_output
+
+
+# 하둡 웹에 띄우기
+    /root/hadoop/etc/hadoop
+    에서 3가지 파일을 변경해 환경설정을 바꿀 필요가 있다
+
+1) hadoop-env.sh (#자바 경로 지정)
+    JAVA_HOME=${JAVA_HOME}이라고 되어있는 부분을 우리가 설정한 자바 경로로 바꿔주자.
+
+    export JAVA_HOME=/root/jdk
+
+    (datanode까지 다 해주어야 한다.)
+
+2) core-site.xml (#웹주소 설정)
+    configuration 부분에 property 설정을 해주자. (name이 key고 value는 value)
+
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+
+3) hdfs-site.xml (#분산 갯수 설정)
+    마찬가지로 configuration 에 설정 추가.
+
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+
+설정변경 완료 후 namenode 포맷을 해주어야 적용됨.
+    hdfs namenode -format
+
+
+# 하둡 웹 서비스 켜기.
+    /root/hadoop/sbin 로 가자.
+
+    start-all.sh
+    (밑의 2가지를 동시에 켜주는 것으로 예전에 쓰던 것이다. 밑 두가지를 각각 켜주는걸 권장.)
+
+        start-dfs.sh
+        start-yarn.sh
+
+    jps 를 입력하면 현재 실행되는 서비스를 확인 가능.
+
+    stop-all.sh
+    를 쓰면 서비스 종료.
+
+    2가지를 켰으니 웹에도 2가지 서비스가 돌아가고 있다.
+
+
+# 웹 접속하기.
+
+우선 2개의 포트를 열어주자.
+firewall-cmd --zone=public --add-port=50070/tcp --permanent
+firewall-cmd --zone=public --add-port=8088/tcp --permanent
+firewall-cmd --reload
+
+각각
+http://ip주소:50070
+http://ip주소:8088
+로 접속할 수 있게 된다.
+
+
+# 하둡 포맷 시에는 인식하는 파일이 달라진다.
+
+hdfs dfs -rm -r /user/root/wc_output
+했을 때 인식 못하는 경우가 있는데,
+포맷 후 기존에 있던게 남아 이러는 경우가 있다. 리눅스 명령어로 지우면 된다.
+
+* 마찬가지로 포맷 후에는 전에 사용하던 user/input 폴더 등은 다시 만들어주자.
+
+
+# 해당 ip가 켜져있나 확인하기
+    ping 해당 ip
+    (Ctrl + C로 끄지 않으면 계속 돎)
+
+
+# 각 리눅스 연결을 위해 host명 지정하기
+    /etc 안의 hosts 설정을 바꿔주자 (기존에 있던건 #주석처리)
+
+        127.0.0.1        localhost
+        192.168.1.20     name
+        192.168.1.19     data1
+        192.168.1.26     data2
+        192.168.1.29     data3
+
+    /etc 안의 hostname 내용을 싹 지우고 각 ip에 맞는 이름만 넣어주자.
+
+    *** 변경사항 적용하기 ***
+    /bin/hostname -F /etc/hostname
+
+    적용 후 hostname을 치면 해당 이름이 떠야 한다.
+    그 후 init 6으로 재부팅 하면 이름이 적용된걸 콘솔창에서 확인가능.
+    (ping을 써 제대로 적용되었는가도 확인해주자.)
+
+
+# namenode에서 만든 ssh 키 넘겨주기.
+
+ 1) 각 datanode에서 ./.ssh 폴더를 만들어주고,
+ 2) namenode에서
+    [scp -rp ~/.ssh/authorized_keys root@data1:~/.ssh/authorized_keys]
+    형태로 입력하고 yes -> 비밀번호
+ 3) 각 데이터 노드에 authorized_keys가 들어와있는가 확인.
+
+이 과정이 완료되면 해당 datanode에 ssh data1 형태로 접속이 가능하다.
+
+=>  namenode에서만 authorized_keys를 복사했기 때문에
+    namenode에서는 비밀번호 없이 datanode에 들어갈 수 있으나,
+    datanode는 비밀번호가 필요하다.
+
+    datanode 세곳은 namenode만 바라보면 되기 때문에
+    굳이 공개 키를 만들 필요가 없다.
+
+
+# 리눅스 scp 명령어
+
+    scp [파일] [계정@서버주소:목적경로]
+
+    -p : preserve의 약자로 원본 파일 시간의 수정시간, 사용시간, 권한을 유지한다.
+    -r : recursive의 약자로 하위 폴더/파일 모두 복사한다.
+
+
+# 하둡 환경설정 추가변경.
+
+    /root/hadoop/etc/hadoop/ 로 이동
+
+    1) hadoop-env.sh
+    namenode 만 변경하자
+
+    vi 모드에서 :set number 라고 입력하면 내용에 줄번호가 뜬다.
+    이 상태에서 i를 눌러 insert모드로 들어가
+    104번줄에 ${}부분을 /root/hadoop/pids 로 변경하자.
+
+    2) core-site.xml
+    모든 node가 대상. 이전에 namenode에서 localhost라 쓴부분을 name으로 바꾸자.
+    그리고 바꾼 property내용을 모든 node에도 써주자.
+
+    그 후 namenode쪽에서 9000포트를 열어주어야 한다.
+    firewall-cmd --zone=public --add-port=9000/tcp --permanent
+    firewall-cmd --reload
+    
+    3) hdfs-site.xml
+
+    총 3개 property가 있어야 한다. (분할 수 / 권한 / 경로)
+
+        <property>
+            <name>dfs.replication</name>
+            <value>2</value>
+        </property>
+
+        <property>
+            <name>dfs.permissions</name>
+            <value>false</value>
+        </property>
+
+        <property>
+            <name>dfs.namenode.name.dir</name>
+            <value>file:/root/hadoop/namenode</value>
+        </property>
+
+    마지막 namenode랑 name부분만 다르게 해서 4가지 node 모두에 써주자.
+
+# 권한 할당.
+ hadoop 홈폴더에 namenode 또는 datanode 폴더를 만들어주자.
+ chmod -Rf 777 폴더명(namenode/datanode)
+ chown -Rf root:root hadoop/
+ 그후 hadoop 폴더에 권한을 주자.
+
+# 잡트래커 설정하기
+
+    4가지 노드의 /root/hadoop/etc/hadoop 에서
+
+    cp mapred-site.xml.template mapred-site.xml
+    를 입력
+    mapred-site.xml.template 파일을 복사해
+    mapred-site.xml 를 만들어주자.
+    xml 파일에 이하 내용을 추가.
+
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+
+    +
+
+    yarn-site.xml에 가서
+
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.auxservices.mapreduce.shuffle.class</name>
+        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+
+    를 추가.
+
+
+# masters와 slaves 설정
+
+    namenode에만 하면 됨.
+    cd ~/hadoop/etc/hadoop
+
+    vi masters -> name 만 입력 후 저장.
+    vi slaves -> data1 data2 data3 입력 후 저장
+
+
+모든 과정이 완료되면 포맷을 해보자.
+hdfs namenode -format
+
+그 후 jps를 확인하면 모든 노드가 처음엔 jps만 켜져있는데
+namenode쪽에서 start-dfs.sh 를 해주면
+
+namenode에서는 SecondaryNameNode 와 NameNode가,
+나머지 datanode에서는 DataNode가 Jps와 함께 켜져야한다.
+
+(start-yarn.sh도 해주자)
+
+start가 전부 끝나면 hdfs dfs -ls /
+했을 때 아무것도 안 떠야 정상. 다 됐다면 이번엔 분산처리를 해보자.
+
+name:50070의 overview에서 Live Nodes를 체크. 3개여야한다.
+
+
+# 분산처리 해보기
+
+1) hdfs dfs -mkdir /result
+2) hdfs dfs -mkdir /input
+3) hdfs dfs -copyFromLocal /root/hadoop/README.txt /input
+4) hadoop jar $HD_SAMPLE/hadoop-mapreduce-examples-2.9.0.jar wordcount /input/README.txt /result/wc_output
+
+안될경우 방화벽 문제이니 (systemctl stop firewalld.service) 로 방화벽 끄면됨.

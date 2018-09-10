@@ -1,0 +1,103 @@
+단위테스트 - Junit
+https://mvnrepository.com/search?q=Junit에서는 4버전이 최신이지만
+https://junit.org/ 가면 5버전이 최신임
+
+메이븐프로젝트 - pom.xml에 기본적으로 junit 3.8.1 버전이 적용되있다.
+               ㄴ Maven Dependencies폴더에 적용된 친구들을 물리적위치를 확인가능(Package Explor)
+                  ㄴ 메이븐에서 추가되면 자동으로 설치를받는데 경로도 위에서 확인가능
+
+1. 자바에서 라이브러리 추가하기
+자바프로젝트 우클릭 - 설정 - java Build Path - Add External JARs에서 추가후 - apply
+
+2. 웹프로젝트 에서 junit추가하기
+* 만약 작동시 문제가있으면 상단의 Project의 Build Automatically 확인
+웹프로젝트 - WebContent - WEB-INF - lib에 추가
+
+* 깃에 올릴때는 src랑 pom.xml 자바프로젝트는 src만 올리면 된담
+
+3. junit 시작하기
+@자바프로젝트에 Junit 3 으로 해보기
+자바프로젝트 - src - src junit Test Case  (Prespective를 java로 바꿔주면 바로나옴)
+Junit 3 특징 - 메소드를 만들때 이름의 앞에는 소문자로 test로 시작해야한다.
+               소스 - 오버라이드 임폴트 메소드 - setup은 전처리 tearDown은 후처리이다.
+                ㄴ setup과 tearDown은 메인메소드가 두개로 돌아가면 두번 돌아간다.
+               테스트 할때 메소드가 같이돌아가서 메소드를 두개만들어서 돌려도 같은 내용을 적으면 같은 결과가 나온다.
+ㄴ jUnit 3 - 이름적고 - 피니시
+--------------추가--------------
+	public void testMain() {
+		System.out.println("testMain()");
+		String str = "string";
+		assertEquals("String", str);      // 앞에있는 거를 뒤에있는 거로 비교 일치하면 true 불일치시 false 오류값을 대괄호로 표시를 해준다.
+	}
+------------------------------------------
+run as - junit Test로 돌림 
+
+@메이븐에서 Junit3 해보기
+test부분에 클래스 하나 추가해주고
+		AppTest at = new AppTest("");
+		at.run();
+호출하면 테스트 해준다.
+
+
+메모리에 안올리고 사용하기-------------------------
+public class Main {
+	public static void main(String[] args) {
+		Main m = new Main();               //메인객체로 만ㄷ르어주면 됨
+		int result = m.sum(1,5);
+	}
+	public int sum(int a, int b) {
+		return a + b;
+	}
+}
+-------------------------
+유연성있는 테스트1------------------------
+import junit.framework.TestCase;
+
+public class MainTest extends TestCase {
+	Main m;
+	int a, b;
+	@Override 
+	protected void setUp() throws Exception {     //첫번재로 실행
+		System.out.println("setUp()");
+		m = new Main();
+		a = 1;
+		b = 5;
+	}
+
+	@Override
+	protected void tearDown() throws Exception {   //마지막으로 실행
+		System.out.println("tearDown()");
+	}
+
+	public void testMain() {
+		System.out.println("testMain()" + b);   //이렇게 두 메소드가 돌아가도 동시에 시행되서 변수의 값은 다음메소드에도 동일하다.
+		assertEquals(a+b, m.sum(a, b));
+	}
+	public void testMain2() {
+		System.out.println("testMain()" + b);
+		assertEquals(a+b, m.sum(a, b));
+	}
+}
+--------------------------------------------
+
+4. Junit 4버전 해보기
+특징 - 3버전과 동일하게도 사용가능하다. 하지만 어노테이션기법(@Test가 붙으면 메소드이름은 마음대로 바꿔도 된다.)을 권장
+        ㄴ 3버전은 TestCase를 상속받아서 test라는 소문자로 메소드가 시작하면 돌아가는데 4버전은 @Test이면 된다.
+
+규칙 - void만 돌려야한다 (return이 있으면 오류발생)
+       매게변수를 받으면 안된다.
+       pom.xml에서 스코프를 test영역으로만 정해서 메인에서 @Test는 실행이 안된다.
+
+메이븐프로젝트 pom.xml에서 junit 버전을 4.12로 변경
+junit 4버전선택해서 생성
+예) --------------------------------------
+public class Main2Test {
+	@Test                		//중요 포인트
+	public void main() {
+		assertEquals(1, 1);
+	}
+}
+-----------------------------------------
+
+Junit 함수들은 assert로 시작한다.
+테스트는 src/test에서 해야만한다. 이유는 위에보면 나옴 

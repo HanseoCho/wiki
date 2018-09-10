@@ -1,0 +1,106 @@
+JavaScript - 객체 기반의 스크립트 프로그래밍 언어이다. 이 언어는 웹 브라우저 내에서 주로 사용하며, 
+            다른 응용 프로그램의 내장 객체에도 접근할 수 있는 기능을 가지고 있다. 또한 Node.js와 같은 런타임 환경과 같이 서버 사이드 네트워크 프로그래밍에도 사용되고 있다.
+#ajax를 이용해서 json전달및 받는다,
+
+1. form- onsubmit
+   예) <form onsubmit="eventSubmit(); return false;">  
+   함수에서 리턴이없으면 undefined라는 결과가나오고 그결과를 사용할수도 있다.
+    function eventSubmit(){
+        console.log("실행중");
+    }
+    function evnetcheck(){
+        if(eventSubmit() == undefined){
+            console.log("결과 : undefined");
+        }
+        else{
+            console.log("결과 : ?");
+        }
+    }
+
+    #페이지 이동
+    location.href = "2.html";
+
+    2) 자바스크립트에서 CSS설정바꾸는법 (style안에 css의 속성들이 들어있다.)
+        document.getElementById("user").style.display = "Block";
+
+
+
+2. node.js - 그냥 cmd에서 node.js 파일이름으로 찍어봄
+// 1. 로그출력
+console.log("테스트");
+
+// 2. 함수 선언 : function 함수이름(){}
+function 함수(){console.log("함수");}
+함수();
+
+//  # 화살표함수
+var 이벤트 = () => {console.log("이벤트")}
+이벤트();
+
+// 3. 변수 선언 : var 변수명 = 값
+var 변수
+변수 = "값";
+console.log(변수);
+
+// 4. 문자열 포멧
+변수 = 10;
+console.log("값 : %d", 변수)
+console.log(`값 : ${변수}`)
+
+// 5. json 데이터타입
+var j = {name:"춘향",age:10};
+console.log("json : %j",j);
+// 제이슨의 키부분은 문자열이다. // json : {"name":"춘향","age":10}
+console.log(j) 
+// { name: '춘향', age: 10 }
+console.dir(j);
+// console.dir은 원래구조 그대로 출력해준다. { name: '춘향', age: 10 }
+
+// 6. 반복문 : for문
+// # time for가 걸린시간을 표현해준다  
+// 출력 : for: 0.096ms
+console.time("for");
+var result = 0;
+for (var i =0; i<1000;i++){
+    result+=i;
+}
+console.timeEnd("for")
+console.log("전체 합 : %d", result);
+
+3. Jquery : 이미 만들어진 자바스크립트 함수의 집합체
+    $ : 제이쿼리 사용한다.
+    () : 선택자를 넣는다.
+    $() : 어떤 선택자를 jquery로 사용한다.
+    #선택자로 쓸수있는 것
+    .1 태그 .2 아이디(id) .3 클래스(class) .4 복합적(태그 + 아이디 + 클래스)
+    $("#login form") 로그인태그안의 form (css와 비슷)
+    
+    1) submit()
+        $("form").submit(function(){
+            console.log("submit()");
+        });
+
+    2)  event.preventDefault();           //a태그의 기본 이벤트제거
+        event.stopPropagation();          //이벤트가 뒤로 전달되는것을 막는다. //배경색변경을 막음.
+        return false                        //이 두가지는 많이사용하기때문에 jquery에서는 return false하면 자동으로 두개다 적용된다.
+
+        <script src="4.js"></script> 4.js에 eventOn함수가 있음
+        $(function(){                html이 셋팅되면 스크립트 셋팅
+            $("form").submit(eventOn)  
+        })
+
+        $("id").val()   // id에 입력한 값들을 가져옴
+    
+    
+
+
+#참고 Ajax json잘정리 : https://github.com/milooy/TIL/blob/master/JavaScript/jpub-ajax-json.md
+
+
+
+
+
+
+
+
+    

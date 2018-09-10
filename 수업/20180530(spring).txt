@@ -1,0 +1,125 @@
+Spring
+
+1. mvc패턴 : Controller : 데이터와 비즈니스로직사이의 상호동작 관리
+              Model : 데이터 (서비스가 포함될수 있다)
+              View : 텍스트, 체크박스등 사용자 인터페이스요소
+
+              MVC1는 JAVABean에 저장하고 View 처리는 JSP에서 하고, 로직은 개발자의 성향에 따라 JSP나 JAVABean 에 골고루 분배된다.
+
+              MVC2는 Servlet, 스트럿츠, Spring 등에서 Controller 처리를 분리한다는 점이 다르다. 
+
+2. 개발툴 : 이클립스(sts), sts, 전자정부 프레임워크 : eGovFrame 
+
+3. 프로젝트 : Spring starter : Spring Boot
+             Spring Legacy  : 프레임워크
+
+4. Spring Boot 맛보기 
+    두번째 설정에서 모듈을 다운받는다, (테스트용으로는 웹을 받음)
+    웹은 리소스에서 스테틱에서 웹을 작성한다.
+    JSTL부분은 템플릿에서 사용가능
+    resources/application.properties에는 정리된 문서에 의해서만 추가한다. (참고 : https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html)
+
+5. 이클립스 환경설정 : windows - preferences - General - show heap status 체크(렘 사용가능 공간 표시)
+                                            - 검색 encoding - 나온느거 전부 utf-8변경 (참고 : http://gangzzang.tistory.com/entry/%EC%9D%B4%ED%81%B4%EB%A6%BD%EC%8A%A4-%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD-UTF8-%EC%9D%B8%EC%BD%94%EB%94%A9-%EC%84%A4%EC%A0%95)
+                     eclipse/eclipse.ini/하단의 xms값을 둘다 2048로 변경                     
+
+6. Spring FrameWork 만들기
+    - new - Spring Legacy project - Templates Spring MVC선택 - 다음 - 도메인 3개이상이 들어가야한다.
+
+7. 환경설정보기 - 보안사용할때에는 설정을 건들어야함
+        pom.xml에서 메이븐에서 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                	<encoding>UTF-8</encoding>  //인코딩을 넣어줘야지 한글할때 안깨진다.
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <compilerArgument>-Xlint:all</compilerArgument>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                </configuration>
+            </plugin>    
+
+    * src/main/webapp/WEB-INF/views에 home.jsp가 있는이유 
+        : 화면을 만들때에는 webapp에 만드는게아니라 views에 만드는게 맞다
+         (기존에 webapp에 만들던방식은 스프링규정을 어긴거나 다름없다.)
+
+
+8. 기타 설정 및 자바샘플
+    Servlet-conftext.xml의
+    <resources mapping="/rs/**" location="/resources/" /> 
+    mapping : 폴더와 파일이 같이 존재할수 있기때문에 **을 쓰고 주소창에 입력한 부분을 location 으로 변경해준다.
+    
+    자바)
+    /**
+    * Handles requests for the application home page.
+    * 응용프로그램 홈 페이지에 대한 요청을 처리합니다.
+    */
+    @Controller //컨트롤러 부분
+    public class HomeController {
+        //해당 클래스에서 발생하는 로그를 출력하기 위하여 사용한다.
+        private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+        
+        /**
+        * Simply selects the home view to render by returning its name.
+        *  이름을 반환하여 렌더링 할 홈 뷰를 선택하기만 하면 된다.
+        **/
+        @RequestMapping(value = "/", method = RequestMethod.GET)
+        //선언을 안하면 둘다 한다는거고 선언을 할시 그것만 가능하다.
+        public String home(Locale locale, Model model) {
+            logger.info("Welcome home! The client locale is {}.", locale);
+            
+            // 현재 일시에 대한 값을 변수에 대입한다.
+            Date date = new Date();
+            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
+            
+            String formattedDate = dateFormat.format(date);
+            
+            model.addAttribute("serverTime", formattedDate );
+            // 요청한 결과를 화면으로 보내기 위하여 viewresolver에서 선언한 내용을 결합하여 화면을 보낸다.
+            return "home";
+        }   
+    }
+------------------------------------------
+    //기본적인 방법, main에 클래스가 두가지 있을시 RequestMapping은 겹치면 안된다. spring에서는 jsp라는 확장명을 쓰면 안된다.
+    @Controller
+    public class TestController {	
+        @RequestMapping("/work_1")  //안에 들어간게 name이라함 (이걸 호출하면 아래에서 return은 해당하는것에 맞게 해주기 떄문에)
+        public String test() {
+            System.out.println("test page!");
+            return "test";
+        }
+    }
+    
+
+9. @Autowitred : 미리 만들어져 있는걸 주입만 하면됨. 스프링영역에서는 재사용할수 있다.
+	import org.springframework.beans.factory.annotation.Autowired;
+	@Autowitred
+	TestService ts;
+	@Autowired
+	TestServiceInterface tsif;    
+
+    @RequestMapping("/work_3")
+	public String test3(String result, Model model) {
+		// model이라는거에 담아주는것으로 jstl을 이용해 화면에서 쉽게 뿌려줄수 있다.
+		HashMap<String, Object> map = ts.test2();
+		result = map.get("view").toString();
+		model.addAttribute("result", map);
+		return result;
+	}	
+
+    컨트롤러 : url받아서 이동하거나 서비스에서 필요한걸 받아서 사용
+    서비스 : 에서 내부로직이 돌아감, 비즈니스로직은 서비스에서 만들어줌
+    모델 : 로 뷰페이지에 내용전달
+
+10. 인터페이스를 사용하는 이유 : 미리 뭘만들지 메소드를 선언하고 구현은 다른사람이할때 사용하고, 나중에 사용할때 @Autowitred를 사용하면 인터페이스를 이용한 객체를 자동으로 넣어줘서 사용하기 편리하다
+                                (인터페이스를 2개이상에서 사용할경우에는????)
+
+
+                               
+
+
+
+
