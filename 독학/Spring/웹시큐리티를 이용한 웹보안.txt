@@ -1,0 +1,221 @@
+웹보안과 스프링 시큐리티
+참고 : 전체적인설명 : http://zgundam.tistory.com/43?category=430446
+					https://hyojun123.github.io/2018/01/16/spring11/
+					시큐리티 사용방법 설명잘됨 : http://simsimjae.tistory.com/category/%EC%9B%B9%20%EA%B0%9C%EB%B0%9C/%EC%8A%A4%ED%94%84%EB%A7%81%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8?page=2
+	   레퍼런스 :https://docs.spring.io/spring-security/site/docs/3.2.4.RELEASE/reference/htmlsingle/
+	   			https://docs.spring.io/spring-security/site/docs/4.2.3.BUILD-SNAPSHOT/reference/htmlsingle/
+                https://okky.kr/article/382738	
+				http://yookeun.github.io/java/2016/12/03/spring-security/
+				자바컨피그 설정 포기하면 바로 쓸수있는 것 : http://extracold.tistory.com/46			   
+개념
+1. 참고사이트의 글쓴이는 로그인 관리와 관리에 대한체계를 시큐리티로 잡았다고한다.
+	시큐리티는 실제로 적용하기에는 커스터마이징이 필요하다고 한다 기본적인 설정으로는 절대 실제 운영사이트에 반영할수없다함.
+
+키워드
+	인증 : 기본적으로 사용자가 맞는지 아닌지 확인하는 것 
+
+	권한 : 사이트를 이용하는 사람이 화면을 접근할수 있는지 확인하는과정 (관리자전용 화면에는 일반인이 들어가면안되는것과 같다.)
+
+	* 로그인을과정 - 인증, 로그인후 상단메뉴의 관리자 메뉴를 클릭시 메뉴를 이용할수있는지 확인 - 인증
+	(사이트가 제공하는 화면마다 권한과정을 거치기 떄문에 여러번 발생한다.)
+	
+	Filter : Spring security에서는 이러한 인증과 권한의 과정을 Fitler들의 흐름에 따라 이루어진다.
+			 
+
+
+필수 dependency : spring-security-web, spring-security-config 3.24버전으로 진행
+
+web.xml 설정 : 
+	<filter>
+	  <filter-name>springSecurityFilterChain</filter-name>
+	  <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+	  <filter-name>springSecurityFilterChain</filter-name>
+	  <url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	* filter-name의 이름은 반드시 이 이름으로 줘야한다. Spring Security 내부에서 이 이름으로
+		DelegatingFilterProxy클래슬르 찾기 때문에 다른 이름을 줄 경우 적용할 수가 없다.
+	* 해당 필터가 적용될 URL패턴을 모든 패턴을 의미하는 /*을 준다 
+	(특정한 애들만 줄려고 *.do라고 지정할수 없다. 왜냐하면 Security 내부적으로 작업을 위해 사용되는 URL들이 있는데 그 URL들이 뒤에 확장자가 붙는 스타일이 아니다.
+	 그래서 확장자로 패턴을 줄경우 로그인을 하지 못하는 상황이 발생한다.
+	 Spring Security가 관여하지 않는 url패턴을 따로 지정할수가 있다.
+	 이런 URL패턴 지정시 이미지파일이 들어있는 디렉토리나 css파일이 들어있는 디렉토리를 지정해주면 된다.
+	 )
+
+
+*.	디펜더시 추가
+		<!-- ... other dependency elements ... -->
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-core</artifactId>
+		    <version>4.2.3.RELEASE</version>
+		</dependency>	
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>4.2.3.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>4.2.3.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>4.2.3.RELEASE</version>
+        </dependency>		
+
+
+/***********************************************************************************************************
+참고 : http://songc92.tistory.com/46?category=268715
+	http://simsimjae.tistory.com/43?category=253061
+시큐리티 설정
+	1. pom.xml)
+        <!--스프링시큐리티 web 라이브러리-->                          스프링 시큐리티 버전 예민하므로 주의 !!!! 스프링 버전에 맞는 것으로 할것
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>4.1.0.RELEASE</version>
+        </dependency>
+        <!--스프링시큐리티 core 라이브러리-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>4.1.0.RELEASE</version>
+        </dependency>
+        <!--스프링시큐리티 config 라이브러리-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>4.1.0.RELEASE</version>
+        </dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>4.1.0.RELEASE</version>
+        </dependency>		
+	
+	2. spring-security.xml 생성하기
+		비밀번호 문서를 위한 bean 추가
+		BCryptPasswordEncoder 은 스프링 시큐리티에서 제공해주는 라이브러리 클래스
+		단 !!! 비밀번호 암호화 메서드 , 와 인코딩 된 비밀번호를 비교해주는 역할 
+
+
+		<?xml version="1.0" encoding="UTF-8"?>
+		<beans:beans xmlns="http://www.springframework.org/schema/security"
+			xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://www.springframework.org/schema/beans
+										http://www.springframework.org/schema/beans/spring-beans.xsd 
+										http://www.springframework.org/schema/security 
+										http://www.springframework.org/schema/security/spring-security.xsd">
+
+			<beans:bean id="bcryptPasswordEncoder"
+				class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+
+		</beans:beans>	
+	
+	3.web.xml 에 spring security.xml 추가 해주기 
+		<?xml version="1.0" encoding="UTF-8"?>
+		<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+			<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
+			<context-param>
+				<param-name>contextConfigLocation</param-name>
+				<param-value>
+					/WEB-INF/spring/root-context.xml
+					/WEB-INF/spring/spring-security.xml
+				</param-value>
+			</context-param>
+
+패스워드 암호화 : spring-security.xml에서 추가한 bcryptPasswordEncoder를 이용해 암호화한다.
+	@Inject
+	org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+	
+	@RequestMapping("/test")
+	public void test(HttpServletRequest req) {
+		String id = req.getParameter("id");
+		String pw = req.getParameter("pw");
+		System.out.println("id : " + id +"\npw : " + pw);
+		String pw2 = passwordEncoder.encode(pw);	//암호화
+		System.out.println("pw" + pw2);
+		if(passwordEncoder.matches(pw, pw2)) {		//문자열과 오른쪽의 암호화된 문자열을 비교 같으면로그인 성공
+			System.out.println("같음");
+		}else {
+			System.out.println("다름??");
+		}
+	}	
+
+
+일정 폐이지 보안 - 확인만하는 용도
+
+spring-security.xml
+    <http auto-config='true'  use-expressions="true">
+		#연결되는 url에 따라 권한이없으면 로그인창을 띄움, 이러고 그냥 로그인하면 1차적으론됨
+        <intercept-url pattern="/admin/**"  access="hasAuthority('ROLE_ADMIN')" />
+        <intercept-url pattern="/manager/**"  access="hasRole('ROLE_MANAGER')" />
+        <intercept-url pattern="/member/**"  access="isAuthenticated()" />
+        <intercept-url pattern="/**"  access="permitAll" />
+        <form-login />
+        <csrf disabled="true"/>
+        <logout/>
+    </http>
+    <authentication-manager>
+        <authentication-provider>
+            <user-service>
+                <user name="guest"  password="1111" authorities="ROLE_USER"/>
+                <user name="manager"  password="2222" authorities="ROLE_MANAGER"/>
+                <user name="admin"  password="3333" authorities="ROLE_ADMIN, ROLE_USER"/>
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>
+
+
+*. http://micropilot.tistory.com/2767
+
+
+
+
+*********************************************************************************************************
+강의 참고 작성 : https://www.inflearn.com/course-status-2/
+
+3. security-taglibs : jsp내에서 사용가능
+	<%@ taglib uri="http://www.springframework.org/security/tags" prefix="s"%>
+
+	<%-- 기존 USER ID : ${pageContext.request.userPrincipal.name}<br> --%>
+	↓	↓	↓	↓	↓	↓	↓	↓	↓	↓	↓	↓	↓
+	<%-- 태그라이브러리 사용 : EL태그를 줄여서 사용가능	  --%>
+	USER ID : <s:authentication property="name"/><br>
+
+	<!-- pageContext.request.userPrincipal 사용자의 권한이 비어있지 않으면 -->
+	<c:if test="${not empty pageContext.request.userPrincipal}">
+		<p>is Log-In</p>
+	</c:if>
+	<c:if test="${empty pageContext.request.userPrincipal}">
+		<p>is Log-Out</p>
+	</c:if>
+	↓	↓	↓	↓	↓	↓	↓	↓	↓	↓	↓	↓	↓
+	<s:authorize ifAnyGranted="ROLE_USER">	// ROLE_USER에 해당하는 유저가 있으면
+											// access=”hasRole(‘ROLE_USER’)”, access=”!hasRole(‘ROLE_USER’)”
+		<p>is Log-In</p>
+	</s:authorize>
+	<s:authorize ifNotGranted="ROLE_USER">	// 해당하는 유저가 없으면
+		<p>is Log-Out</p>
+	</s:authorize>
+
+
+참고 : http://rldk2002.tistory.com/201?category=713959
+		http://simsimjae.tistory.com/42?category=253061
+		http://songc92.tistory.com/47?category=268715
+		https://minwan1.github.io/2017/04/22/2017-04-22-spring-security-implement/
+		http://hamait.tistory.com/325
+		https://m.blog.naver.com/PostView.nhn?blogId=sam_sist&logNo=220964537132&proxyReferer=https%3A%2F%2Fwww.google.co.kr%2F
+		http://labj.tistory.com/616
+		https://gs.saro.me/#!m=elec&jn=792 :친절하게낭모
+
+
+	강의 보기 : https://www.youtube.com/watch?v=SMZm2aqI_dQ

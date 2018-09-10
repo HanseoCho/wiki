@@ -1,0 +1,222 @@
+Ajax & json
+참고 :   https://github.com/milooy/TIL/blob/master/JavaScript/jpub-ajax-json.md
+
+1. Ajax
+    1) 사용 : 검색어 자동완성, 장바구니에 아이템추가
+    2) 비동기 : 원래 브라우저는 <script>태그를 만나면 스크립트를 로드하고 처리하기전까지 다른작업중단
+                ajax의 비동기 처리모델(aka non-blocking처리모델)
+        .1 브라우저는 서버에 데이터요청
+            - 이 요청은 서버가 필요로 하는 정보를 포함하기도 함
+            - 브라우저는 ajax요청을 담당하는 XMLHttpRequest라는 객체를 구현
+            - 일단 요청을 전송하고나면, 브라우저는 서버의 응답을 기다리지 않는다.
+        .2 서버는 응답으로 데이터를 전달
+            - 주로 HTML, XML, JSON형식
+            - 서버에서 일어나는 일들은 ajax라 부르는 처리과정에 포함X
+        .3 서버가 요청에 대한 응답을 완료시 브라우저에선 이벤트가 발생
+            - 이 이벤트는 데이터를 처리하여 페이지의 일부를 변환하는 js함수를 호출
+    3) ajax를 이요하면 페이지의 일부를 수정하고 싶을때 어느 특정요소의 컨텐츠를 업데이트 하면 된다.
+        - 그러려면 이벤트를 가로채 서버에 새로운 콘텐츠를 요청하는 비동기요청을 보낸다.
+            
+2. Ajax 요청 및 응답처리
+    - 브라우저는 XMLHttpRequest객체를 이용해 Ajax요청을 생성
+    - 서버가 브라우저의 요청에 대해 응답을 전달하면 같은 XMLHttpRequesㅅrorcprk rm rufrhkfmf cjfl
+    예)
+    //요청
+    var xhr = new XMLHttpRequest(); //new로 생성.
+    xhr.open('GET', 'data/test.json', true); //open(http메서드, 요청을 처리할 페이지의 url, 요청이 비동기로 처리될 것인지를 지정하는 불리언)
+    xhr.send('search=arduino'); //준비된 요청을 전달. 괄호 내에 서버에 전달될 추가 정보 전달할 수도 있음.
+
+    //응답
+    xhr.onload = function() { //브라우저가 서버로부터 응답을 받으면 onload이벤트가 발생.
+        if(xhr.status == 200) { //xml객체의 status속성값을 검사하고 서버의 응답이 정상인지 확인
+            //서버의 실행 결과를 처리할 코드
+        }
+    }    
+
+3. 데이터타입
+    - Ajax응답은 주로 HTML, XML, JSON중 한가지 형식으로 전달.
+    - HTML
+        .1 웹페이지의 일부를 업데이트하고 싶은 경우 페이지에 데이터를 표현하기 위한 가장 간단한 방법
+        .2 pros
+            - 코드 작성 및 요청 처리하고 응답 표시하기가 간편
+            - 서버로부터 전달된 데이터를 곧바로 페이지에 삽입가능. => 브라우저가 별도로 처리할 필요 없다.
+        .3 cons
+            - 서버가 반드시 페이지에 사용할 수 있는 HTML을 리턴해야 한다.
+            - 웹 브라우저가 아닌 애플리케이션에 적합하지 않다. => 데이터 이식성이 좋지 않음
+            - 요청이 반드시 같은 도메인으로부터 이루어져야 한다.
+                => ajax응답이 html나 xml형식인 경우엔 페이지와 같은 도메인에서 전달된 것들만 허용.
+    - XML
+        .1 html랑 비슷하지만 태그의 이름이 다르다.
+        .2 이는 xml이 저장되어있는 데이터를 묘사하기 때문이다
+        .3 문법 또한 HTML에 비해 훨씬 제한적
+        .4 pros
+            - 유연한 데이터 타입 => 복잡한 구조의 데이터도 표현가능.
+            - 이기종 및 응용프로그램 사이의 데이터교환에 적합
+            - HTML과 동일한 DOM메서드들을 통해 처리 가능.
+        .5 cons
+            - 태그 때문에 실제 데이터 외에도 추가로 많은 문자 사용 => 실제로 필요한 데이터보다 더 많은 양 대역폭 소비
+            - 요청이 반드시 같은 도메인에서 이루어져야하마.
+            - 결과를 처리하기 위해 많은 양의 코드를 작성해야 한다.
+    - JSON
+        .1 JavaScript Object Notation
+        .2 객체표현식과 유사한 용법을 사용해 데이터 표현.
+        .3 pros
+            - 다른 도메인에서도 요청을 보낼 수 있다.
+            - HTML, XML보다 강력
+            - 주로 js와 함께 사용
+        .4 cons
+            - 문법에 예민, 따옴표 등을 실수하면 파일 전체 처리불가.
+            - js이기때문에 악의적인 콘텐츠를 가질 가능성이 있다.
+                => 신뢰할수 있는 곳에서 생성된 JSON만을 사용해야 한다.
+        
+4. XML - 확장 가능한 마크업 언어
+    - html과 비슷하게 생겼지만 태그의 이름이 서로 다름
+    - html과 동일한 돔조작 할수있는데 js보단 jquery로 하는게 더 낫다.
+    - xml파일의 태그는 그들이 가지고 있는 데이터를 설명할수 있어야함.
+    - xml은 모든 플랫폼에서 동작.
+    - 2000년대 촙나에 많이 활용
+
+    사용예)
+        <?xml version="1.0" encoding="utf-8">
+        <events>
+            <event>
+                <location>샌프란시스코</location>
+                <date>5/1</date>
+            </event>
+            <event>
+                <location>한국</location>
+                <date>5/2</date>
+            </event>
+        </events>
+
+5. JSON - 자바스크립트 객체 표현식
+    - 객체 표현식과 거의 똑같이 생겼지만 순수 텍스트임
+    - 실제 객체는 네트워크를 통해 전송할수 없다. 그보다는 브라우저에 의해 객체로 변환될수 있는 텍스트를 전달하는 것.        
+    - 키는 반드시 작은따옴표 말고 큰따옴표로 둘러싸야한다. 
+    - 값: string, number, boolean, array, object, null
+    - js의 JSON객체는 JSON데이터를 js객체로 변환할수 있다.
+    - 또한 js객체를 문자열료 변환하기도 함
+    - JSON.stringify() : js객체를 JSON형식의 문자열료 변환, 이를 이용해 js객체를 브라우저 -> 다른앱으로 전송가능
+    - JSON.parse() : JSON객체를 브라우저가 사용가능한 js객체로 변환.
+
+    사용예)
+        {
+            "location": "샌프란시스코",
+            "date": 5,
+            "booking": true 
+        }
+
+        {
+            "events": [ //이 배열에 객체 2개 저장.
+                {
+                    "location": "샌프란시스코",
+                    "date": 5,
+                    "booking": true 
+                },
+                {
+                    "location": "서울",
+                    "date": 6,
+                    "booking": false
+                }
+            ]
+        }    
+
+6. Ajax로 HTML로드하기
+    - 서버가 요청에 응답할땐 반드시 상태 메시지를 전달하여 요청이 제대로 처리되었는지를 알려야한다.
+        200 : 서버가 응답완료했으며 아무런 문제가 없다.
+        304 : 응답 내용이 이전 응답 내용과 동일하다.
+        404 : 페이지를 찾을 수 없다.
+        500 : 서버 내부에서 오류가 발생했다.
+        # 만일 이 코드를 로컬에서 실행하면 서버상태 속성을 받을수 없기 때문에 이 속성을 검사하는 부분의
+         코드를 주석처리하고 조건식이 올바르게 실행될 수 있도록 true리턴해야 한다.
+
+    사용예)
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function() { //응답이 로드되면
+            if(xhr.status===200){ //서버 응답이 정상이면
+                document.getElementById('content').innerHTML = xhr.responseText;
+            }
+        };
+        xhr.open('GET', 'data/data.html', true); //요청 준비 - 방법/처리할페이지경로/비동기로할거
+        xhr.send(null); //요청 전송냐 - 여기서 서버 접속하고 응답 오면 위의 onload가 호출.             
+
+7. Ajax로 XML로드하기
+    - 조건식 내부의 응답을 처리하는게 좀 복잡, xml을 html로 변환해야 하기 때문
+
+8. Ajax로 JSON로드하기
+    - json은 서버에서 문자열로 전송되어온다.
+    - 도착하면 이걸 js객체로 변환해야한다. (역직렬화)    
+    - JSON내장객체의 parse()메서드 사용하면 된다.
+    - 직렬화 stringfly(). 브라우저 -> 서버
+
+    사용예)
+        var xhr = new XMLRequest();
+        xhr.onload = function() {
+            if(xhr.status===200){
+                responseObject = JSON.parse(xhr.responseText); //json가져와 js객체로 변경
+
+                var newContent = '';
+                for(var i=0; i<responseObject.events.length; i++) {
+                    newContent += '<div class="event">';
+                    newContent += '<img src"' + responseObject.events[i].location + '"';
+                    ...
+                }
+                document.getElementById('content').innerHTML = newContent;
+            }
+        };
+        xhr.open('GET', 'data/data.json', true); //요청 준비
+        xhr.send(null); //요청 전송    
+
+9. 다른 서버로부터의 데이터 다루기
+    - ajax는 내가 보유한 서버로부터 전달된 데이터는 무리없이 처리가능하지만(보안상의 이유로)
+    - 다른 도메인으로부터의 ajax응답은 로드할수 없다.(크로스 도메인 요청)
+    - 우회방법
+        1) 웹 서버의 프록시 파일
+            - 서버에 원격서버로부터 데이터를 수집하는 파일을 생성(php, node, 루비등 서버언어 이용해)
+            - 그럼 사이트 페이지에서 이 파일에 데이터 요청하면 됨.
+            - 이를 프록시 라고함
+        2) JSONP
+            - JSON with padding
+            - 데이터를 로드하는 <script>요소를 다른 서버로부터 페이지에 추가.
+            - 이 방법이 간으한 이유는 스크립트 태그의 원본 주소에 대한 제약이 존재하기 때문.
+            - 스크립트는 함수를 호출하며, 함수의 매개변수로는 JSON형식의 데이터가 전달.
+                : 이대 호출되는 함수는 페이지에 데이터를 요청하는 페이지에 정의된 것
+                : 페이지를 처리하고 표시하는 역할 담당
+            - 대안: JQUERY를 사용하면 편함
+        3) 크로스 오리진 리소스 공유
+            - 브라우저는 서버와 통신할 때마다 서로에 대한 정볼르 HTTP헤더를 이용해 전달
+            - CORS((cross origin resource sharing))는 HTTP헤더에 추가적으로 정보를 추가해 
+              브라우저와 서버가 서로 통신을 해야한다는 사실을 알게한다.
+            - 최신버전의 브라우저에만 작동
+10. JSONP 동작원리 
+    # JSONP : 한 웹페이지에서 도메인이 다른 웹페이지로 요청할때 사용하는 자바스크립트 개발 방법론이다.
+    - parse()메서드나 stringfy()메서드를 사용할 필요없음
+    - 데이터가 문자열이 아니고 스크립트파일로 바로 전달되어 이미 객체취급 가능
+    - 데이터 리턴할때 이를 처리할 함수 이름 지정가능하다.
+    예)
+        //브라우저
+        <script>
+        function showEvents(data) { //서버가 전송한 JSON데이터를 처리할 함수
+            //데이터를 처리하고 페이지에 출력할 코드 작성
+        }
+        </script>
+        <script src="http://example.org/jsonp"></script> //원격서버로부터 json데이터를 요청할 경로
+
+        //서버
+        //서버응답->스크립트는 데이터를처리할 함수(showEvents())를 호출하는 스크립트 전달.
+        //이 함수 호출이 jsonP의 P다.(padding)
+        showEvents({
+            "events": [
+                {
+                    "location": "샌프란시스코",
+                    "date": 5,
+                    "booking": true 
+                } ...
+            ]
+            })        
+
+
+☆☆☆☆☆☆ 이 아래부터 알고싶어하던거같음
+11. jQuery와 ajax
+    - jQuery는 서버로부터 리턴된 데이터를 손쉽게 처리할수있는 jqXHR객체를제공.
+    - 요청

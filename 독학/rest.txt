@@ -1,0 +1,71 @@
+rest란 - Representational State Transfer
+    HTTP 기반으로 필요한 자원에 접근하는 방식을 정해놓은 네트워크 아키텍처 원리모음(사이트 구성 원리)
+1. 조건
+    - 클라이언트/서버 구조
+    - 무상태
+    - 캐시처리가능
+    - 계층화
+    - Code on denabd
+    - 인터페이스 일관성
+    * 실제로 구현할때는 인터페이스 일관성만 주의하면 되는데 그 이유는 나머지 조건들은 HTTP에 REST원칙이 녹아들어 있기 때문이다.
+
+REST하게 만든다 < - > URL주소만 보고도 수행하려는 동작을 눈치챌 수 있게 만드는 것
+
+2. 예시 (url의 명사가 리소스 동사가 메소드로 만든다.)
+    GET(/posts) : 글 목록(posts) 본다(GET).
+    POST(/postst) : 글(posts)을 생성한다(POST).
+    PUT(/posts/:id) : 글(posts)을 수정한다(PUT).
+    DELETE(posts/:id) : 글(posts)을 삭제한다(DELETE).
+    *. 메소드와 이름만으로 구분을 확연하게 할수 있다.
+
+3. 언제 어떤 메소드를 써야 할까
+            수행하기 전,후  반복 수행한 결과    리소스의 수
+    GET         같다            같다            같다
+    POST        다르다          다르다          많아진다
+    PUT         다르다          같다            같다
+    DELETE      다르다          다르다          적어진다
+*.  수행하기 전 후 : 작업을 수행한후 데이터베이스의 내용이 수정될시
+    반복 수행한 결과 : 이작업을 반복수행시 데이터 베이스가 달라지는가
+    리소스의 수 : 데이터베이스의 리소스가 갯수가 변동이 있는가
+
+4. Restful 주의점
+    PUT /dogs/1/isSick      X
+    PUT /dogs/1?isSick=true O
+    *. id와 리소스 이외의 정보를 URI에 담으면 안된다.
+    
+    POST /login         X  
+    POST /users/login   X
+    POST /session       O
+    *.무엇(명사)을 생성하는지 생각해보아야 한다. (로그인은 세션을 저장하는 일이라서 session을 사용하는게 restful한 방법이다)
+
+    /(컬렉션)/(아이템)/(컬렉션)/(아이템)
+    /(컬렉션)/(아이템)/(아이템)/(아이템) 으로 도 구성가능
+*. 참고 
+
+5. 메시지 : REST에서 자원에 대한 정보는 HTTP바디와 HTTP헤더, 응답 상태코드를 활용한다.
+    Http Body : 바디에 정보를담아서 서버 
+
+    Http Header :
+리소스 메소드 메시지
+
+
+*. https://www.youtube.com/watch?v=xUMURjoPddY 9분 20초 http body부분
+
+
+*. 전반적인 rest구조 설계 참고 : http://defacto-standard.tistory.com/entry/AJAX-REST-API-Request
+
+*. 데이터 주고받는거 참고 : https://appear.github.io/2017/12/20/Spring/spring-05/
+
+*. restControll사용할떄 한글처리 (참고 : http://dodong2.tistory.com/5)
+    servlet-context.xml ------
+        <annotation-driven >
+            <!-- @ResponseBody 한글처리 -->
+            <message-converters>
+            <beans:bean 
+                class="org.springframework.http.converter.StringHttpMessageConverter">
+                <beans:property name="supportedMediaTypes">
+                    <beans:value>text/html;charset=UTF-8</beans:value>
+                </beans:property>    
+            </beans:bean>
+        </message-converters>   
+        </annotation-driven>

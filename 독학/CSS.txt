@@ -1,0 +1,188 @@
+﻿html5
+1. 시멘틱 구조 태그 (참고 : http://snusang.tistory.com/4)
+    - 태그에 의미를 부여해서 웹페이지를 만드느것을 시멘틱 웹이라한다.
+    - 시멘틱 태그는 모두 div태그와 같은 기능을 수행하는 태그이다 (태그마다의 역할을 정의)
+    - 시멘틱 태그를 사용함으로서 전체적인 구조를 파악하는데 기존의 div를 남발하는것보다 효율적이다.
+    예) 
+        header :헤더를 의미 
+        nav :내비게이션을 의미 
+        aside :사이드에 위치하는 공간을 의미 
+        section :여러 중심 내용을 감싸는 공간을 의미 
+        article :글자가 많이 들어가는 부분을 의미 
+        footer :푸터를 의미 
+
+2. div, span태그 :공간분할태그 
+    - html5이전의 웹페이지는 공간을 분할하는 태그를 쓰지않고 Table태그를 많이썼다.
+      하지만 Table태그는 정보를 담는 의미이며 수정을 하는데 있어서도 시간이 오래걸리고 비효율적이라
+      공간을 분할하는 태그를 따로만들게 된다.
+    - 공간을 분할하는 가장 큰 이유는 웹페이지의 레이아웃을 구성하기 위해서이다. 
+    - div : block형식으로 공간을 분할
+      span : inline형식으로 공간을 분할
+
+CSS (생활코딩 : https://opentutorials.org/course/2418/13339)
+    (ofcourse : https://ofcourse.kr/css-course/CSS-%EC%9E%85%EB%AC%B8)
+3. 선택자
+    1) 태그선택자 : 해당 태그 전체에 적용
+        li {
+            color:black;
+        }
+    2) 아이디 선택자 : 해당하는 아이디에만 적용하며, 원칙적으로 하나의 객체에만 적용할수 있다.
+        #liid {
+            color:black;
+        }
+        -----
+        <a id="liid">
+    3) 클래스 선택자 : 여러 객체에 적용할수 있다, 띄어씌기로 여러가지 클래스 적용가능
+        .liclass {
+            color:black;
+        }
+        <a class="liclass classB">
+4. 부모, 자식 선택자
+    - 기존의 선택자로들만으로는 섬세한 작업을 하기 어려우므로 정교하게 선택할수 있는 선택자가 필요하다.
+    1) 바로 하위태그에만 적용하기 (ol의 직계자손인 li에 적용)
+        ol>li {
+            border: 1px solid red;
+        }
+        #하지만 color를 줄시에는 상속에 의해서 모든다른 태그들도 색깔이 바뀐다.
+
+5. 가상 클래스 선택자
+    - 엘리먼트의 상태에 따라 선택하는 선택자
+        :link - 방문한 적이 없는 링크
+        :visited - 방문한 적이 있는 링크
+        :hover - 마우스를 롤오버 했을 때
+        :active - 마우스를 클릭했을 때
+        :focus - 포커스 되었을 때 (input 태그 등)
+        :first - 첫번째 요소
+        :last - 마지막 요소
+        :first-child - 첫번째 태그
+        :nth-child(index) - 1부터 시작 해당하는 태그가 몇번째태그인지
+    
+6. 속성
+    1) width, height : 가로길이 세로길이  (참고 : http://taimouse.tistory.com/8)
+        - 100vw, 100vh : viewport에 근거, 1vh는 viewport의 높이의 1%, 1vw는 viewport의 넓이의 1%와 같다
+        - vmin, vmax : 높이와 너비중 작은쪽의 치수에 기초로 한다. (vh, vw중 더 큰값의 비율을 따라감)
+
+    2) margin  : border 바깥쪽여백
+       padding : border 안쪽여백
+        적용예) 시계방향순
+        - margin : 20px; 전체적용, margin : 20px 10px; 상하 좌우, margin: 30px 10px 20px 50px  상 우 하 좌
+
+    3) color :  글자 색상
+
+    4) font : 글자의 폰트를 정의하는 속성
+        1) font-style : 이텔릭체같은 글꼴의 스타일지정
+            - none, italic
+        2) font-weight : 글자 두께(100~900이나 글자로 설정가능)
+            - 100 : lighter, 400 : normal, 700 : bold, 900 : bolder
+        3) font-size : 글자의 크기
+            - rem : html에 적용된 font-size의 영향을 받는다. 가장바람직한 단위라함.
+            - px : 모니터 상의 화소 하나의 크기에 대응되는 단위입니다. 
+            - em : 부모 태그의 영향을 받는 상대적인 크기입니다. 부모의 크기에 영향을 받기 때문에 파악하기가 어렵습니다. rem이 등장하면서 이 단위 역시 사용이 권장되지 않습니다.
+        4)  font-family : 글꼴 종류로 쉼표(,)로 여러 글꼴을 등록할수 있고 맨앞의 글꼴이 없으면 그 다음 글꼴 사용
+            - sans-serif, serif, cursive (흘림체), fantasy, monospace (고정폭) 
+            (폰트 랭킹 : http://www.fontreach.com/#top)
+    5) text-align : 텍스트의 정렬 방향
+        - left, right, center, justify(양쪽정렬 (자동줄바꿈시 오른쪽 경계선 부분 정리))
+
+    6) background : 태그의 배경을 지정하는 속성
+        1) background-color : 배경 색
+        2) background-image : 배경 이미지, 컨테이너의 크기와 상관없이 삽입된 이미지에 맞춰서 늘거나 줄지않고 그대료 표시되고 컨테이너가 크면 반복표시
+        3) background-repeat : 배경 이미지 반복여부
+        4) background-position : 배경 이미지 위치여부, x축 y축
+            - left right cetner나 숫자로 입력가능
+
+    7) border : 태그의 테두리를 설정하는 속성 (참고 : https://ofcourse.kr/css-course/border-%EC%86%8D%EC%84%B1)
+
+    8) visibility : 태그의 가시성을 결정 
+        -visible : 보임, hidden : 숨김(영역차지), collapse : 겹치도록 지정, inherit : 부모요소의 값 상속
+
+    9) display : 속성의 요소를 어떻게 보여줄지 결정
+        - none : 영억미차지 안보임
+        - black : 기본적으로 가로길이 100%이나 width height지정 가능 레이아웃 배치시 주로 사용, <div> <p>태그가 해당
+        - inline : block과 달리 줄바꿈이 되지않고 width height 지정할수 없다 <span> <b> <i>태그가 해당
+        - inline-block : block과 inline의 중간 형태로 줄바꿈이 되지 않지만 크기를 지정가능
+    
+    10) float : 글의 본문안에 이미지를 삽입할때 자연스럽게 삽입하기 위해 사용하거나
+                레이아웃의 잡을때도 많이사용 (최근에는 flex를 많이사용해서 점점 줄어듬)
+    
+    11) clear : float속성을 통해 부유시킨 이후 문서의 흐름을 제거하기 위해 사용
+    
+    12) position : 태그를 어떻게 위치시킬지 정의
+        - static : 기본값, 다른태그와의 관계에 의해 자동으로 배치되며 임의로 설정 불가능
+        - absolute : 절대좌표로 위치설정(부모가 relative이면 부모안에서 설정)
+        - relative : 원래있던 위치를 기준으로 좌표설정
+        - fixed : 스크롤과 상관없이 항상 문서 최 좌측상단을 기준으로 좌표 고정
+    
+    13) cursor : 태그위에 마우스커서의 모양 설정
+
+    14) 다단 : 다단으로 신문처럼 화면을 분할해서 좀더 읽기 쉽게 만든 레이아웃 (참고 : https://opentutorials.org/module/2398/13712)
+        - column-count : 텍스트를 입력한 숫자로 단을 나눠준다, *text-align : justify를 주면 양쪽정렬해줌
+        - column-width : 컬럼의 폭 지정해서 단을 나눔 
+         * column-count와 column-width를 같이 사용하면 count만큼만큼만 단을 나눠준다.
+        - column-gap : 단사이의 간격 조정
+        - column-rule-style : 단 사이의 스타일설정 (점, 선 등등)
+        - column-rule-width : 스타일 크기
+        - column-rule-color : 스타일 색
+        - column-span : 컬럼에 구애받지않고 나오게할 텍스트에게 주는 속성
+
+☆☆ 15) flex : 엘리먼트들의 크기나 위치를 쉽게 잡아주는 도구, 레이아수을 매우 효과적으로 표헌가능
+                flex를 사용하기위해선 아이템들이 부모에 해당되는 컨테이너에 감싸있어야한다.
+            1) 부모태그(컨테이너) 자식태그(아이템태그)에서 사용할수있는 태그
+            - container : display, flex-direction, flex-wrap, flex-flow, justify-content,
+                          align-items, align-content
+            - item : order, flex-grow, flex-shrink, flex-basis, flex, align-self
+            2) flex의 기본 : 사용할려면 컨테이너태그에 display:flex 속성을 부여하고
+                            flex-direction을 이용해서 정렬방향을 바꿀수있다(기본 row : 옆 column : 아래로, revers로 반대로도가능)
+            3) grow & shrink : 아이템은 컨테이너의 크기에 따라서 크기가 달라지는데, 작아지고 커지는 비율을 설정한다.
+                - flex-basic : 플렉스의 방향에 해당되는 엘리먼트의 크기를 지정, 
+                - flex-grow : 아이템들 크기를 컨테이너/n 으로 비율설정
+                - flex-shrink : 자기속성을 그대로 유지시키는 속성, default값은 1로 컨테이너가 줄어들면 줄어든다 (0:유지, 1:줄어들게함)
+            4) holy-grail Layout 구현)
+                1) 컨테이너 flex를 주고 flex-direction=column; 주면 수직으로 변경
+                2) 컨테이너 안에 가로로 배치할 아이템들의 또 다른 컨테이너로 감싼다.
+                # 성배레이아웃은 크기를 줄이면 nav부분과 광고부분은 고정되고 가운데의 중간의 컨텐츠만 변동
+            5) 그 외의 속성)
+                - flex-wrap : wrap을 하면 컨테이너의 크기보다 아이템의 크기가 크면 그 아이템은 줄바꿈이 되어 아래로 내려간다, default로 nowrap
+                - align-items : flex가 row일경우 반대쪽축의 정렬 및 크기, 아이템들이있고 컨테이너가 flex가 되는동시에 아이템들은 컨테이너의 높이와 갚아지는데 이건 stretch때문이다,default로 stretch 
+                                자신의 크기만큼만 차지하게할려면 flex-start; flex-end, center등이 있다. (위 아래 중간 배치),baseline은 가상의줄?
+                - justify-content : flex의 방향대로 정렬상태 지정
+                - align-content : 같은행을 하나의 그룹으로 쳐서 그룹으로 정렬
+                - align-self : 특정한것만 예외적으로 다르게 정렬할 경우 사용
+                - order : 아이템정렬, 아이템들의 태그위치에따라 0부터 올라가는것같음, 두번째 태그를 맨 처음으로 오게할려면 order:-1 이면 될듯
+    
+    16) filter : 포토샵에서 사용하는 필터를 코드화한것 (참고 : http://bennettfeely.com/filters/)
+        - grayscall(100%), blur()
+    
+    17) background-blend-mode : 배경 그래픽 간의 블랜드 효과 (background-image와 background-color1)
+
+    18) mix-blend-mide : 컨텐츠와 백그라운드 사이의 블랜드 (예제 : https://codepen.io/search/pens?q=blend&page=1&order=popularity&depth=everything&show_forks=false)
+
+    19) transform : 엘리먼트의 크기 위치 모양 등을 변경 (참고 : https://opentutorials.org/course/2418/13684)
+
+    20) transition : 전환할때 부드럽게 처리해주는 기능
+        - transition-property : 어떠한 효과가 일어날때 변화가 일어나게함 (all, fontsize등등)
+        - transition-duration : 전환시간
+        - transition : all 0.1s / transition : fotn-size 1s, transform 0.1s;  
+
+    *) word-break : 기본적으로 줄이 넘어갈때 단어단위로 잘려서 넘어가게 되있다. 그래서 띄어쓰기를 하지 않고 글을 쓴다면 한 단어로 인식해서
+                    width를 넘어가도 줄바꿈이 되지않는다. 글자만 이런특성을 가지고있고 레이아웃은 상관없다.
+                    (참고 : http://htglss.tistory.com/31)
+
+7. 상속 : 일부 태그들은 효율을 위해 부모태그로부터 속성을 이어받는다. (상속태그 확인 : https://www.w3.org/TR/CSS21/propidx.html)
+
+8. 적용 우선순위 : css에서 속성들이 적용되는 우선순위가 존재한다.
+    1) 속성 값 뒤에 !important를 붙인 속성
+    2) HTML에서 style을 직접 지정한속성
+    3) #id로 지정한속성
+    4) .클래스 .추상클래스 로 지정한 속성
+    5) 태그이름으로 지정한 속성
+    6) 상위객체에 의해 상속된 속성
+
+
+
+# rgba : a는 투명도
+*. 다양한 css사용 예 : https://opentutorials.org/module/2398/13712
+
+작업중 :
+
+https://opentutorials.org/course/2418/13526

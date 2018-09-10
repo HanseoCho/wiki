@@ -1,0 +1,85 @@
+페이징 방식
+    1. <a>태그 이용 : 필요한 값들은 ?로 get방식으로 넘겨줘야한다.
+
+    2. ★★★★ <form>태그 이용 : 필요한 정보를 클릭한번에 다넘겨줄수있다. (편-리)
+
+페이징 처리시 지켜야 하는 원칙
+    - 반드시 Get방식을 사용
+    - 다른사람에게 URL로 전달하는 겨웅가 많기때문에 반드시 GET방식으로만 처리된다.
+    - 목록페이지 3페이지에서 특정게시물을 보고 목록가기 버튼을 누르면 다시 목록3페이지로 이동하는 기능이 구현되어야 한다.
+    - 페이징 처리에는 반드시 필요한 페이지번호만을 제공
+    - 페이지 번호가 데이터에 맞게 출력되아햔다.
+
+페이징 처리 개발 순서
+    1. 페이지 데이터가 화면에 출력
+    2. 화면 화단에 페이지 번호가 표시되고 이를 클릭할 경우 제대로 이동하는 작업
+    3. 조회 페이지에서 메뉴가기를 선택시 페이지 정보를 유지한채로 이동
+
+Mysql의 limit를 이용한 페이지 출력
+    - SQL을 처리할때 가장 중요한 점은 빠른데이터 출력을 위해서 가능한 결과의 양을 적게 유지하는 것이 좋다.
+        즉 페이지당 10개의 데이터 출력시 특정 페이지에 맞는 데이터 10개만 가져와야한다.
+    
+    역순출력 (no같은 pk를 order by하면 등록순대로 정렬이 된다.)
+    select ... where ~ order by limit 시작데이터, 데이터의 개수;
+
+    파라미터가 여러개로 늘어나면 관리하기가 어려워지기 때문에 클래스로 만들어서 객체로 처리하는 방법도 바람직하다.    
+    
+    - 클래스 구성
+    public class Criteria {
+        private int page;
+        private int perPageNum;
+
+        public Criteria(){
+            this.page = 1;
+            this.perPageNum = 10;
+        }
+
+        public int getPage(){
+            return page;
+        }
+
+        public void setPage(int page){          //limit에서 어디부터 가져올것인지
+            if(page<=0){
+                this.page = 1;
+                return;
+            }
+            this.page = page;
+        }
+
+        public void setPerPageNum(int perPageNum){  //limit에서 몇개 보여줄것인지
+            if(perPageNum <= 0 || perPageNum > 100){
+                this.perPageNum = 10;
+                return;
+            }
+            this.page = page;
+        }
+
+        public int getPerPageNum(){
+            return this.perPageNum;
+        }
+
+        public int getPageStart() {
+            return (this.page - 1) * perPageNum;
+        }
+
+        public String toString(){
+            자동완성쓰자...
+        }
+    }
+    (어차피 계속 반복사용하는것이라서 메소드화나 클래스로 작업해놓으면 편한것같다.)
+    계산공식
+    시작 데이터 번호 = (페이지 번호-1) * 페이지 당 보여지는 개수
+
+화면 하단의 페이징 처리
+    필요한데이터로 도출해야하는 순서
+    1. 현재폐이지의 끝페이지번호(endpage)  =   ((현재페이지번호 / 페이지게시물의 수)* 페이지게시물의 수)
+    2. 시작페이지 번호   =  (현재폐이지의 끝페이지번호 - 페이지게시물의 수) + 1
+    3. 전체 데이터의 개수 = 구해오기
+    4. 끝페이지번호(endpage) : (전체 데이터의 개수/페이지게시물의 수)
+                                if(현재페이지의 끝번호 > 끝페이지번호){
+                                    endpage = 끝페이지번호;
+                                }
+    5. 이전 페이지 링크  =  시작페이지 == 1? false : true;
+    6. 이후 페이지 링크  =  endpage * 페이지게시물의 수 >= 전체데이터의 수 ? false: ture;
+    
+

@@ -1,0 +1,239 @@
+자바스크립트
+1. 비교연산자 
+== 비교연산자  === 엄격한 비교연산자(타입까지 비교) != 같지않으면 !== 타입까지 같지않으면
+
+2. 조건문
+|| or   && and ! 부정
+
+3. 함수선언
+function number(){
+    i=0;
+    while(i < 10){
+    document.write(i);
+    i += 1;
+    }   
+}
+
+4. 배열생성
+var member = ['1','2','3']
+
+5. 객체생성 // map과 같이 왼쪽이 key값 오른쪽이 value이다.
+var grades = {'egoing':10, 'k8805':6,'sori':80}
+
+6. 모듈 - 반복사용되는 함수를 greeting.js라는 파일로 빼두고 사용하는법
+-----------greeting.js-------------------
+    function welcome(){
+        return 'Hello world';
+    }
+----------main.html----------------
+<head>
+    <meta charset="utf-8"/>
+    <script src="greeting.js"></script>
+</head>
+<body>
+    <script>
+        alert(welcome());
+    </script>
+</body>
+-------------------------------------
+script src로 불러들이고 함수 사용하듯 사용하면 된다.
+
+6. UI 와 API
+UI(user interface) - 사용자와 시스템의 접점
+API(application programming interface) - App과 프로그래밍의 접점(프로그램이 동작하는 환경을 제어하기 위해서 환경에서 제공되는 조작 장치)
+
+개발자가 아닌 사람은 UI를 통해 시스템을 제어하는것이고,
+개발자는 UI와 더불어 API를 이용해서 App을 제어할수 있다.
+
+ex)
+'사용자'에게 '웹 개발자'는 인프라를 제공하고, 
+'웹 개발자'에게 '브라우저 개발자'는 인프라를 제공한다.
+'사용자'와 '웹 개발자'의 관계의 접점이 " Interface "
+
+여기서, 
+웹 개발자는 사용자에게 App을 제어할 수 있도록 User interface를 제공하고,
+브라우저 개발자는 웹 개발자에게 App을 제어할 수 있도록, Application programming interface를 제공한다.
+
+7. 정규표현식 
+정규표현식 리터럴 -> var pattern = /a/
+정규표현식 객체 생성자 -> var pattern = new RegExp('a'); 
+---- 위의 두표현다 같은결과를 야기한다.
+RegExp.exec() -> pattern.exec('abcdef') a를 값으로하는 배열을 리턴한다.
+RegExp.test() -> pattern.test('bcdefg') a가있으면 true 없으면 false
+
+ 문자열 메소드
+ String.match() -> 문자열에 사용하는 RegExp.exec()와 비슷한 기능
+ String.replace() -> console.log('abcdef'.replace(pattern, 'A')); 문자열에서 a를 A로 변경 
+ 
+ 정규표현식 옵션 -> i : 대소문자를 구분하지 않는다.  g : 검색된 모든결과를 리턴한다
+    console.log("Abcde".match(xi));
+    console.log("abcdea".match(xg));
+
+8.  1)내부함수 : 말그대로 함수 내부에 함수가 있는거다 외부에서 접근불가능
+    function outter(){
+        function inner(){
+            var title = 'coding everybody'; 
+            alert(title);
+        }
+        inner();
+    }
+    outter();
+    2)클로저 : 내부함수는 외부함수의 지역변수에 접근할수있는데 외부함수의 실행이 긑나서외부함수가 
+               소멸된 이후에도 내부함수가 외부함수의 변수에 접근할수있다.
+               -> 대략적으로 함수를 미리 변수에 담아서 나중에 사용할수있다라는것 같음
+        예제 1
+        function outter(){
+        var title = 'coding everybody';  
+        return function(){        
+            alert(title);
+            }
+        }
+        inner = outter();
+        inner();
+        예제 2
+        function factory_movie(title){
+            return {
+            get_title : function (){
+                return title;
+            },
+            set_title : function(_title){
+                title = _title
+                }
+            }
+        }
+        ghost = factory_movie('Ghost in the shell');
+        matrix = factory_movie('Matrix');
+        
+        alert(ghost.get_title());
+        alert(matrix.get_title());
+        
+        ghost.set_title('공각기동대');
+        
+        alert(ghost.get_title());
+        alert(matrix.get_title());
+
+9. arguments - 함수안에 매개변수를입력안해도 arguments로 파악할수 있다.
+    function sum(){
+        var i, _sum = 0;    
+        for(i = 0; i < arguments.length; i++){
+            document.write(i+' : '+arguments[i]+'<br />');
+            _sum += arguments[i];
+        }   
+        return _sum;
+    }
+    document.write('result : ' + sum(1,2,3,4));
+
+10. 함수호출
+    o1 = {val1:1, val2:2, val3:3}
+    o2 = {v1:10, v2:50, v3:100, v4:25}
+    function sum(){
+        var _sum = 0;
+        for(name in this){
+            _sum += this[name];
+        }
+        return _sum;
+    }
+    alert(sum.apply(o1)) // 6
+    alert(sum.apply(o2)) // 185
+우선 두개의 객체를 만들었다. o1는 3개의 속성을 가지고 있다. 각각의 이름은 val1, val2,val3이다. o2는 4개의 속성을 가지고 있고 o1과는 다른 속성 이름을 가지고 있고 속성의 수도 다르다.
+그 다음엔 함수 sum을 만들었다. 이 함수는 객체의 속성을 열거할 때 사용하는 for in 문을 이용해서 객체 자신(this)의 값을 열거한 후에 
+각 속성의 값을 지역변수 _sum에 저장한 후에 이를 리턴하고 있다.
+객체 Function의 메소드 apply의 첫번째 인자는 함수가 실행될 맥락이다. 이렇게 생각하자. sum.apply(o1)은 함수 sum을 객체 o1의 메소드로 만들고
+sum을 호출한 후에 sum을 삭제한다. 아래와 비슷하다. (실행결과가 조금 다를 것이다. 그것은 함수 for in문으로 객체 o1의 값을 열거할 때 함수 sum도 포함되기 때문이다.)
+
+11. this
+   this는 호출하는 대상에 따라 지칭하는것이 다르다
+   함수가 호출시 -> window(전역객체)
+   메소드가 호출시 -> window
+   생성자가 호출시 -> 만들어진 객체
+
+    var o = {}
+    var p = {}
+    function func(){
+        switch(this){
+            case o:
+                document.write('o<br />');
+                break;
+            case p:
+                document.write('p<br />');
+                break;
+            case window:
+                document.write('window<br />');
+                break;          
+        }
+    }
+    func();
+    func.apply(o);  // apply로 o가 호출한것이 되면 this o를 가리킨다.
+    func.apply(p);
+
+12. 상속
+    function Person(name){
+    this.name = name;
+    }
+    Person.prototype.name=null;
+    Person.prototype.introduce = function(){
+        return 'My name is '+this.name; 
+    }
+    
+    function Programmer(name){
+        this.name = name;
+    }
+    Programmer.prototype = new Person();
+    Programmer.prototype.coding = function(){
+        return "hello world";
+    }
+    
+    var p1 = new Programmer('egoing');
+    document.write(p1.introduce()+"<br />");
+    document.write(p1.coding()+"<br />");
+
+    결과
+    My name is egoing
+    hello world
+
+13. prototype 
+    : 객체는 프로퍼티를 가질 수 있는데 prototype이라는 프로퍼티는 그 용도가 약속되어 있는 특수한 프로퍼티
+
+    node.js.txt 참고
+    9. 프로토타입 객체 : 객체지향의 장점인 붕어빵틀을 자바스크립트에서도 사용할려고 만듬
+    
+    function Person(name, age){
+        this.name = name;
+        this.age = age;
+    }
+    //자바의 메소드역할 할당
+    Person.prototype.walk = function(speed){
+        console.log(speed + 'km 속도로 걸어갑니다.');
+    }
+
+    var person01 = new Person('소녀시대',20);
+    person01.walk(10);
+
+14. history : 페이지 이동
+history.bakc()은 먼저 파라미터가 없구요..바로 이전 문서로 돌아가는 것이구.
+history.go(0) : 현재 페이지 리로드
+history.go(-1) : histor.back() 동일
+history.go(-2) : 2단계 전 문서로. ^^
+
+*. 콜백함수 : 
+(함수형 프로그래밍 
+    변경 가능한 상태를 불변상태(Immutab)로 만들어 SideEffect를 없애자.
+    모든 것은 객체이다.
+    코드를 간결하게 하고 가독성을 높여 구현할 로직에 집중 시키자.
+    동시성 작업을 보다 쉽게 안전하게 구현 하자.
+ 1급객체
+    변수나 데이타에 할당 할 수 있어야 한다.
+    객체의 인자로 넘길 수 있어야 한다.
+    객체의 리턴값으로 리턴 할수 있어야 한다.
+)
+function add(a,b,callback){ 
+    var result = a+b;
+    callback(result);
+}
+
+add(10, 10, function(result){
+    console.log('더하기 결과(콜백함수 안에서) : ' +result);
+});
+*. 함수를 파라미터로 보낼수있다
+
+typeof() : 자료형 확인

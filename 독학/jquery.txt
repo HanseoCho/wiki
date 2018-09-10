@@ -1,0 +1,726 @@
+참고 : http://roqkffhwk.tistory.com/category/%EC%9E%90%EB%B0%94%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8%EC%9D%B4%EC%95%BC%EA%B8%B0/jQuery?page=4
+
+1. $(document).ready
+    $(document).ready(function(){
+    });
+    자바스크립트의 onload와 같은 기능, 모든 html페이지가 화면에 뿌려지고 
+    ready안에 서술된 이벤트들이 동작준비를 한다.
+    이것을 줄여서
+    $(function(){
+    });
+    로 사용가능하다. // 즉 페이지가 준비되면 설정한다고 보면됨.
+
+    클릭이벤트 부여시
+    $(function(){
+        $("#clickButton").click(function()){
+            alert("HelloWorld!!);
+        });
+    })
+    # 만약 $(function(){}) 을 쓰지않고 클릭버튼에 클릭이벤트만 주면
+     소스는 위에서 아래로 읽어들어가는데 클릭버튼을 읽을때 id가없으면 
+     이벤트가 부여가 안된다.
+
+2. 태그를 id,class,name으로 찾기
+    1) id로 특정태그찾을때 : #
+    2) class로 특정태그찾을때 : .
+    3) name로 특정태그찾을때 : 태그시작[name=네임명]
+
+
+
+--------------------------
+
+1. jquery사용법 - jquery-3.3.1.js
+최신브라우저 jQuery 3.x
+오래된웹브라우저 jQuery 1.x
+#참고 https://code.jquery.com/
+
+    1) script선언을 해준다. (다운을 받아서 사용해주면 미리보기가 나온다.)
+        	<script  src="jquery-3.3.1.js"></script> 
+
+    2) 문서 객체 선택방법
+        <script>
+        //CSS 선택자: 문서객체를 선택
+        $("h1").css("color", "red")
+        $("h1").css("background-color", "orange")
+        $("h1").css("backgroundColor", "black")
+        $("h1").html("안녕하세요")
+
+        //태그 형태의 문자열: 문서객체를 생성
+        $("<h1></h1>").appendTo("body") //body 태그뒤에 h1태그를 붙인다.
+        .css("color","red")
+        .html("Hello World")
+
+
+        //태그혀앹의 문자열: 문서객체를 생성
+        $("<h1></h1>")
+        
+        //문서객체 : 문서 객체를 선택
+        var header = document.querySelector("h1");
+        $(header).css("color","blue");
+        </script>
+    
+2.setter와 getter
+# getter는 첫번째만 가지고온다.
+    1) css사용하는경우
+        <body>
+        <h1>안녕하세요</h1>
+        <h1>안녕하세요</h1>
+        <h1>안녕하세요</h1>
+        <script>
+        $("h1").css("color","red")
+
+        // 1. Setter - jQuery객체를 리턴
+        //  1) (문자열,문자열)
+        $("h1").css("color","red")
+        //  2) (객체) : 여러값을 한번에 입력가능
+        $("h1").css({
+            "color":"red",
+            "background-color": "orange",
+            "text-align":"center"
+        })
+        $("h1").css({
+            color:"red", backgroundColor: "orange", textAlign:"center"
+        })
+        //  참고) 함수로 값을 입력 : index값을줘서 
+        var array = ["red","blue","orange"]
+        $("h1").css("color", function(index){
+            return array[index];
+        })
+        // 2. Getter 0 매개변수를 하나 생략해서 사용(값을 가져옴) - 문자열을 리턴
+        var value = $("h1").css("color")
+        alert(value)
+        </script>
+        #참고 img에는 attr도 사용
+    2) attr을 사용하는경우
+        <img/>
+        <img/>
+        <img/>
+        <script>
+        // 1. Setter
+        $("img").attr("src","http://placehold.it/100x100")
+        $("img").attr({"src":"http://placehold.it/100x100","alt":"test image"})
+        $("img").attr({
+            "src":function (index){
+            return "http://placehold.it/100x"+ ((index+1)*100)
+            },
+            "alt":"test image"
+        })
+        // 2. Getter
+        var test = $("img").attr("src")
+        alert(test);
+        </script>
+    3) html 및 text를 사용하는 경우
+        <script>
+        // 1. Setter
+        $("h2").html("<a htef='#'>a</a>")
+        /*
+        html은 태그를 삽입가능하다.
+        text는 문자열형태로 삽입할때 사용
+        text는 Getter할때에는 전부 나온다. ($("h2").text()) 
+        분석할용도가 많기 때문이다.
+        */
+        $("h2").html(function(index){
+            return ("helloWorld"+index)
+        })
+
+        // 2. Getter
+        var value = $("h2").html()
+        alert(value);
+        </script>
+
+3. 문서 객체삽입  &  문서객체의 이동
+    $(A).appendTo(B) : A를 B의 뒷부분에 추가
+    $(A).prependTo(B) : A를 B의 앞부분에 추가
+    $(A).insertAfter(B) : A를 B의 뒤에 추가합니다.
+    $(A).insertBefore(B) : A를 B의 앞에 추가합니다.
+    #before
+    #prepend
+    #  A 
+    #append
+    #after
+
+
+    $(A).append(B) : B를 A의 뒷부분에 추가
+    $(A).prepend(B) : B를 A의 앞부분에 추가
+    $(A).after(B) : B를 A의 뒤에 추가합니다.
+    $(A).before(B) : B를 A의 앞에 추가합니다.
+
+4. 이벤트
+    1) 기본 이벤트실행
+        <h1>Hello</h1>
+        <a href="http://hanbit.co.kr">Hello</a>
+        <script>
+        $("h1").click() //실행시 클릭이벤트 자동실행
+        $("h1").click(function(event){ //handler를 넣어준다. 함수를 넣어서 사용 event객체는 event와 관련된 정보가 들어있다.
+            alert(event.currentTarget)      //이벤트를 발생시킨 객체를 리턴
+            $(event.currentTarget).html("click") // this == event.currentTarget
+            $(this).css("color","red")
+        })
+        $("h1").click(100, function(event){ //매개변수(데이터속성)와 handler를 넣어준다. 함수를 넣어서 사용
+            alert(event.data)                 //데이터를 표기, 이벤트를 식별하기 위한 방법중 하나
+        })
+        $("a").click(function(event){
+            //event.preventDefault();           //a태그의 기본 이벤트제거
+            //event.stopPropagation();          //이벤트가 뒤로 전달되는것을 막는다. //배경색변경을 막음.
+            return false                        //이 두가지는 많이사용하기때문에 jquery에서는 return false하면 자동으로 두개다 적용된다.
+        })
+
+        $("body").click(function(event){
+            $(event.currentTarget).css("backgroundColor","orange")
+        })
+        </script>
+    2) 다중 이벤트설정 : 여러가지 이벤트를 한번에 연결한다.
+        $("h1").on("click",function(){         //복잡한 이벤트 연결방식, on뒤에 string으로 이벤트이름을쓰고 이벤트 연결
+            $(this).html("click");
+        })
+
+        $("h1").on("click",100,function(){$(this).html("click");}) 
+
+        //객체로 쓰는방식
+        $("h1").on({
+            click:function(){$(this).html("click");},
+        dblclick:function(){$(this).html("dbclick");},
+        mouseenter:function(){$(this).html("mouseenter");}
+        })        
+
+    # 적용 예
+        첫번째 녀석만 이벤트가 적용이되고 나중에 추가된애들은 이벤트가 연결이 안된다.
+        $("h1").on("click",function(){
+        $("<h1></h1>").html("hello").appendTo("body")
+        })
+
+        두번째 클릭할때 다시 handler를 호출하도록 설정
+        var handler = function(){
+        $("<h1></h1>").html("hello").appendTo("body").click(handler);
+        }
+        $("h1").on("click",handler)
+
+        세번째  body를 클릭했을때 h1을 클릭했으면
+        $("body").on("click","h1",function(){
+        alert(this)                       // this에는 h1이 들어온다
+        $(this).html("click")
+        $("<h1></h1>").html("hello").appendTo("body");
+        });
+
+5. 효과 (애니메이션)  참고 - 11.html
+    1) 클릭시 생기는 여러가지 효과들 : 버튼클릭시 div의 class이름이 page인것에 적용
+    $("button").click(function(){     // 사라지게하는것도 여러 효과가 있다.
+        //$("div.page").toggle("slow"); // toggle안에 slow나 fast입력
+        //$("div.page").slideToggle("slow"); // 
+        $("div.page").fadeToggle("slow"); // 서서히 사라지고 생김
+    });    
+
+    2) 사용예)
+    $("div").click(function(){     // 사라지게하는것도 여러 효과가 있다.
+    $(this).animate({ //animate(객체, 몇초동안 실행할것인지)
+       width: 300,height: 300 //width: "+=100" 도 사용 가능하다.
+    }, 1.5 *1000 )
+    });
+    $("div").click(function(){
+        $(this).stop(true,true)       //stop(애니메이션을 정지할때 클리어큐를 부를지, 중간에 정지할것인지 바로최종상태로 변경할것인지)
+        //$(this).clearQueue() //현재실행되고있는것은 실행하고 뒤에 대기중인 이벤트를 제거
+        $(this).animate({ 
+        left: "+=60"
+        }, 2000).animate({
+        width: "+=60"
+        }, 2000).animate({
+        height: "+=60"
+        }, 2000);
+    });  
+    $("div").click(function(){
+        $(this).stop(true,true)       //stop(애니메이션을 정지할때 클리어큐를 부를지, 중간에 정지할것인지 바로최종상태로 변경할것인지)
+        $(this).animate({ 
+        left: "+=60",
+        width: "+=60",
+        height: "+=60"
+        }, 2000);
+    });    
+    $("div").click(function(){
+        $(this).stop(true,true)       //stop(애니메이션을 정지할때 클리어큐를 부를지, 중간에 정지할것인지 바로최종상태로 변경할것인지)
+        $(this).animate({ 
+        left: "+=100"
+        },1000)
+        .delay(1000)                  //1초 동안 대기하게만든다.
+        .animate({
+        left: "+=100"
+        },1000)
+    })
+
+6. 문서준비와  find 메소드
+    1)문서 준비상태
+        $(document).ready(function(){      
+            alert("ready");
+        });
+        위와 같은역할
+        $(function(){
+            alert("ready2");
+        });
+    2) find 메소드
+        $(this).find("p").css("color","red"); //아래꺼와 사용방법이 비슷한데 이게 추가확장할때 편리해서 이 방법이 좋다.
+
+    # 예
+        for(var i=0;i<3;i++){
+        $("<div></div>").append("<h1>Hello</h1>").append("<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>").appendTo("body").click(function(){
+            //$("p").css("color","red");          //p 태그를적용할때 이렇게되면 전지역에 적용이된다
+            $(this).find("p").css("color","red"); //아래꺼와 사용방법이 비슷한데 이게 추가확장할때 편리해서 이 방법이 좋다.
+            // $("p", this).css("color","red")
+        })
+        }
+
+7. 연습방법 : 자주가는사이트와 포토샵을 이용한다.
+    1) 자주가는사이트에서 우클릭 검사를 할때 문서객체 모델에 변화가 있으면 javascript이고 없으면 css이다.
+    2) 요소를 파악해서 사이트의 구조를 파악한다.
+    3) 눌러서 생기는 이벤트를 구현해보면 포트폴리오나 취업하는데 활용가능
+    #마법의 CS RGB컬러 숫자 #C8C8C8
+
+8. 이미지슬라이드 - 이미지슬라이드의 종류는 여러가지가있다, 옆으로 스크롤되는방식과 투명해지면서 이동되는동시에 불투명해지는방식과, 상품이 스크롤되는동시에 커지는것
+    1) 핀터레스트라는것을 보면 그리드에 배치되는것을 볼수있다. (https://www.pinterest.co.kr/?autologin=true) - 이거는 나중에 플러그인 살펴본다캄
+    
+    2) 옆으로 슬라이드되는 이미지슬라이더
+        - 길게 띠를만들어서 이것을 좌우로 움직이는데 움직일때 화면을 사용자에게 보이는영역만 뚫어두고 나머지는 안보이게 한거다
+        참고 : http://www.cj.co.kr/cj-kr/index 에서사용한방식 참고함
+        div div ul li 로 구성
+        두번째 div는 style : overflow: hiddenl; position: relative;
+    예)
+    <style>
+        * {margin: 0; padding: 0;}
+        li {list-style: none;}
+    </style>
+    <script>
+        $(function(){
+        var length = $(".viewport li").length; //내부의 li태그의 수를파악\
+        var width = 980;
+        var height = 380;
+    
+
+        $(".viewport").css({                              // div가 한개만 보이게 설정
+            width: width,
+            height: height,
+            overflow: "hidden"
+        })
+        $(".viewport ul").css({ width: width * length }); // ul의 width를 하나의 넒이 * li수만큼으로 설정한다.
+        $(".viewport li").css({                           // 내부 li에게 각각 크기를 준다.
+            width: width,
+            height: height,
+            float: "left"
+        })
+
+        var moveTo = function (index) {
+            if(!index){index=1;}
+            index = index % length;
+            //애니메이션으로 이동
+            $(".viewport ul").animate({                           // 이것을 당기면 이미지가 이동한다.
+            marginLeft: -width * index
+            })
+            //타이틀의 변경
+            var title = $($(".viewport li").get(index)).attr("data-title")
+            $("h1").html(title);
+            $("h2").html("0" + (index+1));
+            currentIndex=index;
+        }
+        
+        window.moveSlider = moveTo;                       // moveSlider(1) 입력시 이동
+
+
+        for (let i=0;i<length;i++){                       // 동적으로 페이지를 유지할려면 자바스크립트로 만들어야한다.
+            $("<button></button>").text(i).click(function(){
+            moveTo(i);
+            //조금미묘한곳
+
+            }).appendTo("body")
+        }
+        var currentIndex=0;                               //일정시간후 스크롤 이동하기
+        setInterval(function(){                           //setInterval함수
+            currentIndex += 1;
+            moveTo(currentIndex)
+        },1000*5)
+
+        })
+    </script>  
+    <body>
+    <h2 id="idnex-label"></h2>
+    <h1 id="title-label"></h1>
+    <div class="viewport">
+        <ul>
+        <li data-title="가나다"><a href="#"><img src="img/a.jpg"/></a></li>
+        <li data-title="라마바"><a href="#"><img src="img/b.jpg" /></a></li>
+        <li data-title="사아자"><a href="#"><img src="img/c.jpg" /></a></li>
+        <li data-title="차카타"><a href="#"><img src="img/d.jpg" /></a></li>
+        <li data-title="파하가"><a href="#"><img src="img/e.jpg" /></a></li>
+        <li data-title="나다라"><a href="#"><img src="img/f.jpg" /></a></li>
+        <li data-title="마바사"><a href="#"><img src="img/g.jpg" /></a></li>
+        <li data-title="아자차"><a href="#"><img src="img/h.jpg" /></a></li>
+        <li data-title="카타파"><a href="#"><img src="img/i.jpg" /></a></li>
+        </ul>
+    </div>
+    <script>
+    $(function(){
+        
+    });
+    </script>
+    </body>    
+
+9. 플러그인 : 웹사이트에서는 자주 사용하는 기능들이 존재하는데, 다른사람들이 우리를위해 뭔가를 구현해놓은것이다.
+        # 찾는법 : jquery plugin registry에서 찾아볼수 있다.
+                    jquery plugin top 10을 검색해보면 여러가지를 찾아볼수 있다.
+
+    1) innerfade 플러그인 : 이미지 슬라이드를 모듈화해놓은것 // ui태그에 id를 걸어주고 거기다가 plugin에있는 .innerfade함수를 써준다.
+        #다운로드 : https://medienfreunde.de/lab/innerfade/
+        <script src="jquery-3.3.1.js"></script>
+        <script src="jquery.innerfade.js"></script>
+        <script>
+            $(function(){
+            $("#inner-fade").innerfade({
+                animationtype: 'fade', 
+                speed: 750, 
+                timeout:2000,
+                type: 'random',
+                containerheight: '350px'
+            });
+            });
+        </script>  
+        <ul id="inner-fade">
+        <li><a href="#"><img src="img/a.jpg"/></a></li>
+        <li><a href="#"><img src="img/b.jpg" /></a></li>
+        <li><a href="#"><img src="img/c.jpg" /></a></li>
+        <li><a href="#"><img src="img/d.jpg" /></a></li>
+        <li><a href="#"><img src="img/e.jpg" /></a></li>
+        <li><a href="#"><img src="img/f.jpg" /></a></li>
+        <li><a href="#"><img src="img/g.jpg" /></a></li>
+        <li><a href="#"><img src="img/h.jpg" /></a></li>
+        <li><a href="#"><img src="img/i.jpg" /></a></li>
+        </ul>>
+    
+10. Jquery플러그인 제작 : fn에 뭔가를 넣으면 jquery에서 사용할수있는 메서드가 된다.
+    <script>
+        $.fn.reader = function(){ 
+        $(this).css("color","red")
+        };
+    </script>
+    <script>
+        $(function(){
+        $("h1").readr();
+        });
+    </script>    
+    <h1>hello</h1>
+
+
+#frontend는 사용자와 가까운것 backend는 회사와 가까운것
+
+11. Node.js : backend에서 주로사용하는 서버사이드 언어
+    다운로드 : https://nodejs.org/ko/
+    시작 : cmd에서 node를 입력하는것으로 node를 시작
+    나가기 : ctrl + c 를 두번입력하면 나가진다.
+    실행 : node 16.js (tab입력하면 자동완성기능 있슴)
+
+12. 웹서버를 기본
+    ----이론 설명----
+    # 참고 : 유투브 모던웹을 위한 node.js 
+    # 서버는 중앙에 있는 것[기업/회사-컴퓨터 위의 프로그램]
+    PHP / Java / Ruby / Python / C# / 자바스크립트
+    # 클라이언트는 제공받는 것[손님-웹 브라우저/애플리케이션]
+    웹브라우저 - 자바스크립트
+    AltJs <= 커피스크립트, 타입스크립트, 코틀린, 고 (자바스크립트로 변환하는 언어들)
+
+    클라이언트 -> 서버 : 요청(request)
+    - 목적[!]
+    - HTTP : 메서드 / URL // HTTP에서는 두가지를 사용
+    - 요청헤더
+    - 요청본문
+
+    서버 -> 클라이언트 : 응답(response)
+    상태코드(status Code)
+    - 200 ok
+    - 404 not found (못찾음)
+    응답 헤더
+    응답 본문
+    ------------------
+    1) 17.js에 아래와 같이 작성한다.
+    17.js--------------------------------------------------------------------------
+    const http = require("http") //http모듈을 읽어들인다.
+
+    const server = http.createServer((request,response) => { //이렇게 만들면 서버라는 객체를 리턴해준다. 
+        //요청 정보확인
+        console.log(request.method);
+        console.log(request.url);
+        console.log();
+
+
+    if(request.url === "/hello"){           //if문을 사용해서 입력한 url값을 확인해서 특정본문을 응답가능하다.
+        response.writeHead(200,{
+            "Content-Type": "text/html"
+        });
+        response.write("<meta charset='utf-8'><h1>안녕하세요</h1>");  //응답 본문
+        response.end();
+    }else{
+
+        //응답 방법 : 사용자에게 응답해주는 코드
+        response.writeHead(200,{            //첫번째에 statusCode와 두번재에는 응답헤더와 관련되 객체 삽입
+            "Content-Type": "text/html"
+        });
+        response.write("<h1>Hello World</h1>");  //응답 본문
+        response.end();
+    }
+    server.listen(52273, () =>{ // 사용안하는포트인 52273과 콜백함수
+        console.log("server Running at http://127.0.0.1:52273")
+    });
+
+    // 익스프레스 라이브러리라는 Jquery 라이브러리가 있고 사용한다.
+    --------------------------------------------------------------------------------------
+    2) node 17.js를 실행시키면 포트를 열고 서버가 돌아가는상태가된다.   
+    3) 주소창에 127.0.0.1:52273으로 들어가면 hello world를 보여준다.
+    # cmd에서 node를 보면 
+        -----------------------------
+        GET                 // 요청정보확인에 입력한 request.method 이다
+        /favicon.ico        // 라는걸 띄우는데 이건 웹에서 주소옆의 그림을 의미한다. request.url를 의미
+        GET
+        /hello/hi           // 127.0.0.1:52273/hello/hi 주소창옆에 입력한게 그대로 서버에 get방식으로 간다.
+        -----------------------------
+#다음부터는 편한 익스프레스 라이브러리르 사용
+
+13. express로 GET 요청 서버 만들기
+    1) cmd - npm install express@4.14 : 해당경로로 package-lock.json와 node_modules폴더를 받는다.
+        기본사용 형태)
+            //모듈을 추출한다.
+            const express = require('express')
+            const app = express()
+
+            app.get('/', (req,res)=>{
+                res.send('<h1>HelloWorld</h1')
+            });
+
+            app.listen(52273, ()=>{
+                console.log('Server Running at http://127.0.0.1:52273')
+            })
+    2) 정적 파일제공 (18.js)
+        app.use(express.static('public')) //public은 폴더의 이름이고
+                                          //폴더의 모든내용을 get으로 자동생성해준다.  
+    
+    3) 응답과 응답형식
+        .1 /data.html : 데이터를 HTML형식으로 제공
+        .2 /data.json : 데이터를 json형식으로 제공
+        .3 /data.xml  : 데이터를 xml형식으로 제공
+
+        예) 19.js
+            //모듈을 추출한다.
+            const express = require('express')
+            const app = express()
+
+            // 변수를 선언
+            const items = [{
+                name: '우유',
+                price: '2000'
+            },{
+                name: '홍차',
+                price: '5000'    
+            },{
+                name: '커피',
+                price: '5000'    
+            }]
+
+            app.use(express.static('public')); //public은 폴더의 이름이고
+                                            //폴더의 모든내용을 get으로 자동생성해준다.
+
+            app.get('/data.html', (request,response)=>{  
+                console.log(request.url)           
+                let output = ""
+                output += "<!DOCTYPE HTML>"
+                output += "<html>"
+                output += "<head>"
+                output += "     <title>Data HTML</title>"
+                output += "</head>"
+                output += "</html>"
+                output += "<body>"    
+                items.forEach(function(item){
+                    output += "<div>"
+                    output += " <h1>" + item.name +"</h1>"
+                    output += " <h2>" + item.price +"</h2>"
+                    output += "</div>"
+                })
+                output += "</body>"
+                output += "</html>"
+                response.send(output)
+            })
+            app.get('/data.json', (req,res)=>{               
+                res.send(items)
+            })
+
+            app.listen(52273, ()=>{
+                console.log('Server Running at http://127.0.0.1:52273')
+            })
+        #노드.js에서는 ;를 사용안한다.
+
+14. jQuery로 GET 요청하기
+    XMLhttpRequest : ajax를 하는 기본적인 객체지만 사용방법이 어려워서 별도의 라이브러리를 사용한다.
+    jQuery Ajax  : UI 라이브러리 + AJax 라이브러리 
+                (React / vue / angular) - UI라이브러리
+    SuperAgent - Ajax 라이브러리 (react에게 ajax를 줄수있다.)
+
+    Ajax - 비동기 자바스크립트를 사용해 xml파일의 추출, 웹페이지 내부에서 다른서버로 요청하는 기능
+    Ajax 사용법)
+        1) html
+        $.ajax({
+        url: "/data.html",
+        success: function (data, textStatus, xhr) {
+          console.log(data)
+          console.log(textStatus)
+        }
+        })
+        2) xml
+        $.ajax({
+        url: "/data.xml",
+        success: function (data, textStatus, xhr) {
+          $(data).find("product").each(function(){      //이렇게 find를 이용하여 <product><name><price> 태그의 값을 추출 가능하다
+              var name = $(this).find("name").text()
+              var price = $(this).find("price").text()
+
+              var $header $(<h1></h1>).text(name + " - " + price + "원"); //jquery객체를 변수에 넣을때는 $기호를 사용한다
+              $("<div></div>").append($header).appendTo("body);
+          })
+        }
+        })    
+        3) json
+        $.ajax({
+            url: "/data.json"
+            success: function (data, textStatus, xhr){
+                data.forEach(function(item){
+                    var $header = $("<h1></h1>").text(name + " - " + price + "원");
+                    $("<div></div>").append($header).appendTo("body);
+                })
+            }
+        })    
+    #데이터를 처리하는 일을 crud라고 부르는데, Read를 할때 웹서버에게 요청할때는 get으로 요청한다. creat는 post메소드 update는 put메소드 delete는 delee메소드 
+     Create - POST 메소드
+     READ - GET 메소드
+     UPDATE - PUT 메소드
+     Delete - DELETE 메소드
+
+15. Get POST PUT DELETE 요청과 응답
+    $.ajax({
+        method: "GET",                          //Ajax를 사용할때 
+        url: "/data.html"
+        success: function(data,textStatus,xhr){
+            $("body").html(data)
+        }
+    })
+
+    # RESTful
+      Get - /data : 모든데이터를 주세요
+      POST - /data : 데이터를 추가할게요
+      PUT - /data : 데이터를 모두 수정할게요
+      DELETE - /data : 데이터를 모두 제거할게요
+
+      Get - /data/0 : 0번째 데이터를 주세요
+      PUT - /data/0 : 0번째 데이터를 수정할게요
+      DELETE - /data/0 : 0번째 데이터를 제거할게요      
+      
+    #일반적으로 put - /data 나 DELETE - /data를 제외하고는 자주 쓰인다.
+
+    main.js
+        app.get("/drink", (request,response) => {response.send(items)})
+        app.post("/drink",(request,response)=>{
+            name: "테스트",
+            price: "테스트"
+        })
+        response.send(items[items.length - 1])
+        app.get("/drink/:id",(request,response) => {
+            const id = Number(request.params.id)      // jquery익스프레스 라이브러리에는 :id라고 입력해서 값을 받아들이고 아래에서 params로 그 값을 받을수 있다.
+            response.send(items[id])                  // 오류발생시 오류전송
+        })
+        app.put("/drink/:id",(request,response) => {  // 데이터가 들어오면 수정
+            items[id].name = "테스트"
+            items[id].price = 1000
+            response.send(items[id])                  
+        })
+        app.delete("/drink/:id",(request,response) => { // 데이터가 들어오면 삭제
+            items.splice(id, 1)
+            response.send(items[id])                  
+        })                
+    # 서버는 이와같은식으로 확장을 해나간다.
+
+16. 각 요청시의 데이터 주고받는 방법
+    편지 : 가볍다 + 쉽게처리
+        -GET
+        -?a=10&b=10형태로 데이터를 전달 : 요청 매개변수 또는 쿼리
+        -
+
+        #get요청시의 ajax예 )
+        index.html
+            $.ajax({
+                url: "/drink",
+                method: "get",
+                data{
+                    a: "hello",
+                    b: "hello_2"
+                },
+                success: function(data){
+                    consoles.log(data)
+                }
+            })
+        main.js
+        app.get("/drink",(request,response)) => {
+            console.log(request.query())          
+            //data로 넘겨준 값들은 request.query로 받는다. 이러한 형태로 ajax요청을 걸때는 XMLhttpRequest를 내부적으로 활용하는데 부르기 힘들어서 xhr이라 부른다.
+            response.send(전송값)
+        }
+
+        
+    택배 : 무겁다 + 복잡하게 처리
+        -POST PUT DELETE
+        -Body라는 별도의 요소로 데이터를 담고 전달
+        #post의 ajax예)
+        index.html
+            $.ajax({
+                url: "/drink",
+                method: "post",
+                data{
+                    a: "hello_1",
+                    b: "hello_2"
+                },
+                success: function(data){
+                    consoles.log(data)
+                }
+            })
+        #아까와 같이 xhr로 전송이 되는데 Form Data내부에서 a와 b값이 전달된다. 
+        #이걸 구현하는 방법은 복잡해서 별도의 라이브러리를 사용한다.
+        1) body-parser 설치
+            cmd - npm install body-parser 
+        2) .js에서 읽어들인다
+            const bodyParser = require('body-parser')
+        3) 구글에서 express bodyParser를 입력하면 가장위쪽에 나오는 깃에 들어가서 
+            아래쪽 코드에 뭔가 읽어들이는게 나온다
+            읽어들인거 아래에사용한다.
+            app.use(bodyParser.urlencoded({extends: false}))
+        4) 3번까지 해주면 request.body로  받아들일수있다. 사용가능해진다.
+            main.js
+            app.post("/drink",(request,response)) => {
+                console.log(request.body)        로 서버에서 출력이 가능해진다.
+            }        
+
+# 이를 사용하면 서버와 클라이언트끼리 데이터통신을해서 원하는 데이터를 추가 가능해진다.
+  1) html아래쪽에다 input 태그 2개를 만들고 첫 친구 id="name" 두번째는 id="price"로 만든다
+  2) POST전송 방식에서 data에 입력한 친구들을 전달
+        data{
+            name: $("#name").val()
+            price: $("#price").val()
+        },
+        success: function(data){    //성공시 수행
+            console.log(data)
+        }
+  3) 이제 서버에서 body를 이용해서 받을수 있다.(라이브러리 사용해야함 모르면 위에 읽어)
+        app.post("/drink",(request,response)) => {
+            items.push({                    //items에 데이터 저장
+                name: request.body.name
+                price: request.body.price
+            })
+            response.send(items[items.length - 1])
+        })
+  4) 이제 실행해서 해보면 서버에 추가됨
+
+
+
+
+    
+
+
+

@@ -1,0 +1,177 @@
+﻿ES6 
+1.  1) const : 상수
+    2) let : 구문적인 변수 영역규칙
+    3) 템플릿 문자열 : 이전의 + 대신 ``사이에 ${}를 사용
+        예) console.log(`${var},${firstname}`)
+    4) 디폴트 파라미터 : 함수의 인자로 디폴트 값을 선언
+       예1) function logActivity(name="오성원", activity="테니스"){
+        console.log( `${name}은 ${activity}를 좋아합니다.`)
+     }
+        예2) var defaultPerson = {
+                name : {
+                    first: "성원",
+                    last: "오"
+                },
+                favActivity: "테니스"
+            }
+            function logActivity (p=defaultPerson){
+                console.log(`${p.name.first}은(는) ${p.favActivity}를 좋아합니다.`)
+            }
+    5) 화살표 함수 
+        예) var lordify = firstname => `캔터베리의 ${firstname}`
+
+2. ES6 객체와 배열
+    1) 구조 분해를 사용한 대입
+        var sandwich = {
+            bread: "더치 크런치",
+            meat: "참치",
+            cheese: "스위스",
+            toppings: ["상추","토마토","머스타드"]
+        }    
+        var {bread, meat} = sandwich // var {}안에 같은 이름의 변수명이 있으면 sandwich에서 빼서 값을 넣어준다.
+        console.log(bread,meat) // 더치 크런치 참치
+    2) 객체의 필드에 접근하기 위해 점(.)과 필드 이름을 사용하는 대신 regularPerson에서 필요한 값을 구조 분해후 가져올수 있다.
+        var lordify({firstname}) => {
+            console.log(`캔터벨리의 ${firstname}`)
+        }
+        lordify(regularPerson) // 캔터베리의 현석
+
+    3) 불필요한 값을 콤마를 사용해 생략하는 리스트 매칭도 있다.
+        var [firstResort] = ["용평","평창","강촌"]
+        console.log(firstname) // 용병
+        var [,,thirdResort] = ["용평","평창","강촌"]
+        console.log(thirdResort) // 강촌
+
+    4) 객체 리터럴 개선 : 구조 분해의 반대로 구조를 다시만들어내는 과정
+        예) var name = "탈락";
+            var elevation = 9738
+            var funHike = {name, elevation}
+            console.log(funHike) // {name:"탈락", elevation:9738}
+    
+        예2) var name = "Tallac
+            var elevation = 9738
+            var print = function(){
+                console.log(`${this.name} 산의 높이는 ${this.elevation}피트 입니다.`)
+            }
+            var funHike = {name,elevation,print}
+            funHike.print() // 탈락 산의 높이는 9738피트 입니다.
+        
+        예3)
+            # 기존의 방식
+            var skier ={
+                name: name,
+                sound: sound,
+                powderYell: function(){
+                    var yell = this.sound.toUpperCase()
+                    console.log(`${yell} ${yell} ${yell}!!!`)
+                },
+                speed: function(mph){
+                    this.speed = mph
+                    console.log('속력(mph:'), mph)
+                }
+            }
+            #새로운 방식 - 객체리터럴 개선으로 현재 영역에서 볼수있는 변수들을 객체의 필드에 대입할수 있으며 function키워드를 사용하지 않아도 되서 코드양도 줄어든다
+            const skier = {
+                name,
+                sound,
+                powderYell(){
+                    let yell = this.sound.toUpperCase()
+                    console.log(`${yell} ${yell} ${yell}!!!`)
+                },
+                speed(mph) {
+                    this.speed = mph
+                    console.log('속력(mph):', mph)
+                }
+            }
+    5) 스프레드 연산자 : 세게의 점(...)으로 이루어진 연산자 몇가지 다른 역할을 담당
+        예1) var peaks = ["대청봉","중청봉","소청봉"]
+             var canyons = ["천불동계곡","가야동계곡"]
+             var seoraksan = [...peaks,...canyons]
+             console.log(seoraksan.join(`, `)) //대청봉, 중청봉, 소청봉, 천불동계곡, 가야동계곡
+            
+        예2) 스프레드 연산자를 사용해 원본배열을 놔두고 뒤집을수 있다.
+             var peaks = ["대청봉", "중청봉","소청봉"]
+            var [last] = [...peaks].reverse()
+            console.log(last) // 소청봉
+            console.log(peaks.join(', ')) // 대청봉,중청봉, 소청봉
+
+        예3) var lakes = ["경포호","화진포","송지호","청초호"]
+            var [first, ...rest] = lakes        //first에 경포호 나머지는 rest에
+            console.log(rest.join(", ")) // 화진포, 송지호, 청초호
+
+        예4) function directions(...args){
+            var [start, ...remaining] = args
+            var [finish, ...stops] = remaining.reverse()
+
+            console.log(`${args.length} 도시를 운행합니다.`)
+            console.log(`${start}에서 출발합니다`)
+            console.log(`목적지는 ${finish}입니다.`)
+            console.log(`중간에 ${stops.length}군데 들립니다.`)
+            }
+            directions("서울","수원","천안","대전","대구","부산")
+        
+    6) 프라미스 : 비동기적인 동작을 잘 다루기 위한 방법으로 여러가지 성공이나 실패를 단순한 성공이나 실패로 환원
+        러닝 리엑트 p47에 주석자세히 달아둠
+        예) const getFakeMembers = count => new Promise((resolves, reject)=>{
+            const api = `https://api.randomuser.me/?nat=US&results=${count}`
+            const request = new XMLHttpRequest()
+            request.open('GET',api)
+            request.onload = () =>
+            resolves(JSON.parse(request.response).results) :
+            reject(Error(request.statusText))
+            request.onerror = (err) => rejects(err)
+            request.send()
+            })
+            
+            getFakeMembers(5).then(
+                members => console.log(members),
+                err => console.error(
+                    new Error("randomuser.me에서 멤버를 가죠올수 없습니다.")
+                )
+            )
+    7) 클래스 : ES6에서는 클래스 선언이 추가되었다.
+        예) Class Vacation {
+                constructor(destination, length){   //constructor는 자바스크립트의 생성자
+                    this.destination = destination
+                    this.length = length
+                }
+                print(){
+                    console.log(`${this.destination}은(는) ${this.length}일 걸립니다.`)
+                }
+            }
+            #호출
+            const trip = new Vacation("칠레 산티아고",7)
+            console.log(trip.print()) //칠레산티아고는 7일 걸립니다.
+
+        # 대문자 관습으로 모든 타입의 이름은 대문자로 시작한다는 규칙을 따라 클래스 첫글자를 대문자로 시작한다.
+        //클래스 객체를 한번만들고 나면 원하는만큼 new로 호출가능 클래스 확장가능하다
+        //기존의 클래스(부모 또는 상위클래스)를 확장한 새로운 클래스(자식또는 상위)는
+        //상위 클래스의 모든프로퍼티와 메서드를 상속한다.
+        //이렇게 상속한 프로퍼티나 메서드를 하위 클래스 선언안에서 변경 가능하다.
+        예2) 예1과 연계
+            Class Expedition extends Vacation {
+                constructor(destination, length, gear){
+                    super(destination,length)
+                    this.gear
+                }
+                print(){
+                    super.print()
+                    console.log(`당신의 ${this.gear.join("와(과) 당신의 ")}를(을) 가져오십시오`)
+                }
+            }
+
+            const trip2 = new Expedition("한라산",3,["선글라스,"오색깃발","카메라"])     
+            trip2.print()
+    8) ES6 모듈 : 예전에는 import와 export를 처리하는 라이브러리 활용법만 있었는데, es6에서는 자체에서 모듈을 지원한다.
+                자바스크립트는 각각의 모듈을 별도을 파일로 저장한다. 모듈을 만들고 외부에서 익스포트하는 방법에는 한 모듈에서 여러 자바스크립트 객체를 외부에서
+                노출시키는 방법과 모듈당 하나의 자바스크립트 객체를 노출시키는 방법이 있다.
+        예) text-helper.js
+            export const print(message) => log(message, new Date())
+
+            export const log(message, timestamp) => console.log()
+
+        
+리엑트는 공부중입니다.
+        
+
+        

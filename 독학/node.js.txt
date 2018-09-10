@@ -1,0 +1,181 @@
+node 강의 참고 : https://www.youtube.com/watch?v=EfPHkuFujMY&list=PLG7te9eYUi7tHH-hJ2yzBJ9h6dwBu1FUy
+
+1. 브라켓 설치 : brackets.io
+    - 노드.js는 딱히 정해진 툴이없어서 최근에 좋은거 씀
+
+2. 브라켓 설정
+    - 보기 - 테마 : 글자크기나 폰트 배경색 바꿀수있슴
+
+3. js파일
+    - 자바스크립트 코드를 따로 분리해놓은거다
+    - 자바스크립트를 따로 모아놓고 <script src="">로 로딩을 해서 자바스크립트를 실행하는데
+    - 노드js는 자바스크립트 코드를 서버사이드나 pc상에서 그대로 파일을 실행할수 있게 해준다.
+    - node.org에 다운받을때 보면 lts랑 current두가지 버전이있는데 lts는 천천히 업데이트되고 current는 최신기술이다 설치는 current로 진행
+    - 1.js에 console.log("안녕하세요") 를 만들고 cmd에서 파일이있는 곳으로 이동하고 node 1.js로 실행하면 안녕하세요가 나온다. pc에서 실행
+    - 라이브러리 설치 : brackets icons (파일마다 다른아이콘을 보여줌!) Custom Work (이것도 아이콘 맨위만 체크해제하고 브라켓 재실행!!! //ui배치 깔끔해진다)
+                    ☆NodeJS integration (노드js파일을 브라켓에서 실행시켜준다 - 설치후 재실행 - 우클릭 add to node.js 이거 쓰는이유는 가운데 벌레모양의 디버거가 한스텝씩 넘어가면서 실행해줘서 에러확인에 좋다)
+    # 노드js는 '' 작은따옴표를 권장한다.
+
+4. 문자열포멧
+    console.log('숫자 : %d',10);
+    console.log('문자 : %s','안녕');
+    var json = {name:'소녀시대',age:20} //json변수에 자바스크립트객체로 만들어서 넣어줌
+    console.log('자바스크립트객체 : %j',json) // json객체보다는 자바스크립트 객체이다 json객체는 웹서버와 클라이언트간에 자바스크립트 객체 포멧으로 주고받기위한건데 속성이름도 문자열로 표시한다.
+    console.log('JSON객체 : %j',json)
+
+    var num = 10;
+    console.log(`숫자 : ${num}`)
+
+5. console객체의 함수들
+    console.log() : 상태나 변수의 값을 확인가능
+
+    console.dir(json) : 객체를 넣어주고 자바스크립트 객체를 그대로 출력해주고있다.
+                        이거의 장점은 라이브러리를 가져다 사용하거나 프로젝트중에 생긴 객체의 속성에 대해서 
+                        그대로 출력을 해줘서 쉽게 파악할수 있게 해준다
+                        출력 : { name: '소녀시대', age: 20 }
+
+    console.time('키값') : 키값이 돌아가는데 걸린시간을 알려준다, 그냥 개발중에 얼마나 걸리는지 궁금할때 사용한다함
+                            예)
+                            console.time('time_s');
+                            var result=0
+                            for(var i = 0 ; i < 10000; i++){
+                                result += i;
+                            }
+                            console.timeEnd('time_s')
+
+    console.log('파일이름 : %s',__filename); : D:\work\work_node\1.js, 어떤파일이 어디에있나 정보를 확인할때 많이 사용한다. 둘다 전역변수
+    console.log('패스 : %s',__dirname); : D:\work\work_node
+
+    #전역객체(어디서든 사용가능) console, prose
+    console.log('argv 속성의 파라미터수 : ' + process.argv.length) : 배열로 되있고 node실행파일 위치와 현재파일의 위치를 가지고있다.
+    console.dir(process.argv) : 결과 : argv 속성의 파라미터수 : 2
+                                        [ 'C:\\Program Files\\nodejs\\node.exe',
+                                        'D:\\work\\work_node\\2.js' ]
+
+    process.argv.forEach(function(item, index){
+        console.log(index + ' : ' + item)
+    })
+
+6. 노드에서 모듈불러오기 : 코드를 별도의 파일로 분리하는 이유는 자바스크립트가 길어지면 함수로 분리해서 정의해서 실행을 하는데 분리해놓으면 관리하기가 편해진다.
+    - 파일 있는지 확인 -> 파일읽기 -> 화면에 내용보여주기  (코드실행순서) 
+    - 기능별로 정리가되면 읽을때에는 읽기에가서 수정만 해주면 된다.
+
+    - 함수 내보내기 분리한 파일이 module1.js일때, 코드를 집어넣고 함수를 변수에 할당할수있는 함수 1급객체언어이다 (중요한 객체로 다룬다는 의미)
+        exports.함수이름 = 함수정의
+
+    - main.js에서 가져올때
+        var module1 = require('module1(경로)')
+        module1.함수이름()
+
+    - exports 방법
+        1) export 사용
+            exports.add = function(a,b){
+                return a + b
+            }
+
+            exports.mul = function(a,b){
+                return a * b
+            }
+
+        2) module.exports : 객체로 만들고 마지막에 리턴 (실제로 많이 사용하는 방식)
+            val calc = {}
+            calc.add = function(a,b){
+                return a+b
+            }
+            calc.mul = function(a,b){
+                return a*b
+            }
+            module.exports = calc;
+        3) 모듈 분리전
+            var calc = {};
+
+            calc.add = function(a,b){
+                return a+b;
+            };
+
+            console.log('모듈로 분리하기전 - calc.add : '+calc.add(10,10))
+        4) 분리후
+            calc.js
+            exports.add = function(a,b){
+                return a+b;
+            };
+            4.js
+            //calc에 add가 exports가 되있다
+            var calc = require('./calc') //직접만든 모듈은 상대패스로 넣어준다.
+            console.log('모듈로 분리한 후 - calc.add : '+calc.add(20,20));
+
+7. 외장모듈 만들기
+    npn init : json파일을 만들어줌 (디펜더시를 자동으로 만들어준다.)
+    json파일과 소스를 옮길때 애가 알아서 외장에서 설치한 정보를 받는다
+    npm install : .json파일 설치
+    npm install nconf --save : json파일에 저장
+
+    내장모듈
+    var 변수이름 = require('내장모듈');
+    -종류
+        os : 호스트이름이나 메모리 (잘사용되지않는다.)
+        path : 경로와 관련된 정보들 (많이사용된다함)
+        * join() : 배열이 ,로 구분되면서 붙는다.
+          join(path.sep) : 구분이 \로 바뀐다.
+          path.join('문장1','문장2') : 문장의 구분이 \로 바뀌고 하나의 문자로 합쳐진다.
+          path.dirname(변수) : 파일명을 제외한 폴더 경로
+          path.basename(변수) : 파일이름(notepad.exe)
+          path.extname(변수) : .까지포함한 확장자(.exe)
+        
+
+*js에서 배열은 forEach(하나씩받을이름, 돌아가는숫자)로 표현가능
+8. 노드나 js는 함수지향언어라서 객체안에 함수가 들어갈수있다.
+    console.log('숫자 : %d',10);
+
+    function add(a,b,callback){
+        var result = a+b;
+        callback(result);
+    
+        var count = 0;
+        var history = function(){
+            count += 1;
+            return count + ' : ' +  a + ' + ' + b + ' = ' + result;
+        };
+
+        return history;
+    }
+
+    var add_history = add(10, 10, function(result){
+        console.log('더하기 결과 : ' +result);
+    });
+    //add_history에 함수를 담는다(!!!)
+
+    console.log('add_history의 자료형'+typeof(add_history));
+    console.log('결과값으로 받은 함수 실행' + add_history());
+    결과 : 
+        숫자 : 10
+        더하기 결과 : 20
+        add_history의 자료형function
+        결과값으로 받은 함수 실행10 + 10 = 20
+
+    *. 클로저 : 내부함수에서 외부함수를 접근했을때 그 변수가 그대로 유지된다. 
+
+9. 프로토타입 객체 : 객체지향의 장점인 붕어빵틀을 자바스크립트에서도 사용할려고 만듬
+    
+    function Person(name, age){
+        this.name = name;
+        this.age = age;
+    }
+    //자바의 메소드역할 할당
+    Person.prototype.walk = function(speed){
+        console.log(speed + 'km 속도로 걸어갑니다.');
+    }
+
+    var person01 = new Person('소녀시대',20);
+    person01.walk(10);
+
+10. 
+
+*. https://www.youtube.com/watch?v=RtOSw8TLCtQ&index=15&list=PLG7te9eYUi7tHH-hJ2yzBJ9h6dwBu1FUy
+
+
+
+
+
+
+            
